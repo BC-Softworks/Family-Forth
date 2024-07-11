@@ -15,7 +15,7 @@ git clone https://github.com/superseeker13/FamiForth.git
 
 # Kernel Configuration
 W   = Working register one
-X   = Working register two
+W2   = Working register two
 PSP = Parameter Stack Pointer
 RSP = Return Stack Pointer
 UP  = User Pointer
@@ -24,13 +24,12 @@ BOS = Bottom of stack
 
 
 ## Kernel Memory locations
-W    -> Zpage $00-$01
-IP   -> Zpage $02-$03
-UP   -> Zpage $04-$05
-TOP  -> Zpage $06
-BOS  -> Zpage $07
-PSP  -> X Register    -> $08 to $FF
-RSP  -> Stack Pointer -> $0100 to $01FF
+W    ->  Zpage         -> $00 - $01
+W2   ->  Zpage         -> $02 - $03
+IP   ->  Zpage         -> $04 - $05
+UP   ->  Zpage         -> $06 - $07
+PSP  ->  X Register    -> $08 to $FF
+RSP  ->  Stack Pointer -> $0100 to $01FF
 
 
 
