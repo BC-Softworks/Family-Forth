@@ -1,4 +1,4 @@
-![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
+![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)
 
 # FamiForth
 
@@ -10,7 +10,6 @@ cc65 and make are the only dependencies.
 
 ```
 git clone https://github.com/superseeker13/FamiForth.git
-
 ```
 
 # Kernel Configuration
