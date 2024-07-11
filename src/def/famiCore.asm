@@ -211,15 +211,31 @@ hiByteW2   = $03
 ; ( n1 n2 -- n3 )
 ; n3 is the lesser value
 .proc MIN
-  lda $00,X
-  
+  lda $01,X ; Compare high bytes first
+  cmp $03,X
+  bne       ; If unequal skip checking low byte
+  lda $00,X ; Compare low bytes
+  cmp $02,X ; If high ytes equal
+  bpl @end  ; If n1 is less then n2 call drop
+  jsr NIP   ; Else call nip
+  rts
+@end:
+  DROP
   rts
 .endproc
 
 ; ( n1 n2 -- n3 )
 ; n3 is the greater value
 .proc MAX
-  lda $00,X
-  
+  lda $01,X ; Compare high bytes first
+  cmp $03,X
+  bne       ; If unequal skip checking low byte
+  lda $00,X ; Compare low bytes
+  cmp $02,X ; If high ytes equal
+  bmi @end  ; If n1 is greater then n2 call drop
+  jsr NIP   ; Else call nip
+  rts
+@end:
+  DROP
   rts
 .endproc
