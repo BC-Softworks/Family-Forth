@@ -10,6 +10,7 @@ lowByteW  = $01
 hiByteW2  = $02
 lowByteW2 = $03
 
+; Macros for 1:1 tokens
 .macro CALL
   jsr
 .endmacro
@@ -34,30 +35,30 @@ lowByteW2 = $03
 ; Copy x and place it on the stack
 .proc DUP
   PUT
-  lda $0002,X
-  sta $0000,X
-  lda $0003,X
-  sta $0001,X
+  lda $02,X
+  sta $00,X
+  lda $03,X
+  sta $01,X
   rts
 .endproc
 
 ; ( x1 x2 -- x2 x1 )
 ; Swaps the position of x1 and x2
 .proc SWAP
-  lda $0000,X    ; Load the hiByte from the TOS
+  lda $00,X    ; Load the hiByte from the TOS
   sta hibyte_W   
-  lda $0001,X    ; Load the lowByte from the TOS
+  lda $01,X    ; Load the lowByte from the TOS
   sta lowbyte_W  
   
-  lda $0002,X    ; Load the hiByte
-  sta $0000,X    
-  lda $0003,X    ; Load the lowByte
-  sta $0001,X    
+  lda $02,X    ; Load the hiByte
+  sta $00,X    
+  lda $03,X    ; Load the lowByte
+  sta $01,X    
   
   lda hibyte_W   ; Load the hiByte from W
-  sta $0002,X   
+  sta $02,X   
   lda lowbyte_W  ; Load the lowByte from W
-  sta $0003,X  
+  sta $03,X  
   
   rts
 .endproc
@@ -66,31 +67,33 @@ lowByteW2 = $03
 ; Duplicate the TOS and 
 ; place it onto the bottom
 .proc OVER
-
+  lda $00,X
+  
   rts
 .endproc
 
 ; ( x1 x2 x3 -- x2 x3 x1 )
 ; Places the top of the stack onto the bottom
 .proc ROT
-
+  lda $00,X
+  
   rts
 .endproc
 
 ; ( x1 x2 -- x2 )
 ; Remove the second cell on the stack
 .proc NIP
-  CALL SWAP
+  jsr SWAP
   DROP
-  RETURN
+  rts
 .endproc
 
 ; ( x1 x2 x3 -- x2 x3 x1 )
 ; Places the top of the stack onto the bottom
 .proc TUCK
-  CALL SWAP
-  CALL OVER
-  RETURN
+  jsr SWAP
+  jsr OVER
+  rts
 .endproc
 
 
@@ -99,15 +102,15 @@ lowByteW2 = $03
 ; ( x1 x2 -- x3 )
 ; x3 is the bit-by-bit logical "and" of x1 with x2. 
 .proc AND
-  lda $0000,X
+  lda $00,X
   sta $00
-  lda $0001,X
+  lda $01,X
   DROP
-  and $0001,X
-  sta $0001,X
+  and $01,X
+  sta $01,X
   lda $00
-  and $0000,X
-  sta $0000,X
+  and $00,X
+  sta $00,X
   rts
 .endproc
 
@@ -115,59 +118,74 @@ lowByteW2 = $03
 ; ( x1 x2 -- x3 )
 ; x3 is the bit-by-bit logical "or" of x1 with x2. 
 .proc OR
-  lda $0000,X
-  sta $00
-  lda $0001,X
+  lda $00,X
+  sta hiByteW
+  lda $01,X
   DROP
-  ora $0001,X
-  sta $0001,X
-  lda $00
-  ora $0000,X
-  sta $0000,X
+  ora $01,X
+  sta $01,X
+  lda hiByteW
+  ora $00,X
+  sta $00,X
   rts
 .endproc
 
 ; ( x1 x2 -- x3 )
 ; x3 is the bit-by-bit logical "xor" of x1 with x2. 
 .proc XOR
-  lda $0000,X
-  sta $00
-  lda $0001,X
+  lda $00,X
+  sta hiByteW
+  lda $01,X ; Keep the low byte in register
   DROP
-  eor $0001,X
-  sta $0001,X
-  lda $00
-  eor $0000,X
-  sta $0000,X
+  eor $01,X
+  sta $01,X
+  lda hiByteW
+  eor $00,X
+  sta $00,X
   rts
 .endproc
 
 ;; Arithmetic operations
 
 ; ( n1 n2 -- n3 )
-; n3 = n1 + n2
+; n3 = n2 + n1
 .proc ADD
-  
+  clc
+  lda $01,X
+  adc $03,X
+  sta $03,X
+  lda $00,X  
+  adc $02,X
+  sta $02,X
+  DROP
   rts
 .endproc
 
 ; ( n1 n2 -- n3 )
-; n3 = n1 - n2
+; n3 = n2 - n1
 .proc SUB
-  
+  sec
+  .repeat 2   ; Decrementing between subtractions
+    lda $00,X ; allows a repeat to be used
+    sbc $02,X ; Doesn't work with ADD because of carry
+    sta $02,X
+    dex
+  .endrep
   rts
 .endproc
 
 ; ( n1 n2 -- n3 )
-; n3 is lesser value
+; n3 is the lesser value
 .proc MIN
+  lda $00,X
   
   rts
 .endproc
 
 ; ( n1 n2 -- n3 )
-; n3 is greater value
+; n3 is the greater value
 .proc MAX
+  lda $00,X
   
   rts
 .endproc
