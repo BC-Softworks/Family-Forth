@@ -5,10 +5,10 @@
 ;; Primitives are defined as macros when possible for performance
 
 ;; Working register locations
-hiByteW   = $00
-lowByteW  = $01
-hiByteW2  = $02
-lowByteW2 = $03
+lowByteW   = $00
+hiByteW    = $01
+lowByteW2  = $02
+hiByteW2   = $03
 
 ; Macros for 1:1 tokens
 .macro CALL
@@ -45,19 +45,19 @@ lowByteW2 = $03
 ; ( x1 x2 -- x2 x1 )
 ; Swaps the position of x1 and x2
 .proc SWAP
-  lda $00,X    ; Load the hiByte from the TOS
-  sta hibyte_W   
-  lda $01,X    ; Load the lowByte from the TOS
-  sta lowbyte_W  
+  lda $00,X    ; Load the lowByte from the TOS
+  sta lowbyte_W   
+  lda $01,X    ; Load the hiByte from the TOS
+  sta hibyte_W  
   
-  lda $02,X    ; Load the hiByte
+  lda $02,X    ; Load the lowByte
   sta $00,X    
-  lda $03,X    ; Load the lowByte
+  lda $03,X    ; Load the hiByte
   sta $01,X    
   
-  lda hibyte_W   ; Load the hiByte from W
+  lda lowbyte_W   ; Load the lowByte from W
   sta $02,X   
-  lda lowbyte_W  ; Load the lowByte from W
+  lda hibyte_W  ; Load the hiByte from W
   sta $03,X  
   
   rts
@@ -119,12 +119,12 @@ lowByteW2 = $03
 ; x3 is the bit-by-bit logical "or" of x1 with x2. 
 .proc OR
   lda $00,X
-  sta hiByteW
+  sta lowByteW
   lda $01,X
   DROP
   ora $01,X
   sta $01,X
-  lda hiByteW
+  lda lowByteW
   ora $00,X
   sta $00,X
   rts
@@ -134,12 +134,12 @@ lowByteW2 = $03
 ; x3 is the bit-by-bit logical "xor" of x1 with x2. 
 .proc XOR
   lda $00,X
-  sta hiByteW
-  lda $01,X ; Keep the low byte in register
+  sta lowByteW
+  lda $01,X
   DROP
   eor $01,X
   sta $01,X
-  lda hiByteW
+  lda lowByteW
   eor $00,X
   sta $00,X
   rts
@@ -151,13 +151,12 @@ lowByteW2 = $03
 ; n3 = n2 + n1
 .proc ADD
   clc
-  lda $01,X
-  adc $03,X
-  sta $03,X
-  lda $00,X  
-  adc $02,X
-  sta $02,X
-  DROP
+  .repeat 2   ; Decrementing between additions
+    lda $00,X ; allows a repeat to be used
+    adc $02,X ; Doesn't work with SUB
+    sta $02,X
+    dex
+  .endrep
   rts
 .endproc
 
@@ -165,12 +164,47 @@ lowByteW2 = $03
 ; n3 = n2 - n1
 .proc SUB
   sec
-  .repeat 2   ; Decrementing between subtractions
-    lda $00,X ; allows a repeat to be used
-    sbc $02,X ; Doesn't work with ADD because of carry
-    sta $02,X
-    dex
-  .endrep
+  lda $01,X
+  sbc $03,X
+  sta $03,X
+  lda $00,X  
+  sbc $02,X
+  sta $02,X
+  DROP
+  rts
+.endproc
+
+; ( n1 n2 -- n3 )
+; n3 = n2 * n1
+.proc MUL
+  clc
+
+  rts
+.endproc
+
+; ( n1 n2 -- n3 )
+; n3 = n2 / n1
+.proc DIV
+  sec
+
+  rts
+.endproc
+
+; ( n1 -- n2 )
+; n2 = n1 ^ 2
+.proc SQR
+  jsr DUP
+  jsr MUL
+  rts
+.endproc
+
+; ( n1 -- n2 )
+; n2 = n1 ^ 3
+.proc CUB
+  jsr DUP
+  jsr DUP
+  jsr MUL
+  jsr MUL
   rts
 .endproc
 
