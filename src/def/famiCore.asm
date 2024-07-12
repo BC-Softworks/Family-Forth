@@ -3,6 +3,7 @@
 ;==========================================================;
 
 ;; Primitives are defined as macros when possible for performance
+;; TODO: Create JSON file mapping primatives to subroutines/macros
 
 ;; Working register locations
 lowByteW   = $00
@@ -85,13 +86,18 @@ hiByteW2   = $03
   rts
 .endproc
 
+
 ; ( x1 x2 -- x2 )
 ; Remove the second cell on the stack
 .proc NIP
-  jsr SWAP
+  lda $00,X    ; Load the lowByte from the TOS
+  sta $02,X    ; Overwrite lowByte of second cell
+  lda $01,X    ; Load the highByte from the TOS
+  sta $03,X    ; Overwrite highByte of second cell
   DROP
   rts
 .endproc
+
 
 ; ( x1 x2 x3 -- x2 x3 x1 )
 ; Places the top of the stack onto the bottom
@@ -195,6 +201,7 @@ hiByteW2   = $03
   rts
 .endproc
 
+; TODO: Speed up with direct addressing
 ; ( n1 -- n2 )
 ; n2 = n1 ^ 2
 .proc SQR
@@ -207,8 +214,7 @@ hiByteW2   = $03
 ; n2 = n1 ^ 3
 .proc CUB
   jsr DUP
-  jsr DUP
-  jsr MUL
+  jsr SQR
   jsr MUL
   rts
 .endproc
