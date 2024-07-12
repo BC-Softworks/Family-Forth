@@ -79,7 +79,7 @@ hiByteW2   = $03
 .endproc
 
 ; ( x1 x2 x3 -- x2 x3 x1 )
-; Places the third of the stack onto the top
+; Rotate the top three stack entries. 
 .proc ROT
   lda $00,X
   
@@ -99,8 +99,8 @@ hiByteW2   = $03
 .endproc
 
 
-; ( x1 x2 x3 -- x2 x3 x1 )
-; Places the top of the stack onto the bottom
+; ( x1 x2-- x2 x1 x2 )
+; Copy the first (top) stack item below the second stack item. 
 .proc TUCK
   jsr SWAP
   jsr OVER
@@ -109,6 +109,25 @@ hiByteW2   = $03
 
 
 ;; Logical operations
+
+
+; ( x -- flag )
+; flag is true if and only if x is equal to zero. 
+; Tokenized 0=
+.proc ZEROEQU
+  lda $00,X
+  
+  rts
+.endproc
+
+; ( x -- flag )
+; flag is true if and only if x is less then zero. 
+; Tokenized 0<
+.proc ZEROLESS
+  lda $01,X
+  
+  rts
+.endproc
 
 ; ( x1 x2 -- x3 )
 ; x3 is the bit-by-bit logical "and" of x1 with x2. 
@@ -178,12 +197,41 @@ hiByteW2   = $03
   lda $01,X
   sbc $03,X
   sta $03,X
-  lda $00,X  
+  lda $00,X
   sbc $02,X
   sta $02,X
   DROP
   rts
 .endproc
+
+; ( n1 | u1 -- n2 | u2 )
+; Add one (1) to n1 | u1 giving the sum n2 | u2.
+; Tokenized 1+
+.proc ONEADD
+  clc
+  lda $00,X
+  adc #1
+  sta $00,X
+  lda $01,X ; Should handle the carry
+  adc #0
+  sta $01,X
+  rts
+.endproc
+
+; ( n1 | u1 -- n2 | u2 )
+; Sub one (1) to n1 | u1 giving the differene n2 | u2.
+; Tokenized 1-
+.proc ONESUB
+  sec
+  lda $00,X
+  sbc #0
+  sta $00,X
+  lda $01,X ; Should handle the carry
+  sbc #0
+  sta $01,X
+  rts
+.endproc
+
 
 ; ( n1 n2 -- n3 )
 ; n3 = n2 * n1
