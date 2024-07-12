@@ -19,6 +19,8 @@ hiByteW2   = $03
   rts
 .endmacro
 
+; Should always be called before 
+; adding a value to the stack
 .macro PUT
   dex
   dex
@@ -64,16 +66,19 @@ hiByteW2   = $03
 .endproc
 
 ; ( x1 x2 -- x1 x2 x1 )
-; Duplicate the TOS and 
-; place it onto the bottom
+; Duplicate the second cell on  the stack
+; place it on top
 .proc OVER
-  lda $00,X
-  
+  PUT
+  lda $04,X
+  sta $00,X ; Store low byte of second
+  lda $05,X
+  sta $01,X ; Store high byte of second
   rts
 .endproc
 
 ; ( x1 x2 x3 -- x2 x3 x1 )
-; Places the top of the stack onto the bottom
+; Places the third of the stack onto the top
 .proc ROT
   lda $00,X
   
