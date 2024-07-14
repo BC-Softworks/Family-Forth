@@ -86,28 +86,6 @@ hiByteW2   = $03
   rts
 .endproc
 
-
-; ( x1 x2 -- x2 )
-; Remove the second cell on the stack
-.proc NIP
-  lda $00,X    ; Load the lowByte from the TOS
-  sta $02,X    ; Overwrite lowByte of second cell
-  lda $01,X    ; Load the highByte from the TOS
-  sta $03,X    ; Overwrite highByte of second cell
-  DROP
-  rts
-.endproc
-
-
-; ( x1 x2-- x2 x1 x2 )
-; Copy the first (top) stack item below the second stack item. 
-.proc TUCK
-  jsr SWAP
-  jsr OVER
-  rts
-.endproc
-
-
 ;; Logical operations
 
 
@@ -120,8 +98,8 @@ hiByteW2   = $03
   rts
 .endproc
 
-; ( x -- flag )
-; flag is true if and only if x is less then zero. 
+; ( n -- flag )
+; flag is true if and only if n is less then zero. 
 ; Tokenized 0<
 .proc ZEROLESS
   lda $01,X
@@ -224,7 +202,7 @@ hiByteW2   = $03
 .proc ONESUB
   sec
   lda $00,X
-  sbc #0
+  sbc #1
   sta $00,X
   lda $01,X ; Should handle the carry
   sbc #0
