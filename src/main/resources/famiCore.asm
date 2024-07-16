@@ -210,14 +210,54 @@ hiByteW2   = $03
   rts
 .endproc
 
+; Modified Mul8 optimized by Tepples
+; Runs in 120 cycles or less
+.proc MUL8
+	lda $00,X
+	ldy $02,X
+    lsr
+    sta lowByteW
+    tya
+    beq mul8_return
+    dey
+    sty hiByteW
+    lda #0
+.repeat 8, i
+    .if i > 0
+        ror lowByteW
+    .endif
+    bcc rotate
+    adc hiByteW
+rotate:
+    ror
+.endrepeat
+    tay
+    lda lowByteW
+    ror
+mul8_return:
+    rts
+.endproc
 
-; ( n1 n2 -- n3 )
-; n3 = n2 * n1
-.proc MUL
+.proc MUL16
   clc
 
   rts
 .endproc
+
+; ( n1 n2 -- n3 )
+; n3 = n2 * n1
+.proc MUL
+  lda $01,X
+  ora $03,X ; If the highbyte's or is zero 
+  beq @mul8 ; then use 8x8 multiplication
+  jsr MUL16
+  rts
+@mul8:  
+  jsr MUL8  ; Spliting the mul functions 
+  rts       ; Saves cycles on low numbers
+.endproc
+
+
 
 ; ( n1 n2 -- n3 )
 ; n3 = n2 / n1
@@ -250,7 +290,7 @@ hiByteW2   = $03
 .proc MIN
   lda $01,X ; Compare high bytes first
   cmp $03,X
-  bne       ; If unequal skip checking low byte
+  bne @end  ; If unequal skip checking low byte
   lda $00,X ; Compare low bytes
   cmp $02,X ; If high ytes equal
   bpl @end  ; If n1 is less then n2 call drop
@@ -266,9 +306,9 @@ hiByteW2   = $03
 .proc MAX
   lda $01,X ; Compare high bytes first
   cmp $03,X
-  bne       ; If unequal skip checking low byte
+  bne @end  ; If unequal skip checking low byte
   lda $00,X ; Compare low bytes
-  cmp $02,X ; If high ytes equal
+  cmp $02,X ; If high bytes are equal
   bmi @end  ; If n1 is greater then n2 call drop
   jsr NIP   ; Else call nip
   rts

@@ -3,8 +3,8 @@
 # FamiForth
 
 FamiForth STC Forth Compiler targeting the NES, based on MVPForth for the Apple II.
-The compiler is built on top of cc65 and is build using make.
-cc65 and make are the only dependencies.
+The compiler was created using bnfc.  Requires Ant and Java to build the compiler.
+cc65 is required to assembled the compiler's output.
 
 ## Clone the FamiForth repository
 
@@ -29,7 +29,6 @@ IP   ->  Zpage         -> $04 - $05
 UP   ->  Zpage         -> $06 - $07
 PSP  ->  X Register    -> $08 to $FF
 RSP  ->  Stack Pointer -> $0100 to $01FF
-
 
 
 # Comment style guide
