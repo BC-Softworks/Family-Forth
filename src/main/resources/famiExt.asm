@@ -2,7 +2,7 @@
 ; =#= AUTHOR:  Edward Conn (@cardseller2)  			       ;
 ;==========================================================;
 
-.include "famiCoreExt.asm"
+.include "famiCore.asm"
 
 ;; Core Word Extensions
 ;; Primitives are defined as macros when possible for performance
