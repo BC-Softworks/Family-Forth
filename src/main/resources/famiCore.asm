@@ -75,14 +75,19 @@ true  = #255
 
 ; ( x1 x2 x3 -- x2 x3 x1 )
 ; Rotate the top three stack entries. 
+; Optimized back moving the stack pointer
+; instead of the objects.
 .proc ROT
-  lda $00,X
-  
+  inx          ; Inline Drop
+  inx
+  jsr SWAP     ; Doesn't affect x3
+  dex          ; Inline Put
+  dex
+  jsr SWAP
   rts
 .endproc
 
 ;; Logical operations
-
 
 ; ( x -- flag )
 ; flag is true if and only if x is equal to zero. 
@@ -125,7 +130,8 @@ set_cell:
   lda $00,X
   sta $00
   lda $01,X
-  DROP
+  inx
+  inx
   and $01,X
   sta $01,X
   lda $00
@@ -141,7 +147,8 @@ set_cell:
   lda $00,X
   sta lowByteW
   lda $01,X
-  DROP
+  inx
+  inx
   ora $01,X
   sta $01,X
   lda lowByteW
@@ -156,7 +163,8 @@ set_cell:
   lda $00,X
   sta lowByteW
   lda $01,X
-  DROP
+  inx
+  inx
   eor $01,X
   sta $01,X
   lda lowByteW
