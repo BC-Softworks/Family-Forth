@@ -4,7 +4,7 @@
 
 ; Defines the following words core words
 ; PUT DROP DUP SWAP OVER ROT 0= 0< 0>
-; AND OR XOR 2* 2/ LSHIFT < >
+; AND OR XOR 2* 2/ LSHIFT < > =
 
 ; Defines the following words core extension words
 ; NIP TUCK TRUE FALSE U> U<
@@ -248,6 +248,25 @@ r_zero: lda #0
 		bmi neg
 
 
+		rts
+.endproc
+
+; ( n1 n2 -- flag )
+; flag is true if and only if n1 is equal to n2. 
+; Tokenized =
+.proc EQUAL
+		jsr XOR    ; Flips bits to all zeros if equal
+		lda $00,X
+		bne branch
+		lda $01,X
+		bne branch ; If false 
+		lda true
+		sta $00,X
+		sta $01,X
+		rts
+branch: lda false  ; A bit was set to 1
+		sta $00,X
+		sta $01,X
 		rts
 .endproc
 
