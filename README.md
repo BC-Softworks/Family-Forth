@@ -1,15 +1,15 @@
 ![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)
 
-# FamiForth
+# Family Forth Cross Compiler
 
-FamiForth STC Forth Compiler targeting the NES, based on MVPForth for the Apple II.
-The compiler was created using bnfc.  Requires Ant and Java to build the compiler.
+Family Forth STC Forth Cross Compiler targeting the NES, based on MVPForth for the Apple II.
+The compiler was created using bnfc.  Requires Maven and Java11+ to run the compiler.
 cc65 is required to assembled the compiler's output.
 
 ## Clone the FamiForth repository
 
 ```
-git clone https://github.com/superseeker13/FamiForth.git
+git clone https://github.com/Family-Forth/Family-ForthCC.git
 ```
 
 # Kernel Configuration
@@ -18,9 +18,6 @@ W2   = Working register two
 PSP = Parameter Stack Pointer
 RSP = Return Stack Pointer
 UP  = User Pointer
-TOP = Top of stack
-BOS = Bottom of stack
-
 
 ## Kernel Memory locations
 W    ->  Zpage         -> $00 - $01
