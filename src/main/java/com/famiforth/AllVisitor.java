@@ -1,6 +1,6 @@
-package java.com.famiforth;
+package com.famiforth;
 
-import java.com.famiforth.Absyn.*;
+import com.famiforth.Absyn.*;
 
 public interface AllVisitor<R, A> extends
     EntryPoint.Visitor<R, A>,

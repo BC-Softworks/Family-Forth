@@ -1,5 +1,5 @@
 
-package java.com.famiforth.Absyn;
+package com.famiforth.Absyn;
 
 import java.io.Serializable;
 

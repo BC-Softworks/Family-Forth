@@ -1,4 +1,4 @@
-package java.com.famiforth;
+package com.famiforth;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,10 +28,10 @@ public class Compiler
     p = new parser(l, l.getSymbolFactory());
   }
 
-  public java.com.famiforth.Absyn.EntryPoint parse() throws Exception
+  public com.famiforth.Absyn.EntryPoint parse() throws Exception
   {
     /* The default parser is the first-defined entry point. */
-    java.com.famiforth.Absyn.EntryPoint ast = p.pPrg();
+    com.famiforth.Absyn.EntryPoint ast = p.pPrg();
     System.out.println();
     System.out.println("Parse Successful!");
     System.out.println();

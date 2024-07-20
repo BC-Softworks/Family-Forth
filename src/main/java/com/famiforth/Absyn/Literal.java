@@ -1,4 +1,4 @@
-package java.com.famiforth.Absyn;
+package com.famiforth.Absyn;
 
 public class Literal extends Statement {
   public final Constant constant_;

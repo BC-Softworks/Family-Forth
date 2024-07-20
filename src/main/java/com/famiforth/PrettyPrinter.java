@@ -1,19 +1,19 @@
-package java.com.famiforth;
+package com.famiforth;
 
-import java.com.famiforth.Absyn.Conditional;
-import java.com.famiforth.Absyn.Constant;
-import java.com.famiforth.Absyn.Define;
-import java.com.famiforth.Absyn.EntryPoint;
-import java.com.famiforth.Absyn.Expr;
-import java.com.famiforth.Absyn.Expression;
-import java.com.famiforth.Absyn.Literal;
-import java.com.famiforth.Absyn.Loop;
-import java.com.famiforth.Absyn.Name;
-import java.com.famiforth.Absyn.Numeral;
-import java.com.famiforth.Absyn.Program;
-import java.com.famiforth.Absyn.SinlgeWord;
-import java.com.famiforth.Absyn.Statement;
-import java.com.famiforth.Absyn.Word;
+import com.famiforth.Absyn.Conditional;
+import com.famiforth.Absyn.Constant;
+import com.famiforth.Absyn.Define;
+import com.famiforth.Absyn.EntryPoint;
+import com.famiforth.Absyn.Expr;
+import com.famiforth.Absyn.Expression;
+import com.famiforth.Absyn.Literal;
+import com.famiforth.Absyn.Loop;
+import com.famiforth.Absyn.Name;
+import com.famiforth.Absyn.Numeral;
+import com.famiforth.Absyn.Program;
+import com.famiforth.Absyn.SinlgeWord;
+import com.famiforth.Absyn.Statement;
+import com.famiforth.Absyn.Word;
 import java.util.Iterator;
 import java.util.List;
 
@@ -150,20 +150,6 @@ public class PrettyPrinter {
     return temp;
   }
 
-  public static String print(List<Expr> token) {
-    pp(token, 0);
-    trim();
-    String temp = builder.toString();
-    builder.delete(0, builder.length());
-    return temp;
-  }
-
-  public static String show(List<Expr> token) {
-    sh(token);
-    String temp = builder.toString();
-    builder.delete(0, builder.length());
-    return temp;
-  }
 
   /*** You shouldn't need to change anything beyond this point. ***/
 
@@ -279,23 +265,6 @@ public class PrettyPrinter {
 
   }
 
-  private static void pp(List<Expr> token, int _i_) {
-    ppListExpr(token.iterator(), _i_);
-  }
-
-  private static void ppListExpr(Iterator<Expr> it, int _i_) {
-    if (it.hasNext()) {
-      Expr el = it.next();
-      if (!it.hasNext()) { /* last */
-        pp(el, _i_);
-        render(" ");
-      } else { /* cons */
-        pp(el, _i_);
-        render(" ");
-        ppListExpr(it, _i_);
-      }
-    }
-  }
 
   private static void sh(EntryPoint token) {
     if (token instanceof Program) {
@@ -383,14 +352,6 @@ public class PrettyPrinter {
       render("Numeral");
       sh(_Numeral.integer_);
       render(")");
-    }
-  }
-
-  private static void sh(List<Expr> token) {
-    for (java.util.Iterator<Expr> it = token.iterator(); it.hasNext();) {
-      sh(it.next());
-      if (it.hasNext())
-        render(",");
     }
   }
 

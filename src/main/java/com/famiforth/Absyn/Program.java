@@ -1,4 +1,4 @@
-package java.com.famiforth.Absyn;
+package com.famiforth.Absyn;
 
 import java.util.List;
 

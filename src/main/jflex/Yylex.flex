@@ -1,5 +1,4 @@
-// Lexer definition for use with JLex
-package forthcompiler;
+package com.famiforth;
 
 import java_cup.runtime.SymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory;

@@ -1,4 +1,4 @@
-package java.famicompiler.Absyn;
+package com.famiforth.Absyn;
 
 public class Define extends Expr {
   public final Word word_;
@@ -16,7 +16,7 @@ public class Define extends Expr {
   public boolean equals(Object o) {
     if (this == o)
       return true;
-    if (o instanceof java.famicompiler.Absyn.Define) {
+    if (o instanceof com.famiforth.Absyn.Define) {
       Define x = (Define) o;
       return this.word_.equals(x.word_) && this.statement_.equals(x.statement_);
     }
