@@ -3,8 +3,8 @@
 ;==========================================================;
 
 ; Defines the following words
-; ADD SUB 1+ 1- ABS * / MOD/ MIN MAX
-; SIGN NEGATE
+; ADD SUB 1+ 1- ABS * / MOD/ 
+; MIN MAX NEGATE
 
 ;; Working register locations
 lowByteW   = $00
@@ -69,6 +69,7 @@ hiByteW2   = $03
 		rts
 .endproc
 
+
 ; ( n -- u )
 ; u is the absolute value of n. 
 .proc _ABS
@@ -112,35 +113,35 @@ mul8_return:
 ; Modified version that uses the Y register
 ; from 6502.org
 .proc MUL16
-		lda $00,X
+		lda $00,X			; Load the first cell into W
 		sta $00,X
 		lda $01,X
 		sta $01,X
 
-		lda $02,X
+		lda $02,X			; Load the first cell into W2
 		sta $02,X
 		lda $03,X
 		sta $03,X
 
 		multiplier = lowByteW
 		multiplicand = lowByteW2
-		product = $00,X
- 
+		product = $00,X		; Store directly onto the stack
+							; Overwrites both factors
 mult16: lda #$00
-		sta product+2	 ; clear upper bits of product
+		sta product+2	 	; clear upper bits of product
 		sta product+3 
-		ldy #$10		   ; set binary count to 16 
+		ldy #$10		   	; set binary count to 16 
 shift_r:
-		lsr multiplier+1 ; divide multiplier by 2 
+		lsr multiplier+1 	; divide multiplier by 2 
 		ror multiplier
 		bcc rot_r 
-		lda product+2	 ; get upper half of product and add multiplicand
+		lda product+2	 	; get upper half of product and add multiplicand
 		clc
 		adc multiplicand
 		sta product+2
 		lda product+3 
 		adc multiplicand+1
-rot_r:	ror			 ; rotate partial product 
+rot_r:	ror			 		; rotate partial product 
 		sta product+3 
 		ror product+2
 		ror product+1 
@@ -169,9 +170,17 @@ rot_r:	ror			 ; rotate partial product
 ; ( n1 n2 -- n3 )
 ; n3 = n2 / n1
 .proc DIVI
-  sec
+		sec
 
-  rts
+		rts
+.endproc
+
+; ( n1 n2 -- n4 n3 )
+; n3rn4 = n2 / n1 
+.proc MODDIV
+		sec
+
+		rts
 .endproc
 
 

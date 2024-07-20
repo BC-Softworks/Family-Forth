@@ -2,12 +2,12 @@
 ; =#= AUTHOR:  Edward Conn (@cardseller2)  			       ;
 ;==========================================================;
 
-; Defines the following words core words
+; Defines the following words
 ; PUT DROP DUP SWAP OVER ROT 0= 0< 0>
-; AND OR XOR 2* 2/ LSHIFT < > =
+; AND OR XOR 2* 2/ LSHIFT < > = 
 
 ; Defines the following words core extension words
-; NIP TUCK TRUE FALSE U> U<
+; NIP TUCK TRUE FALSE PICK U> U<
 
 ;; Working register locations
 lowByteW   = $00
@@ -18,7 +18,6 @@ hiByteW2   = $03
 ;Boolean constant
 false = #0
 true  = #255
-
 
 ; Should always be called before
 ; adding a value to the stack
@@ -73,7 +72,7 @@ true  = #255
 ; place it on top
 .proc OVER
 		PUT
-		lda $04,X
+		lda $04,X ; Load now third in stack
 		sta $00,X ; Store low byte of second
 		lda $05,X
 		sta $01,X ; Store high byte of second
@@ -114,6 +113,11 @@ true  = #255
 		rts
 .endproc
 
+; Synonym of 0=
+.macro NOT
+		ZEROEQU
+.endmacro
+
 ; ( n -- flag )
 ; flag is true if and only if n is less then zero.
 ; Tokenized 0<
@@ -143,7 +147,6 @@ set: 	sta $00,X
 		sta $00,X
 		rts
 .endproc
-
 
 ; ( x1 x2 -- x3 )
 ; x3 is the bit-by-bit logical "or" of x1 with x2.
@@ -226,16 +229,32 @@ r_zero: lda #0
 .endproc
 
 ; TODO: Finish implmenting LESS and GREATER
+;       Account for sign
+
+
+.macro CMP16
+		lda $00,X
+		cmp $02,X
+		lda $01,X
+		sbc $03,X
+		bvc skip ; N eor V
+		eor #$80
+skip:
+.endmacro
 
 ; ( n1 n2 -- flag )
 ; flag is true if and only if n1 is less than n2. 
 ; Tokenized <
 .proc LESS
-		lda $03,X
-		cmp $01,X
-		bmi neg
-
-
+		CMP16
+		bpl branch ; If N not set 
+		lda true
+		sta $00,X
+		sta $01,X
+		rts
+branch: lda false  ; A bit was set to 1
+		sta $00,X
+		sta $01,X
 		rts
 .endproc
 
@@ -243,11 +262,15 @@ r_zero: lda #0
 ; flag is true if and only if n1 is greater than n2. 
 ; Tokenized >
 .proc GREATER
-		lda $03,X
-		cmp $01,X
-		bmi neg
-
-
+		CMP16
+		bmi branch ; N set
+		lda true
+		sta $00,X
+		sta $01,X
+		rts
+branch: lda false  ; A bit was set to 1
+		sta $00,X
+		sta $01,X
 		rts
 .endproc
 
@@ -310,7 +333,7 @@ set: 	sta $00,X
 ; ( -- true )
 ; Return a true flag, a single-cell value with all bits set. 
 .proc TRUE
-		dex
+		dex			; Inline Put
 		dex
 		lda true
 		sta $00,X
@@ -321,22 +344,79 @@ set: 	sta $00,X
 ; Return a false flag, a single-cell value with no bits set.
 ; Same as pushing 0 onto the stack
 .proc FALSE
-		dex
+		dex			; Inline Put
 		dex
 		lda false
 		sta $00,X
 		sta $01,X
 .endproc
 
+; ( xu...x1 x0 u -- xu...x1 x0 xu )
+; Remove u. Copy the xu to the top of the stack. 
+; An ambiguous condition exists if there are less 
+; than u+2 items on the stack before PICK is executed.
+; Since the stack is 60 cells max u is only using the lower byte
+.proc PICK
+		clc
+		lda $00,X
+		tay
+		adc Y     	; Convert cells to bytes
+		adc X     	; Add from top of stack
+		ldy #0    	; Clear Y
+		sta $00   	; Save addr at $00    
+		lda ($00),Y ; Load xu's low byte indirectly
+		sta $00,X
+		iny			; Increment y to get high byte
+		lda ($00),Y ; Load xu's high byte indirectly
+		sta $01,X
+		rts        	; Don't need to drop anything
+.endproc
+
 ; ( u1 u2 -- flag )
 ; flag is true if and only if u1 is greater than u2. 
 .proc UGREATER
+		lda $01,X
+		cmp $03,X
+		bpl _true	; High byte greater
+		bmi _false	; High byte lesser
 		
+		lda $00,X	; Lowbyte check
+		cmp $02,X
+		bpl _true	; Low byte greater
+		
+_false:	lda false
+		jmp @drop
+		
+_true:	lda true		
+		
+@drop:  inx
+		inx		
+		sta $00,X	; Store true or false
+		sta $01,X	; to the TOS
 		rts
 .endproc
 
+; ( u1 u2 -- flag )
+; flag is true if and only if u1 is less than u2. 
 .proc ULESS
+		lda $01,X
+		cmp $03,X
+		bmi _true	; High byte lesser
+		bpl _false	; High byte greater
 		
+		lda $00,X	; Lowbyte check
+		cmp $02,X
+		bmi _true	; Low byte lesser
+		
+_false:	lda false
+		jmp @drop
+		
+_true:	lda true		
+		
+@drop:  inx
+		inx		
+		sta $00,X	; Store true or false
+		sta $01,X	; to the TOS
 		rts
 .endproc
 
