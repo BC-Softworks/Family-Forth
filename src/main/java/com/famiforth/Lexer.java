@@ -3,35 +3,54 @@ package com.famiforth;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class Lexer {
 
     private static Scanner scanner;
-    private static int tokenNumber;
+    private static Queue<String> currentLine;
     private static String str_token;
 
 
+    private static int tokenNumber;
+    private static int lineNumber;
+
 	public Lexer(Reader input) {
 		scanner = new Scanner(input);
+        str_token = "";
+        currentLine = new LinkedList<>();
         tokenNumber = 0;
+        lineNumber = 0;
 	}
 
     /**
      * Advance to the next token
+     * This is done by line instead of 
+     * directly grabing next for easier debugging
      * @throws IOException
      */
+
     protected static void advance() throws IOException  {
-        if(scanner.hasNext()){
-            str_token = scanner.next();
-            str_token = str_token.toUpperCase();
-            tokenNumber += 1;
-        } else {
-            scanner.close();
+        if(currentLine.isEmpty()){
+            if(scanner.hasNextLine()){
+                String[] nextLine = StringUtils.split(scanner.nextLine());
+                currentLine.addAll(Arrays.asList(nextLine));
+                lineNumber += 1;
+            } else {
+                // Ensure the scanner has been closed
+                // Then set str_token to null
+                scanner.close();
+            }
         }
+
+        // If currentLine is populated
+        // set str_token to the head
+        str_token = currentLine.poll().toUpperCase();
+        tokenNumber += 1;
 	}
 
     public boolean hasNext() {
@@ -43,7 +62,7 @@ public class Lexer {
      * @return The next token pair
      * @throws IOException
      */
-    public Pair<String, TokenType> next_token() throws IOException {
+    public Token next_token() throws IOException {
         advance();
 
         TokenType type;
@@ -55,11 +74,24 @@ public class Lexer {
             type = TokenType.WORD;
         }
         
-        return Pair.of(str_token, type);
+        return new Token(str_token, type, lineNumber, tokenNumber);
     }
 
+    // Define Token and token types
+    public class Token {
+        String value;
+        TokenType type;
+        int lineNumber;
+        int tokenNumber;
 
-    // Lexme type checks
+        public Token(String value, TokenType type, int lineNumber, int tokenNumber) {
+            this.value = value;
+            this.type = type;
+            this.lineNumber = lineNumber;
+            this.tokenNumber = tokenNumber;
+        }
+    }
+
 
     public enum TokenType{
         KEYWORD,

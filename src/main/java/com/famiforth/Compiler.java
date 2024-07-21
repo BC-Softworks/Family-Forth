@@ -10,8 +10,7 @@ public class Compiler {
   Parser parser;
 
   public Compiler(String[] args) {
-    try
-    {
+    try {
       Reader input = args.length == 0 ? new InputStreamReader(System.in) : new FileReader(args[0]);
       scan = new Lexer(input);
     } catch(IOException e) {
@@ -23,11 +22,10 @@ public class Compiler {
   }
 
   public void parse() throws Exception {
-    return;
+    parser.parse();
   }
 
-  public static void main(String args[]) throws Exception
-  {
+  public static void main(String args[]) throws Exception {
     Compiler comp = new Compiler(args);
     try {
       comp.parse();

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.famiforth.Lexer.Keyword;
 
@@ -23,18 +22,18 @@ public class Parser {
         while(lexer.hasNext()){
             List<String> procudureList = new ArrayList<>();
 
-            Pair<String, Lexer.TokenType> token = lexer.next_token();
-            switch(token.getRight()){
+            Lexer.Token token = lexer.next_token();
+            switch(token.type){
                 case KEYWORD:
-                    procudureList = parseKeyword(Keyword.valueOf(token.getLeft()));
+                    procudureList = parseKeyword(Keyword.valueOf(token.value));
                     break;
                 case WORD:
-                    Definition word = dictionary.getDefinition(token.getLeft());
+                    Definition word = dictionary.getDefinition(token.value);
                     procudureList = expandDefinition(word);
                     break;
                 case INTEGER:
                     // TODO: Add proc to push to top
-                    procudureList = List.of(token.getLeft());
+                    procudureList = List.of(token.value);
                     break;
             }
 
