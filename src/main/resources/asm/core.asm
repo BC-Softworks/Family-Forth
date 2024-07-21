@@ -3,7 +3,7 @@
 ;==========================================================;
 
 ; Defines the following words
-; PUT DROP DUP SWAP OVER ROT 0= 0< 0>
+; DROP DUP SWAP OVER ROT 0= 0< 0>
 ; AND OR XOR 2* 2/ LSHIFT < > = 
 
 ; Defines the following words core extension words
@@ -16,16 +16,23 @@ lowByteW2  = $02
 hiByteW2   = $03
 
 ;Boolean constant
-false = #0
-true  = #255
+false = 0
+true  = 255
 
-; Should always be called before
-; adding a value to the stack
-.proc PUT
+; Used to load constants
+; onto the stack
+.macro PUSH arg1, arg2
+		.if (.blank(arg))
+            .error "Syntax error"
+        .endif
 		dex
 		dex
+		lda arg1
+		sta $00,X
+		lda arg2
+		sta $01,X
 		rts
-.endproc
+.endmacro
 
 ; ( x -- )
 ; Drop x from the stack
@@ -38,7 +45,8 @@ true  = #255
 ; ( x -- xx )
 ; Copy x and place it on the stack
 .proc DUP
-		PUT
+		dex          ; Inline Put
+		dex
 		lda $02,X
 		sta $00,X
 		lda $03,X
@@ -71,7 +79,8 @@ true  = #255
 ; Duplicate the second cell on  the stack
 ; place it on top
 .proc OVER
-		PUT
+		dex       ; Inline Put
+		dex
 		lda $04,X ; Load now third in stack
 		sta $00,X ; Store low byte of second
 		lda $05,X
@@ -360,8 +369,9 @@ set: 	sta $00,X
 		clc
 		lda $00,X
 		tay
-		adc Y     	; Convert cells to bytes
-		adc X     	; Add from top of stack
+		adc $00,X   ; Convert cells to bytes
+		stx $00		; Store TOS address
+		adc $00    	; Add from top of stack
 		ldy #0    	; Clear Y
 		sta $00   	; Save addr at $00    
 		lda ($00),Y ; Load xu's low byte indirectly
@@ -374,6 +384,7 @@ set: 	sta $00,X
 
 ; ( u1 u2 -- flag )
 ; flag is true if and only if u1 is greater than u2. 
+; U>
 .proc UGREATER
 		lda $01,X
 		cmp $03,X
@@ -398,6 +409,7 @@ _true:	lda true
 
 ; ( u1 u2 -- flag )
 ; flag is true if and only if u1 is less than u2. 
+; U<
 .proc ULESS
 		lda $01,X
 		cmp $03,X

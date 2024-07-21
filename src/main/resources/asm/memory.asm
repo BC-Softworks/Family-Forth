@@ -5,11 +5,7 @@
 ; Defines the following words core words
 ; @ C@ 2@ ALIGNED 2! 2@ R> R@
 
-;; Working register locations
-lowByteW   = $00
-hiByteW    = $01
-lowByteW2  = $02
-hiByteW2   = $03
+.include "math.asm"
 
 ; ( a-addr -- x ) 
 ; Returns the full cell

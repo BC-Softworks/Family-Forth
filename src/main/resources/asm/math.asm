@@ -72,7 +72,7 @@ hiByteW2   = $03
 
 ; ( n -- u )
 ; u is the absolute value of n. 
-.proc _ABS
+.proc ABS
 		lda $01,X
 		and #%01111111
 		sta $01,X
@@ -96,9 +96,9 @@ hiByteW2   = $03
 			.if i > 0
 				ror lowByteW
 			.endif
-			bcc rotate
+			bcc @rotate
 			adc hiByteWF_
-rotate:
+@rotate:
 		ror
 .endrepeat
 		tay
@@ -169,7 +169,7 @@ rot_r:	ror			 		; rotate partial product
 
 ; ( n1 n2 -- n3 )
 ; n3 = n2 / n1
-.proc DIVI
+.proc DIV
 		sec
 
 		rts

@@ -13,9 +13,9 @@ public class Parser {
     private Lexer lexer;
     private UserDictionary dictionary;
     
-    public Parser(Lexer scan) {
+    public Parser(Lexer scan, String dictionaryFile) {
         this.lexer = scan;
-        this.dictionary = new UserDictionary();
+        this.dictionary = UserDictionary.getInstance(dictionaryFile);
     }
 
     public void parse() throws IOException{
@@ -37,7 +37,8 @@ public class Parser {
                     break;
             }
 
-            System.out.println(StringUtils.join(procudureList, '\n'));
+            //TODO: Write to file instead of System.out
+            System.out.println(StringUtils.join(procudureList, System.lineSeparator()));
         }
     }
 
@@ -76,7 +77,7 @@ public class Parser {
 
     public List<String> expandDefinition(Definition definition){
         if (definition.isPrimitive){
-            return List.of(definition.procedure);
+            return definition.assembly;
         }
 
         List<String> list = new ArrayList<>();

@@ -1,17 +1,44 @@
 package com.famiforth;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 public class UserDictionary {
-    private Dictionary<String, Definition> dictionary;
+    private static UserDictionary instance = null;
+    private static Dictionary<String, Definition> dictionary;
 
-    public UserDictionary() {
-        dictionary = new Hashtable<String,Definition>();
+    // Prevent the creation of an empty dictionary
+    private UserDictionary() {}
+
+    private UserDictionary(String fileName) throws IOException {
+        
+        FileInputStream fin = null;
+        
+        try {
+            dictionary = new Hashtable<String, Definition>();
+            fin = new FileInputStream(fileName);
+            
+        } catch(IOException e){
+            System.err.println(String.format("Unable to open the dictionary file: %0", fileName));
+        } finally {
+            if(fin != null){
+                fin.close();
+            }
+        }
     }
 
-    public UserDictionary(String fileName) {
-        dictionary = new Hashtable<String,Definition>();
+    public static UserDictionary getInstance(String fileName){
+        if(instance == null){
+            try {
+                instance = new UserDictionary(fileName);
+            } catch(IOException e) {
+                System.err.println(e);
+                throw new RuntimeException(e);
+            }
+        }
+        return instance;
     }
 
     public void addWord(String str, Definition def) {
@@ -19,18 +46,18 @@ public class UserDictionary {
             throw new IllegalArgumentException("Words can not be null.");
         }
 
-        if(this.dictionary.get(str.toUpperCase()) != null){
+        if(dictionary.get(str.toUpperCase()) != null){
             throw new IllegalArgumentException(String.format("Error: %0 is already defined", str));
         }
 
-        this.dictionary.put(str.toUpperCase(), def);
+        dictionary.put(str.toUpperCase(), def);
     }
 
     public Definition getDefinition(String str) {
         if(str == null){
             throw new IllegalArgumentException("No null word exists.");
         }
-        return this.dictionary.get(str.toUpperCase());
+        return dictionary.get(str.toUpperCase());
     }
     
 }

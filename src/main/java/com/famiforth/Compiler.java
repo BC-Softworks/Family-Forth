@@ -9,6 +9,8 @@ public class Compiler {
   Lexer scan;
   Parser parser;
 
+  String defautlDictionaryLocation = "src/main/resources/base_dictionary.json";
+
   public Compiler(String[] args) {
     try {
       Reader input = args.length == 0 ? new InputStreamReader(System.in) : new FileReader(args[0]);
@@ -18,7 +20,7 @@ public class Compiler {
       System.exit(1);
     }
 
-    parser = new Parser(scan);
+    parser = new Parser(scan, defautlDictionaryLocation);
   }
 
   public void parse() throws Exception {
