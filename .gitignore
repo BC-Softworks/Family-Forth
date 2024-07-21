@@ -24,3 +24,7 @@ hs_err_pid*
 replay_pid*
 .vscode/settings.json
 target/*
+target/classes/asm/control.asm
+target/classes/asm/core.asm
+target/classes/asm/math.asm
+target/classes/asm/memory.asm
