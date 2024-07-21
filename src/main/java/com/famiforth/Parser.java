@@ -1,63 +1,62 @@
 package com.famiforth;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+
+import com.famiforth.Lexer.Keyword;
 
 public class Parser {
 
     private Lexer lexer;
-
+    private UserDictionary dictionary;
+    
     public Parser(Lexer scan) {
         this.lexer = scan;
+        this.dictionary = new UserDictionary();
     }
 
     public void parse() throws IOException{
         while(lexer.hasNext()){
-            Pair<String, Integer> token = lexer.next_token();
+            List<String> procudureList = new ArrayList<>();
 
-            if(Definition.isKeyword(token.getLeft())){
-                switch(Definition.Keyword.valueOf(token.getLeft())){
-                    case COLON:
-                        // parse user defined word
-                        break;
-                    case SEMICOLON:
-                        break;
-                    case END:
-                        break;
-                    case IF:
-                        // parse If statement
-                        break;
-                    case ELSE:
-                        break;
-                    case THEN:
-                        break;
-                    case BEGIN:
-                        // parse loop word
-                        break;
-                    case WHILE:
-                        break;
-                    case REPEAT:
-                        break;
-                    case UNTIL:
-                        break;
-                    case DO:
-                        // parse loop word
-                        break;
-                    case LOOP:
-                        break;
-                    case PLUS_LOOP:
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Syntax Error");
-                }
-            } else if(Lexer.isInteger(token.getLeft(), 10)){
-                int number = Integer.parseInt(token.getLeft());
-                // TODO: Add number to stack
-            } else {
-                
+            Pair<String, Lexer.TokenType> token = lexer.next_token();
+            switch(token.getRight()){
+                case KEYWORD:
+                    procudureList = parseKeyword(Keyword.valueOf(token.getLeft()));
+                    break;
+                case WORD:
+                    Definition word = dictionary.getDefinition(token.getLeft());
+                    procudureList = expandDefinition(word);
+                    break;
+                case INTEGER:
+                    // TODO: Add proc to push to top
+                    procudureList = List.of(token.getLeft());
+                    break;
             }
+
+            System.out.println(StringUtils.join(procudureList, '\n'));
+
         }
+    }
+
+    public List<String> parseKeyword(Keyword keyword){
+        return List.of("");
+    }
+
+    public List<String> expandDefinition(Definition definition){
+        if (definition.isPrimitive){
+            return List.of(definition.procedure);
+        }
+
+        List<String> list = new ArrayList<>();
+        for (Definition def : definition.words) {
+            list.addAll(expandDefinition(def));
+        }
+        return list;
     }
     
 }

@@ -2,6 +2,7 @@ package com.famiforth;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,10 @@ public class Lexer {
         tokenNumber = 0;
 	}
 
+    /**
+     * Advance to the next token
+     * @throws IOException
+     */
     protected static void advance() throws IOException  {
         if(scanner.hasNext()){
             str_token = scanner.next();
@@ -33,9 +38,59 @@ public class Lexer {
         return scanner.hasNext();
     } 
 
-    public Pair<String, Integer> next_token() throws IOException {
+    /**
+     * 
+     * @return The next token pair
+     * @throws IOException
+     */
+    public Pair<String, TokenType> next_token() throws IOException {
         advance();
-        return Pair.of(str_token, tokenNumber);
+
+        TokenType type;
+        if(isKeyword(str_token)){
+            type = TokenType.KEYWORD;
+        } else if(isInteger(str_token, 10)){
+            type = TokenType.INTEGER;
+        } else {
+            type = TokenType.WORD;
+        }
+        
+        return Pair.of(str_token, type);
+    }
+
+
+    // Lexme type checks
+
+    public enum TokenType{
+        KEYWORD,
+        INTEGER,
+        WORD
+    }
+
+    public enum Keyword{
+        COLON(":"),
+        SEMICOLON(";"),
+        END("END"),
+        IF("IF"),
+        ELSE("ELSE"),
+        THEN("THEN"),
+        BEGIN("BEGIN"),
+        WHILE("WHILE"),
+        REPEAT("REPEAT"),
+        UNTIL("UNTIL"),
+        DO("DO"),
+        LOOP("LOOP"),
+        PLUS_LOOP("+LOOP");
+
+        public final String value;
+
+        private Keyword(String value) {
+            this.value = value;
+        }
+    }
+
+    public static boolean isKeyword(String str){
+        return Arrays.stream(Keyword.values()).anyMatch(v -> v.value.equals(str));
     }
 
     public static boolean isInteger(String s, int radix) {

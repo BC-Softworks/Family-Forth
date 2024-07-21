@@ -1,24 +1,31 @@
 package com.famiforth;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Definition {
+    
     final boolean isPrimitive;
+    
     final String name;
-    final List<String> words;
+    
+    final List<Definition> words;
+
+    // Name of subroutine
+    final String procedure;
 
 
-    public Definition(boolean isPrimitive, String name) {
+    public Definition(boolean isPrimitive, String name, String procedure) {
         this.isPrimitive = isPrimitive;
         this.name = name;
+        this.procedure = procedure;
         this.words = null;
     }
 
-    public Definition(boolean isPrimitive, String name, List<String> words) {
+    public Definition(boolean isPrimitive, String name, List<Definition> words) {
         this.isPrimitive = isPrimitive;
         this.name = name;
         this.words = words;
+        this.procedure = null;
     }
 
     @Override
@@ -34,33 +41,11 @@ public class Definition {
         return name;
     }
 
-    public List<String> getWords() {
+    public List<Definition> getWords() {
         return words;
     }
 
-    public enum Keyword{
-        COLON(":"),
-        SEMICOLON(";"),
-        END("END"),
-        IF("IF"),
-        ELSE("ELSE"),
-        THEN("THEN"),
-        BEGIN("BEGIN"),
-        WHILE("WHILE"),
-        REPEAT("REPEAT"),
-        UNTIL("UNTIL"),
-        DO("DO"),
-        LOOP("LOOP"),
-        PLUS_LOOP("+LOOP");
-
-        public final String value;
-
-        private Keyword(String value) {
-            this.value = value;
-        }
-    }
-
-    public static boolean isKeyword(String str){
-        return Arrays.stream(Keyword.values()).anyMatch(v -> v.value.equals(str));
+    public String getProcedure() {
+        return procedure;
     }
 }

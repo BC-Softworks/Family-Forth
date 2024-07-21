@@ -10,6 +10,10 @@ public class UserDictionary {
         dictionary = new Hashtable<String,Definition>();
     }
 
+    public UserDictionary(String fileName) {
+        dictionary = new Hashtable<String,Definition>();
+    }
+
     public void addWord(String str, Definition def) {
         if(str == null){
             throw new IllegalArgumentException("Words can not be null.");
@@ -22,11 +26,11 @@ public class UserDictionary {
         this.dictionary.put(str.toUpperCase(), def);
     }
 
-    public void getWord(String str, Definition def) {
+    public Definition getDefinition(String str) {
         if(str == null){
             throw new IllegalArgumentException("No null word exists.");
         }
-        this.dictionary.get(str.toUpperCase());
+        return this.dictionary.get(str.toUpperCase());
     }
     
 }
