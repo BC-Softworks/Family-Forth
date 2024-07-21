@@ -1,0 +1,69 @@
+[
+    {
+        "name": "ADD",
+        "isPrimitive": "true",
+        "assembly": ["jsr ADDD"],
+        "words": []
+    },
+    {
+        "name": "SUB",
+        "isPrimitive": "true",
+        "assembly": ["jsr SUBB"],
+        "words": []
+    },
+    {
+        "name": "1+",
+        "isPrimitive": "true",
+        "assembly": ["jsr ONEADD"],
+        "words": []
+    },
+    {
+        "name": "1-",
+        "isPrimitive": "true",
+        "assembly": ["jsr ONESUB"],
+        "words": []
+    },
+    {
+        "name": "ABS",
+        "isPrimitive": "true",
+        "assembly": ["jsr ABS"],
+        "words": []
+    },
+    {
+        "name": "*",
+        "isPrimitive": "true",
+        "assembly": ["jsr MULT"],
+        "words": []
+    },
+    {
+        "name": "/",
+        "isPrimitive": "true",
+        "assembly": ["jsr DIVI"],
+        "words": []
+    },
+    {
+        "name": "MOD/",
+        "isPrimitive": "true",
+        "assembly": ["jsr DIV"],
+        "words": []
+    },
+    {
+        "name": "MIN",
+        "isPrimitive": "true",
+        "assembly": ["jsr MIN"],
+        "words": []
+    },
+    {
+        "name": "MAX",
+        "isPrimitive": "true",
+        "assembly": ["jsr MAX"],
+        "words": []
+    },
+    {
+        "name": "NEGATE",
+        "isPrimitive": "true",
+        "assembly": ["jsr NEGATE"],
+        "words": []
+    }
+
+]

@@ -1,0 +1,147 @@
+[
+    {
+        "name": "DROP",
+        "isPrimitive": "true",
+        "assembly": ["jsr DROP"],
+        "words": []
+    },
+    {
+        "name": "DUP",
+        "isPrimitive": "true",
+        "assembly": ["jsr DUP"],
+        "words": []
+    },
+    {
+        "name": "SWAP",
+        "isPrimitive": "true",
+        "assembly": ["jsr SWAP"],
+        "words": []
+    },
+    {
+        "name": "OVER",
+        "isPrimitive": "true",
+        "assembly": ["jsr OVER"],
+        "words": []
+    },
+    {
+        "name": "ROT",
+        "isPrimitive": "true",
+        "assembly": ["jsr ROT"],
+        "words": []
+    },
+    {
+        "name": "0=",
+        "isPrimitive": "true",
+        "assembly": ["jsr ZEROEQU"],
+        "words": []
+    },
+    {
+        "name": "0<",
+        "isPrimitive": "true",
+        "assembly": ["jsr ZEROLESS"],
+        "words": []
+    },
+    {
+        "name": "0>",
+        "isPrimitive": "true",
+        "assembly": ["jsr ZEROGREATER"],
+        "words": []
+    },
+    {
+        "name": "AND",
+        "isPrimitive": "true",
+        "assembly": ["jsr ANDD"],
+        "words": []
+    },
+    {
+        "name": "OR",
+        "isPrimitive": "true",
+        "assembly": ["jsr OR"],
+        "words": []
+    },
+    {
+        "name": "XOR",
+        "isPrimitive": "true",
+        "assembly": ["jsr XOR"],
+        "words": []
+    },
+    {
+        "name": "2*",
+        "isPrimitive": "true",
+        "assembly": ["jsr TWOSTAR"],
+        "words": []
+    },
+    {
+        "name": "2/",
+        "isPrimitive": "true",
+        "assembly": ["jsr TWOSLASH"],
+        "words": []
+    },
+    {
+        "name": "LSHIFT",
+        "isPrimitive": "true",
+        "assembly": ["jsr LSHIFT"],
+        "words": []
+    },
+    {
+        "name": "<",
+        "isPrimitive": "true",
+        "assembly": ["jsr LESS"],
+        "words": []
+    },
+    {
+        "name": ">",
+        "isPrimitive": "true",
+        "assembly": ["jsr GREATER"],
+        "words": []
+    },
+    {
+        "name": "=",
+        "isPrimitive": "true",
+        "assembly": ["jsr EQUAL"],
+        "words": []
+    },
+    {
+        "name": "NIP",
+        "isPrimitive": "true",
+        "assembly": ["jsr NIP"],
+        "words": []
+    },
+    {
+        "name": "TUCK",
+        "isPrimitive": "true",
+        "assembly": ["jsr TUCK"],
+        "words": []
+    },
+    {
+        "name": "TRUE",
+        "isPrimitive": "true",
+        "assembly": ["jsr TRUE"],
+        "words": []
+    },
+    {
+        "name": "FALSE",
+        "isPrimitive": "true",
+        "assembly": ["jsr FALSE"],
+        "words": []
+    },
+    {
+        "name": "PICK",
+        "isPrimitive": "true",
+        "assembly": ["jsr PICK"],
+        "words": []
+    },
+    {
+        "name": "U>",
+        "isPrimitive": "true",
+        "assembly": ["jsr UGREATER"],
+        "words": []
+    },
+    {
+        "name": "U<",
+        "isPrimitive": "true",
+        "assembly": ["jsr ULESS"],
+        "words": []
+    }
+
+]

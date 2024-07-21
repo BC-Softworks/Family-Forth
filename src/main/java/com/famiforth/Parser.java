@@ -38,12 +38,40 @@ public class Parser {
             }
 
             System.out.println(StringUtils.join(procudureList, '\n'));
-
         }
     }
 
     public List<String> parseKeyword(Keyword keyword){
-        return List.of("");
+        switch (keyword) {
+            case BEGIN:
+                return parseBeginStatement();
+            case COLON:
+                return parseColonStatement();
+            case IF:
+                return parseIfStatement();
+            case LOOP:
+            case PLUS_LOOP:
+                return parseLoop();
+        
+            default:
+                throw new IllegalArgumentException(String.format("Syntax Error: Keyword %0 encountered out of order.", keyword.value));
+        }
+    }
+
+    private List<String> parseBeginStatement() {
+        throw new UnsupportedOperationException("Unimplemented method 'parseBeginStatement'");
+    }
+
+    private List<String> parseColonStatement() {
+        throw new UnsupportedOperationException("Unimplemented method 'parseColonStatement'");
+    }
+
+    private List<String> parseIfStatement() {
+        throw new UnsupportedOperationException("Unimplemented method 'parseIfStatement'");
+    }
+
+    private List<String> parseLoop() {
+        throw new UnsupportedOperationException("Unimplemented method 'parseLoop'");
     }
 
     public List<String> expandDefinition(Definition definition){

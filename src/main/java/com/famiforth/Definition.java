@@ -4,28 +4,35 @@ import java.util.List;
 
 public class Definition {
     
-    final boolean isPrimitive;
+    protected boolean isPrimitive;
     
-    final String name;
+    protected String name;
     
-    final List<Definition> words;
+    protected List<Definition> words;
 
-    // Name of subroutine
-    final String procedure;
+    protected List<String> assembly;
 
 
-    public Definition(boolean isPrimitive, String name, String procedure) {
-        this.isPrimitive = isPrimitive;
-        this.name = name;
-        this.procedure = procedure;
-        this.words = null;
+    private Definition() {}
+    
+    public Definition createPrimitiveDefinition(String name, List<String> assembly){
+        Definition definition = new Definition();
+        definition.isPrimitive = false;
+        definition.name = name;
+        definition.words = null;
+        definition.assembly = assembly;
+        
+        return definition;
     }
 
-    public Definition(boolean isPrimitive, String name, List<Definition> words) {
-        this.isPrimitive = isPrimitive;
-        this.name = name;
-        this.words = words;
-        this.procedure = null;
+    public Definition createUserWordDefinition(String name, List<Definition> words){
+        Definition definition = new Definition();
+        definition.isPrimitive = false;
+        definition.name = name;
+        definition.words = words;
+        definition.assembly = null;
+        
+        return definition;
     }
 
     @Override
@@ -42,10 +49,10 @@ public class Definition {
     }
 
     public List<Definition> getWords() {
-        return words;
+        return List.copyOf(words);
     }
 
-    public String getProcedure() {
-        return procedure;
+    public List<String> getProcedure() {
+        return List.copyOf(assembly);
     }
 }
