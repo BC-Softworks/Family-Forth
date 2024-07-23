@@ -19,6 +19,9 @@ public class Lexer {
     private static int tokenNumber;
     private static int lineNumber;
 
+	@SuppressWarnings("unused")
+    private Lexer() {}
+
 	public Lexer(Reader input) {
 		scanner = new Scanner(input);
         str_token = "";

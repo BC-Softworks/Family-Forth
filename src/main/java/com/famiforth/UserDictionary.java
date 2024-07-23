@@ -21,7 +21,7 @@ public class UserDictionary {
             fin = new FileInputStream(fileName);
             
         } catch(IOException e){
-            System.err.println(String.format("Unable to open the dictionary file: %0", fileName));
+            System.err.println(String.format("Unable to open the dictionary file: %s", fileName));
         } finally {
             if(fin != null){
                 fin.close();
@@ -47,7 +47,7 @@ public class UserDictionary {
         }
 
         if(dictionary.get(str.toUpperCase()) != null){
-            throw new IllegalArgumentException(String.format("Error: %0 is already defined", str));
+            throw new IllegalArgumentException(String.format("Error: %s is already defined", str));
         }
 
         dictionary.put(str.toUpperCase(), def);

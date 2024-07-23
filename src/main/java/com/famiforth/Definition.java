@@ -37,7 +37,7 @@ public class Definition {
 
     @Override
     public String toString() {
-        return String.format("Definition [%0: %1]", name, words);
+        return String.format("Definition [%s: %s]", name, words);
     }
 
     public boolean isPrimitive() {

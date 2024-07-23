@@ -55,7 +55,7 @@ public class Parser {
                 return parseLoop();
         
             default:
-                throw new IllegalArgumentException(String.format("Syntax Error: Keyword %0 encountered out of order.", keyword.value));
+                throw new IllegalArgumentException(String.format("Syntax Error: Keyword %s encountered out of order.", keyword.value));
         }
     }
 
