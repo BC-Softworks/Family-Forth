@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.famiforth.Lexer.Keyword;
+import com.famiforth.Lexer.Token;
+import com.famiforth.Lexer.TokenType;
 
 public class Parser {
 
@@ -22,8 +24,12 @@ public class Parser {
         while(lexer.hasNext()){
             List<String> procudureList = new ArrayList<>();
 
-            Lexer.Token token = lexer.next_token();
+            Token token = lexer.next_token();
             switch(token.type){
+                case BEGIN_COMMENT:
+                    while(token.type != TokenType.END_COMMENT){
+                        token = lexer.next_token();
+                    }
                 case KEYWORD:
                     procudureList = parseKeyword(Keyword.valueOf(token.value));
                     break;

@@ -23,6 +23,9 @@ public class ParserTest {
     }
 
     @Test
+    /**
+     * Test the creation of a user defined word made with two primitives
+     */
     public void parseColonDefinitionTest() throws IOException{
         init(": 2DROP DROP DROP ;");
         parser.parse();
@@ -30,6 +33,9 @@ public class ParserTest {
     }
 
     @Test
+    /**
+     * Test the creation of a basic word with two primitives and two integers
+     */
     public void parseColonDefinitionWithIntegersTest() throws IOException{
         init(": 2OVER 3 PICK 3 PICK  ;");
         parser.parse();

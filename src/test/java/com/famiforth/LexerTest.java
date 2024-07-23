@@ -64,4 +64,19 @@ public class LexerTest {
         assertEquals(TokenType.INTEGER, token.type);
         assertEquals(minShort, token.value);
     }
+
+
+    @Test
+    public void ignoreCommentsTest() throws IOException {
+        init("( addr -- x )");
+        Token token = lexer.next_token();
+        assertEquals(TokenType.BEGIN_COMMENT, token.type);
+        assertEquals("(", token.value);
+        lexer.next_token();
+        lexer.next_token();
+        lexer.next_token();
+        token = lexer.next_token();
+        assertEquals(TokenType.END_COMMENT, token.type);
+        assertEquals(")", token.value);
+    }
 }

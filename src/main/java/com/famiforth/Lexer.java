@@ -71,6 +71,10 @@ public class Lexer {
         TokenType type;
         if(isKeyword(str_token)){
             type = TokenType.KEYWORD;
+        } else if("(".equals(str_token)){
+            type = TokenType.BEGIN_COMMENT;
+        } else if(")".equals(str_token)){
+            type = TokenType.END_COMMENT;
         } else if(isInteger(str_token, 10)){
             type = TokenType.INTEGER;
         } else {
@@ -97,6 +101,8 @@ public class Lexer {
 
 
     public enum TokenType{
+        BEGIN_COMMENT,
+        END_COMMENT,
         KEYWORD,
         INTEGER,
         WORD
