@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 # Family Forth Cross Compiler
 
 Family Forth STC Forth Cross Compiler targeting the NES, based on MVPForth for the Apple II.
