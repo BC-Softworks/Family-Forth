@@ -84,6 +84,12 @@
         "words": []
     },
     {
+        "name": "RSHIFT",
+        "isPrimitive": "true",
+        "assembly": ["jsr RSHIFT"],
+        "words": []
+    },
+    {
         "name": "<",
         "isPrimitive": "true",
         "assembly": ["jsr LESS"],

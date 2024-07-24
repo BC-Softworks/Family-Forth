@@ -4,7 +4,7 @@
 
 ; Defines the following words
 ; DROP DUP SWAP OVER ROT 0= 0< 0>
-; AND OR XOR 2* 2/ LSHIFT < > = 
+; AND OR XOR 2* 2/ LSHIFT RSHIFT < > = 
 
 ; Defines the following words core extension words
 ; NIP TUCK TRUE FALSE PICK U> U<
@@ -226,11 +226,32 @@ set: 	sta $00,X
 		inx             ; Inline Drop
 		inx
 		lda $00,X
-loop:	asl A
+@loop:	asl A
 		sta $00, X
 		; TODO: Finish
 		dey
-		bne loop
+		bne @loop
+		rts
+r_zero: lda #0
+		sta $00
+		rts
+.endproc
+
+; ( x1 u -- x2 )
+; Perform a logical right shift of u bit-places on x1, giving x2. 
+; Put zeroes into the most significant bits vacated by the shift.
+.proc RSHIFT
+		ldy $00,X       ; Load low bit of u
+		cmp #%00010000  
+		bmi r_zero
+		inx             ; Inline Drop
+		inx
+		lda $00,X
+@loop:	lsr A
+		sta $00, X
+		; TODO: Finish
+		dey
+		bne @loop
 		rts
 r_zero: lda #0
 		sta $00
