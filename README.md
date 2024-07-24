@@ -1,5 +1,3 @@
-![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)
-
 # Family Forth Cross Compiler
 
 Family Forth STC Forth Cross Compiler targeting the NES, based on MVPForth for the Apple II.
