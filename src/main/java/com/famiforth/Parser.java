@@ -1,7 +1,9 @@
 package com.famiforth;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,12 +14,22 @@ import com.famiforth.Lexer.TokenType;
 
 public class Parser {
 
-    private Lexer lexer;
-    private UserDictionary dictionary;
+    final private Lexer lexer;
+    final private UserDictionary dictionary;
+
+    final File fileOut;
+    final private List<List<String>> parsedWords = new LinkedList<>();
     
-    public Parser(Lexer scan, String dictionaryFile) {
+    final static String DEFAULT_FILE_OUT = "out.asm";
+
+    public Parser(Lexer scan, String dictionaryFile, String fileName) {
         this.lexer = scan;
         this.dictionary = UserDictionary.getInstance(dictionaryFile);
+        fileOut = new File(fileName);
+    }
+
+    public Parser(Lexer scan, String dictionaryFile) {
+        this(scan, dictionaryFile, DEFAULT_FILE_OUT);
     }
 
     public void parse() throws IOException{
@@ -33,15 +45,22 @@ public class Parser {
                 case KEYWORD:
                     procudureList = parseKeyword(Keyword.valueOf(token.value));
                     break;
-                case WORD:
-                    Definition word = dictionary.getDefinition(token.value);
-                    procudureList = expandDefinition(word);
-                    break;
+                case FLOAT:
+                    throw new SyntaxErrorException("Floating point numbers are currently unsupported.");
                 case INTEGER:
                     // TODO: Add proc to push to top
                     procudureList = List.of(token.value);
                     break;
+                case WORD:
+                    Definition word = dictionary.getDefinition(token.value);
+                    procudureList = expandDefinition(word);
+                    break;
+                
             }
+            
+            // Used for debugging
+            // Disable after tests are implemented
+            parsedWords.add(procudureList);
 
             //TODO: Write to file instead of System.out
             System.out.println(StringUtils.join(procudureList, System.lineSeparator()));

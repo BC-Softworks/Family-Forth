@@ -77,6 +77,8 @@ public class Lexer {
             type = TokenType.END_COMMENT;
         } else if(isInteger(str_token, 10)){
             type = TokenType.INTEGER;
+        } else if(isFloat(str_token)){
+            type = TokenType.FLOAT;
         } else {
             type = TokenType.WORD;
         }
@@ -104,6 +106,7 @@ public class Lexer {
         BEGIN_COMMENT,
         END_COMMENT,
         KEYWORD,
+        FLOAT,
         INTEGER,
         WORD
     }
@@ -134,6 +137,14 @@ public class Lexer {
         return Arrays.stream(Keyword.values()).anyMatch(v -> v.value.equals(str));
     }
 
+    /**
+     * Check if a string is an integer
+     * Max an min values are not checked
+     * Bounds checkign is left up to the parser
+     * @param s
+     * @param radix
+     * @return boolean
+     */
     public static boolean isInteger(String s, int radix) {
         // Reject empty Strings
         if(StringUtils.isBlank(s)){
@@ -146,7 +157,33 @@ public class Lexer {
                 if(s.length() == 1) {
                     return false;
                 }
-            } else if(Character.digit(s.charAt(i),radix) < 0){
+            } else if(Character.digit(s.charAt(i), radix) < 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if a string is an floating point number
+     * These are not supported and are rejected by the parser
+     * @param s
+     * @param radix
+     * @return boolean
+     */
+    public static boolean isFloat(String s) {
+        // Reject empty Strings
+        if(StringUtils.isBlank(s)){
+            return false;
+        }
+
+        for(int i = 0; i < s.length(); i++) {
+            if(i == 0 && (s.charAt(i) == '-' || s.charAt(i) == '+')) {
+                // Ignore leading sign unless it is the only symbol
+                if(s.length() == 1) {
+                    return false;
+                }
+            } else if(!(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.')){
                 return false;
             }
         }
