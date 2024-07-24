@@ -5,7 +5,7 @@
 ; Defines the following words core words
 ; @ C@ 2@ ALIGNED 2! 2@ R> R@
 
-.include "math.asm"
+.include "core.asm"
 
 ; ( a-addr -- x ) 
 ; Returns the full cell
@@ -66,10 +66,24 @@
 .proc ALIGNED
 		lda $00,X
 		and #%00000001
-		beq add_one
-		jsr ONEADD
-add_one:  
-		jsr ONEADD
+		beq @addOne
+		clc
+		lda $00,X
+		adc #2
+		sta $00,X
+		lda $01,X
+		adc #0
+		sta $01,X
+		rts
+@addOne:  
+		clc
+		lda $00,X
+		adc #1
+		sta $00,X
+		lda $01,X
+		adc #0
+		sta $01,X
+		rts
 		rts
 .endproc
 

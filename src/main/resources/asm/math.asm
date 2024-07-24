@@ -6,12 +6,7 @@
 ; ADD SUB 1+ 1- ABS * / MOD/ 
 ; MIN MAX NEGATE
 
-;; Working register locations
-lowByteW   = $00
-hiByteW    = $01
-lowByteW2  = $02
-hiByteW2   = $03
-
+.include "core.asm"
 
 ; ( n1 n2 -- n3 )
 ; n3 = n2 + n1
