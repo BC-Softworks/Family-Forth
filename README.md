@@ -15,29 +15,31 @@ git clone https://github.com/Family-Forth/Family-ForthCC.git
 
 Build the app
 ```
-mvn clean
+    mvn clean
 ```
 
 Build the jar
 ```
-mvn package
+    mvn package
 ```
 
 
 # Kernel Configuration
 * W   = Working register one
-* W2   = Working register two
+* W2  = Working register two
 * PSP = Parameter Stack Pointer
 * RSP = Return Stack Pointer
-* UP  = User Pointer
+* DP  = Data Space Pointer
 
 ## Kernel Memory locations
-* W    ->  Zpage         -> $00 - $01
-* W2   ->  Zpage         -> $02 - $03
-* IP   ->  Zpage         -> $04 - $05
-* UP   ->  Zpage         -> $06 - $07
-* PSP  ->  X Register    -> $08 to $FF
-* RSP  ->  Stack Pointer -> $0100 to $01FF
+
+| Reg  |  Mem Type      | RAM Addr  | Vaild values   |
+| ---- |--------------- | --------- | -------------- |
+| W    |  Zpage         | $00 - $01 |                |
+| W2   |  Zpage         | $02 - $03 |                |
+| DP   |  Zpage         | $04 - $05 | $0400 to $07FF |
+| PSP  |  X Register    |           | $10 to $FF     |
+| RSP  |  Stack Pointer |           | $01A0 to $01FF |
 
 
 # Comment style guide
