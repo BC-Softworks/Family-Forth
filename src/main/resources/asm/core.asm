@@ -9,11 +9,13 @@
 ; Defines the following words core extension words
 ; NIP TUCK TRUE FALSE PICK U> U<
 
-;; Working register locations
+;; Kernel "register" locations
 lowByteW   = $00
 hiByteW    = $01
 lowByteW2  = $02
 hiByteW2   = $03
+lowByteDSP = $04
+hiByteDSP = $05
 
 ;Boolean constant
 false = 0

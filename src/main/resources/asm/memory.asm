@@ -3,7 +3,7 @@
 ;==========================================================;
 
 ; Defines the following words core words
-; @ C@ 2@ ALIGNED 2! 2@ R> R@
+; @ C@ 2@ ALIGNED 2! 2@ R> R@ HERE
 
 .include "core.asm"
 
@@ -175,5 +175,46 @@ no_add:
 		rts
 .endproc
 
+; ( -- addr )
+; addr is the data-space pointer. 
+.proc HERE
+		dex
+		lda hiByteDSP
+		sta $00,X
+		dex
+		lda lowByteDSP
+		sta $00,X
+		rts
+.endproc
+
+; ( n -- )
+; If n is greater than zero, reserve n address units of data space. 
+; If n is less than zero, release | n | address units of data space. 
+; If n is zero, leave the data-space pointer unchanged.
+
+; If the data-space pointer is aligned and n is a multiple of the size of a cell when ALLOT begins execution, 
+; it will remain aligned when ALLOT finishes execution.
+
+; If the data-space pointer is character aligned and n is a multiple of the size of a character when ALLOT begins execution, 
+; it will remain character aligned when ALLOT finishes execution. 
+.proc ALLOT
+		lda $01,X		; Check if high byte is zeroed
+		bne @add
+		lda $00,X		; Check if low byte is zeroed
+		bne @add
+		jmp @drop		; Both bytes zero
+	
+@add:	clc				; Clear carry flag
+		lda $00,X
+		adc lowByteDSP
+		sta lowByteDSP
+		lda $01,X 
+		adc hiByteDSP
+		sta hiByteDSP
+
+@drop:  inx				; Drop n
+		inx
+		rts
+.endproc
 
 
