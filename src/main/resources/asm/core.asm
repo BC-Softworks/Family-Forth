@@ -22,8 +22,7 @@ hiByteDSP = $05
 false = 0
 true  = 255
 
-; Used to load constants
-; onto the stack
+; Used to load constants onto the stack
 .macro PUSH arg1, arg2
 		.if (.blank(arg))
             .error "Syntax error"
@@ -37,6 +36,11 @@ true  = 255
 		rts
 .endmacro
 
+.macro PUT
+		dex
+		dex
+.endmacro
+
 ; ( x -- )
 ; Drop x from the stack
 .proc DROP
@@ -48,8 +52,7 @@ true  = 255
 ; ( x -- xx )
 ; Copy x and place it on the stack
 .proc DUP
-		dex          ; Inline Put
-		dex
+		PUT
 		lda $02,X
 		sta $00,X
 		lda $03,X
@@ -82,8 +85,7 @@ true  = 255
 ; Duplicate the second cell on  the stack
 ; place it on top
 .proc OVER
-		dex       ; Inline Put
-		dex
+		PUT
 		lda $04,X ; Load now third in stack
 		sta $00,X ; Store low byte of second
 		lda $05,X
@@ -123,8 +125,7 @@ true  = 255
 		inx          ; Inline Drop
 		inx
 		jsr SWAP     ; Doesn't affect x3
-		dex          ; Inline Put
-		dex
+		PUT
 		jsr SWAP
 		rts
 .endproc
@@ -174,8 +175,7 @@ set: 	sta $00,X
 		lda $00,X
 		sta $00
 		lda $01,X
-		inx
-		inx
+		jsr DROP
 		and $01,X
 		sta $01,X
 		lda $00
@@ -190,8 +190,7 @@ set: 	sta $00,X
 		lda $00,X
 		sta lowByteW
 		lda $01,X
-		inx
-		inx
+		jsr DROP
 		ora $01,X
 		sta $01,X
 		lda lowByteW
@@ -206,8 +205,7 @@ set: 	sta $00,X
 		lda $00,X
 		sta lowByteW
 		lda $01,X
-		inx          ;Inline drop
-		inx
+		jsr DROP
 		eor $01,X
 		sta $01,X
 		lda lowByteW
@@ -250,8 +248,7 @@ set: 	sta $00,X
 		ldy $00,X       ; Load low bit of u
 		cmp #%00010000  
 		bmi r_zero
-		inx             ; Inline Drop
-		inx
+		jsr DROP
 		lda $00,X
 @loop:	asl A
 		sta $00, X
@@ -271,8 +268,7 @@ r_zero: lda #0
 		ldy $00,X       ; Load low bit of u
 		cmp #%00010000  
 		bmi r_zero
-		inx             ; Inline Drop
-		inx
+		jsr DROP
 		lda $00,X
 @loop:	lsr A
 		sta $00, X
@@ -377,8 +373,7 @@ branch: lda false  ; A bit was set to 1
 		sta $02,X    ; Overwrite lowByte of second cell
 		lda $01,X    ; Load the highByte from the TOS
 		sta $03,X    ; Overwrite highByte of second cell
-		inx
-		inx
+		jsr DROP
 		rts
 .endproc
 
@@ -396,11 +391,11 @@ branch: lda false  ; A bit was set to 1
 ; Tokenized 0>
 .proc ZEROGREATER
 		lda $01,X
-		bpl neg
+		bpl @neg
 		lda false
-		jmp set
-neg: 	lda true
-set: 	sta $00,X
+		jmp @set
+@neg: 	lda true
+@set: 	sta $00,X
 		sta $01,X
 		rts
 .endproc
