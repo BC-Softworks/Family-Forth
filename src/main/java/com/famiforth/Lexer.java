@@ -56,8 +56,16 @@ public class Lexer {
         tokenNumber += 1;
 	}
 
+    public void skipLine(){
+        currentLine.clear();
+    }
+
     public boolean hasNext() {
         return scanner.hasNext();
+    } 
+
+    public boolean hasNextLine() {
+        return scanner.hasNextLine();
     } 
 
     /**
@@ -71,6 +79,8 @@ public class Lexer {
         TokenType type;
         if(isKeyword(str_token)){
             type = TokenType.KEYWORD;
+        } else if("\\".equals(str_token)){
+            type = TokenType.SKIP_LINE;
         } else if("(".equals(str_token)){
             type = TokenType.BEGIN_COMMENT;
         } else if(")".equals(str_token)){
@@ -103,6 +113,7 @@ public class Lexer {
 
 
     public enum TokenType{
+        SKIP_LINE,
         BEGIN_COMMENT,
         END_COMMENT,
         KEYWORD,

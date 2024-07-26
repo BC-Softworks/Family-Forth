@@ -38,10 +38,14 @@ public class Parser {
 
             Token token = lexer.next_token();
             switch(token.type){
+                case SKIP_LINE:
+                    lexer.skipLine();
+                    continue;
                 case BEGIN_COMMENT:
                     while(token.type != TokenType.END_COMMENT){
                         token = lexer.next_token();
                     }
+                    continue;
                 case KEYWORD:
                     procudureList = parseKeyword(Keyword.valueOf(token.value));
                     break;
@@ -55,7 +59,8 @@ public class Parser {
                     Definition word = dictionary.getDefinition(token.value);
                     procudureList = expandDefinition(word);
                     break;
-                
+                default:
+                    break;
             }
             
             // Used for debugging
