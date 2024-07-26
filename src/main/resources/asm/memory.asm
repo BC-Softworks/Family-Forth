@@ -3,7 +3,8 @@
 ;==========================================================;
 
 ; Defines the following words core words
-; @ C@ 2@ ALIGNED 2! 2@ R> R@ HERE
+; @ C@ 2@ ALIGN ALIGNED 2! 2@ 
+; CELLS CELL+ R> R@ HERE
 
 .include "core.asm"
 
@@ -60,6 +61,17 @@
   rts  
 .endproc
 
+; ( -- )
+; If the data-space pointer is not aligned, 
+; reserve enough space to align it.
+.proc ALIGN
+		lda lowByteDSP
+		and #%00000001
+		cmp #%00000001
+		beq @end
+		jsr ONESUB
+@end:	rts
+.endproc
 
 ;( addr -- a-addr )
 ; a-addr is the first aligned address greater than or equal to addr. 
@@ -107,7 +119,7 @@
 ; TODO: TEST
 ; ( addr -- d)
 ; Leave on the stack the contents of the four consecutive  bytes
-; beginning at addr, as for a double number.
+; beginning at addr, as for a double number. '2@'
 .proc TWOFETCH
 		ldy $00,X     ; Load the low byte of the address into Y
 		lda $01,X     ; Load the high byte of the address into A
@@ -140,6 +152,25 @@ no_add:
 		pha
 .endmacro
 
+; ( n1 -- n2 )
+; n2 is the size in address units of n1 cells. 
+.proc CELLS
+	jsr LSHIFT
+	rts
+.endproc
+
+; ( a-addr1 -- a-addr2 )
+; Add the size in address units of a cell to a-addr1, giving a-addr2. 
+.proc CELL+
+	clc
+	lda $00,X
+	adc #2
+	sta $00,X
+	lda $01,X ; Should handle the carry
+	adc #0
+	sta $01,X
+	rts
+.endproc
 
 ; ( -- n)
 ; Transfer n from the return stack to the data stack.
