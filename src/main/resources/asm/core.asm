@@ -3,8 +3,9 @@
 ;==========================================================;
 
 ; Defines the following words
-; DROP DUP SWAP OVER ROT 0= 0< 0>
-; AND OR XOR 2* 2/ LSHIFT RSHIFT < > = 
+; DROP DUP SWAP OVER 2DUP ?DUP ROT 0= 0< 0>
+; AND OR XOR 2* 2/ LSHIFT RSHIFT < > =
+; DEPTH
 
 ; Defines the following words core extension words
 ; NIP TUCK TRUE FALSE PICK U> U<
@@ -89,6 +90,30 @@ true  = 255
 		sta $01,X ; Store high byte of second
 		rts
 .endproc
+
+; ( x1 x2 -- x1 x2 x1 x2 )
+; Duplicate cell pair x1 x2. 
+; Tokenized 2DUP
+.proc TWODUP
+		jsr OVER 
+		jsr OVER 
+		rts
+.endproc
+
+; ( x -- 0 | x x )
+; Duplicate x if it is non-zero.
+; Tokenized ?DUP
+.proc QDUP
+		lda $00,X
+		cmp #0
+		bne @end
+		lda $01,X
+		cmp #0
+		bne @end
+		jsr DUP
+@end:	rts
+.endproc
+
 
 ; ( x1 x2 x3 -- x2 x3 x1 )
 ; Rotate the top three stack entries.
@@ -322,6 +347,24 @@ branch: lda false  ; A bit was set to 1
 branch: lda false  ; A bit was set to 1
 		sta $00,X
 		sta $01,X
+		rts
+.endproc
+
+
+; ( -- +n )
+; +n is the number of single-cell values contained in 
+; the data stack before +n was placed on the stack
+.proc DEPTH
+		stx lowByte	; Store addr before dex
+		dex			; Add an empty highbyte
+		lda #0		
+		sta $00,X
+		dex
+		sec			; Clear sub flag
+		lda #FF
+		sbc lowByte
+		sta $00,X
+		jsr RSHIFT
 		rts
 .endproc
 
