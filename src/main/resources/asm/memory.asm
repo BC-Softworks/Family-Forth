@@ -4,7 +4,12 @@
 
 ; Defines the following words core words
 ; @ C@ 2@ ALIGN ALIGNED 2! 2@ 
-; CELLS CELL+ R> R@ HERE
+; CELLS CELL+ R> R@ ALLOT HERE , 
+
+; We plan to implement the
+; optional Memory-Allocation word set ar a later date
+; ALLOCATE FREE RESIZE
+
 
 .include "core.asm"
 
@@ -95,7 +100,6 @@
 		lda $01,X
 		adc #0
 		sta $01,X
-		rts
 		rts
 .endproc
 
@@ -206,18 +210,6 @@ no_add:
 		rts
 .endproc
 
-; ( -- addr )
-; addr is the data-space pointer. 
-.proc HERE
-		dex
-		lda hiByteDSP
-		sta $00,X
-		dex
-		lda lowByteDSP
-		sta $00,X
-		rts
-.endproc
-
 ; ( n -- )
 ; If n is greater than zero, reserve n address units of data space. 
 ; If n is less than zero, release | n | address units of data space. 
@@ -242,10 +234,41 @@ no_add:
 		lda $01,X 
 		adc hiByteDSP
 		sta hiByteDSP
+@drop:  jmp DROP
+.endproc
 
-@drop:  inx				; Drop n
-		inx
+; ( -- addr )
+; addr is the data-space pointer. 
+.proc HERE
+		dex
+		lda hiByteDSP
+		sta $00,X
+		dex
+		lda lowByteDSP
+		sta $00,X
 		rts
 .endproc
+
+; ( x -- )
+; Reserve one cell of data space and store x in the cell. 
+; Tokenized ,
+.proc COMMA
+		dex					; Inline Put
+		lda #0
+		sta $00,X			; Push 2 onto the stack
+		dex
+		lda #2
+		sta $00,X
+		jsr ALLOT			; Allot one cell
+		ldy #0
+		lda $00,X   
+		sta (lowByteDSP),Y	; Store the lowByte
+		iny
+		lda $01,X   
+		sta (lowByteDSP),Y	; Store the highbyte
+		jmp DROP			; Drop x from the parameter stack
+.endproc
+
+
 
 
