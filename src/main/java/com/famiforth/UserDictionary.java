@@ -88,7 +88,7 @@ public class UserDictionary {
     }
 
     /**
-     * Throws an IllegalArgumentException if the string is null.
+     * Throws an IllegalArgumentException if the string is blank or null.
      * @param word
      * @return
      */

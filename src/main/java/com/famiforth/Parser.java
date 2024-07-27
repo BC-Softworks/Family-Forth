@@ -3,6 +3,7 @@ package com.famiforth;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,8 +20,9 @@ public class Parser {
     final private UserDictionary dictionary;
 
     final File fileOut;
-    final private List<List<String>> parsedWords = new LinkedList<>();
+    final private List<List<String>> parsedDefinitions = new LinkedList<>();
 
+    //TODO: Add cli argument for filename
     final static String DEFAULT_FILE_OUT = "out.asm";
 
     public Parser(Lexer scan, String dictionaryFile, String fileName) {
@@ -31,6 +33,10 @@ public class Parser {
 
     public Parser(Lexer scan, String dictionaryFile) {
         this(scan, dictionaryFile, DEFAULT_FILE_OUT);
+    }
+
+    public List<List<String>> getParsedDefinitions() {
+        return parsedDefinitions;
     }
 
     public void parse() throws IOException {
@@ -48,17 +54,21 @@ public class Parser {
                     }
                     continue;
                 case KEYWORD:
-                    procudureList = parseKeyword(Keyword.getByValue(token.value));
+                    Keyword keyword = Keyword.getByValue(token.value);
+                    if(keyword.equals(Keyword.COLON)){
+                        procudureList = parseColonStatement();
+                    } else {
+                        procudureList = parseWord(token);
+                    }
                     break;
                 case FLOAT:
                     throw new SyntaxErrorException("Floating point numbers are currently unsupported.");
                 case INTEGER:
                     // TODO: Add proc to push to top
-                    procudureList = List.of(token.value);
+                    procudureList = List.of(integerToHex(token.value));
                     break;
                 case WORD:
-                    Definition word = dictionary.getDefinition(token.value);
-                    procudureList = expandDefinition(word);
+                    procudureList = parseWord(token);
                     break;
                 default:
                     break;
@@ -66,37 +76,53 @@ public class Parser {
 
             // Used for debugging
             // Disable after tests are implemented
-            parsedWords.add(procudureList);
+            parsedDefinitions.add(procudureList);
 
             // TODO: Write to file instead of System.out
             System.out.println(StringUtils.join(procudureList, System.lineSeparator()));
         }
     }
 
-    public List<String> parseKeyword(Keyword keyword) throws IOException {
-        switch (keyword) {
-            case BEGIN:
-                return parseBeginStatement();
-            case COLON:
-                return parseColonStatement();
-            case IF:
-                return parseIfStatement();
-            case LOOP:
-            case PLUS_LOOP:
-                return parseLoop();
-
-            default:
-                throw new IllegalArgumentException(
-                        String.format("Syntax Error: Keyword %s encountered out of order.", keyword.value));
+    /**
+     * Converts the provided Definition to a List of Strings
+     * @param definition
+     * @return
+     */
+    public List<String> expandDefinition(Definition definition) {
+        if(definition == null){
+            throw new SyntaxErrorException("Unable to access an undefined word.");
         }
-    }
 
-    private List<String> parseBeginStatement() {
-        throw new UnsupportedOperationException("Unimplemented method 'parseBeginStatement'");
+        if (definition.isPrimitive) {
+            return definition.assembly;
+        }
+
+        List<String> list = new ArrayList<>();
+        for (Definition def : definition.words) {
+            list.addAll(expandDefinition(def));
+        }
+        return list;
     }
 
     /**
-     * Parse a colon definition
+     * Get the Token's Definition from the dictionary
+     * Throws an error if no Definition is found
+     * @param token
+     * @return 
+     */
+    private List<String> parseWord(Token token) {
+        Definition word = dictionary.getDefinition(token.value);
+        return expandDefinition(word);
+    }
+
+    /**
+     * ( C: "<spaces>name" -- colon-sys )
+     * Skip leading space delimiters. Parse name delimited by a space. 
+     * Create a definition for name, called a "colon definition".
+     * Enter compilation state and start the current definition, producing colon-sys.
+     * Append the initiation semantics given below to the current definition.
+     * The execution semantics of name will be determined by the words compiled into the body of the definition. 
+     * The current definition shall not be findable in the dictionary until it is ended (or until the execution of DOES> in some systems). 
      * 
      * @return
      * @throws IOException
@@ -122,24 +148,67 @@ public class Parser {
         return procedureList;
     }
 
-    private List<String> parseIfStatement() {
-        throw new UnsupportedOperationException("Unimplemented method 'parseIfStatement'");
-    }
-
-    private List<String> parseLoop() {
-        throw new UnsupportedOperationException("Unimplemented method 'parseLoop'");
-    }
-
-    public List<String> expandDefinition(Definition definition) {
-        if (definition.isPrimitive) {
-            return definition.assembly;
+    /**
+     * Convert integers to signed hex strings
+     * Negative numbers are returned in twos complment form
+     * @param input
+     * @return
+     */
+    private static String integerToHex(int input) {
+        boolean nonNegative = input >= 0;
+        String hex = Integer.toString(Math.abs(input), 16);
+        hex = hex.toUpperCase();
+        // Twos complment
+        if(!nonNegative){
+            Arrays.stream(hex.split("")).map(Parser::invertHex).collect(Collectors.joining(""));
         }
-
-        List<String> list = new ArrayList<>();
-        for (Definition def : definition.words) {
-            list.addAll(expandDefinition(def));
-        }
-        return list;
+        return hex;
     }
 
+    private static String integerToHex(String input) {
+        return integerToHex(Integer.valueOf(input));
+    }
+
+    /**
+     * Return the twos complment of a single hex character
+     * @return
+     */
+    private static String invertHex(String str){
+        switch(str){
+            case "0":
+                return "F";
+            case "1":
+                return "E";
+            case "2":
+                return "D";
+            case "3":
+                return "C";
+            case "4":
+                return "B";
+            case "5":
+                return "A";
+            case "6":
+                return "9";
+            case "7":
+                return "8";
+            case "8":
+                return "7";
+            case "9":
+                return "6";
+            case "A":
+                return "5";
+            case "B":
+                return "4";
+            case "C":
+                return "3";
+            case "D":
+                return "2";
+            case "E":
+                return "1";
+            case "F":
+                return "0";
+            default:
+                throw new IllegalArgumentException("Invalid hex character.");
+        }
+    }
 }

@@ -1,11 +1,16 @@
 package com.famiforth;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -29,7 +34,8 @@ public class ParserTest {
     public void parseColonDefinitionTest() throws IOException{
         init(": D0= 0= SWAP 0= AND ;");
         parser.parse();
-        //TODO: Finish test
+        List<List<String>> parsedDefinitions = parser.getParsedDefinitions();
+        assertEquals(1, parsedDefinitions.size());
     }
 
     @Test
@@ -37,8 +43,11 @@ public class ParserTest {
      * Test the creation of a basic word with two primitives and two integers
      */
     public void parseColonDefinitionWithIntegersTest() throws IOException{
-        init(": 2OVER 3 PICK 3 PICK  ;");
+        init(": 2OVER 3 PICK 3 PICK ;");
         parser.parse();
+        List<List<String>> parsedDefinitions = parser.getParsedDefinitions();
+        assertEquals(1, parsedDefinitions.size());
+
         //TODO: Finish test
     }
 
