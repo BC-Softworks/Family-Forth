@@ -27,7 +27,7 @@ public class ParserTest {
      * Test the creation of a user defined word made with two primitives
      */
     public void parseColonDefinitionTest() throws IOException{
-        init(": 2DROP DROP DROP ;");
+        init(": D0= 0= SWAP 0= AND ;");
         parser.parse();
         //TODO: Finish test
     }

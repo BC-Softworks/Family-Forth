@@ -15,7 +15,7 @@ public class Definition {
 
     private Definition() {}
     
-    public Definition createPrimitiveDefinition(String name, List<String> assembly){
+    public static Definition createPrimitiveDefinition(String name, List<String> assembly){
         Definition definition = new Definition();
         definition.isPrimitive = false;
         definition.name = name;
@@ -25,7 +25,7 @@ public class Definition {
         return definition;
     }
 
-    public Definition createUserWordDefinition(String name, List<Definition> words){
+    public static Definition createUserWordDefinition(String name, List<Definition> words){
         Definition definition = new Definition();
         definition.isPrimitive = false;
         definition.name = name;

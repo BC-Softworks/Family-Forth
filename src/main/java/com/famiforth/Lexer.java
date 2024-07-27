@@ -70,7 +70,7 @@ public class Lexer {
 
     /**
      * 
-     * @return The next token pair
+     * @return The next Token object
      * @throws IOException
      */
     public Token next_token() throws IOException {
@@ -141,6 +141,10 @@ public class Lexer {
 
         private Keyword(String value) {
             this.value = value;
+        }
+
+        public static Keyword getByValue(String value){
+            return Arrays.stream(Keyword.values()).filter(key -> key.value.equals(value)).findFirst().orElse(null);
         }
     }
 
