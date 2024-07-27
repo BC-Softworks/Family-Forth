@@ -3,9 +3,8 @@
 ;==========================================================;
 
 ; Defines the following words
-; DROP DUP SWAP OVER 2DUP ?DUP ROT 0= 0< 0>
-; AND OR XOR 2* 2/ LSHIFT RSHIFT < > =
-; DEPTH
+; DROP 2DROP DUP SWAP OVER 2DUP ?DUP ROT 0= 0< 0>
+; AND OR XOR 2* 2/ LSHIFT RSHIFT < > = DEPTH
 
 ; Defines the following words core extension words
 ; NIP TUCK TRUE FALSE PICK U> U<
@@ -22,13 +21,32 @@ hiByteDSP = $05
 false = 0
 true  = 255
 
+;; Global Macros
+
+.macro PUT
+		dex
+		dex
+.endmacro
+
 ; Used to load constants onto the stack
-.macro PUSH arg1, arg2
+; Used to load constants onto the stack
+.macro PUSH arg1
 		.if (.blank(arg))
             .error "Syntax error"
         .endif
-		dex
-		dex
+		PUT
+		lda arg1
+		sta $00,X
+		lda #0
+		sta $01,X
+		rts
+.endmacro
+
+.macro PUSHCELL arg1, arg2
+		.if (.blank(arg))
+            .error "Syntax error"
+        .endif
+		PUT
 		lda arg1
 		sta $00,X
 		lda arg2
@@ -36,16 +54,23 @@ true  = 255
 		rts
 .endmacro
 
-.macro PUT
-		dex
-		dex
-.endmacro
 
 ; ( x -- )
 ; Drop x from the stack
 .proc DROP
 		inx
 		inx
+		rts
+.endproc
+
+; ( x1 x2 -- )
+; Drop x1 and x2 from the stack
+; Tokwnized 2DROP
+.proc TWODROP
+		txa
+		clc
+		adc #4
+		tax
 		rts
 .endproc
 

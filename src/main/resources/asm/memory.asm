@@ -4,7 +4,7 @@
 
 ; Defines the following words core words
 ; @ C@ 2@ ALIGN ALIGNED 2! 2@ 
-; CELLS CELL+ R> R@ ALLOT HERE , 
+; CELLS CELL+ R> >R  R@ ALLOT HERE , 
 
 ; We plan to implement the
 ; optional Memory-Allocation word set ar a later date
@@ -159,8 +159,7 @@ no_add:
 ; ( n1 -- n2 )
 ; n2 is the size in address units of n1 cells. 
 .proc CELLS
-	jsr LSHIFT
-	rts
+	jmp LSHIFT
 .endproc
 
 ; ( a-addr1 -- a-addr2 )
@@ -181,8 +180,7 @@ no_add:
 ; Tokenized R>
 .proc RFROM
 		SAVE_RETURN
-		dex           ; Inline Put
-		dex
+		PUT
 		pla
 		sta $00,X     ; Push lower byte
 		pla
@@ -191,13 +189,25 @@ no_add:
 		rts
 .endproc
 
+; ( x -- ) ( R: -- x )
+; Move x to the return stack.
+; Tokenized >R
+.proc TOR
+		SAVE_RETURN
+		sta $01,X     ; Push higher byte
+		pha
+		sta $00,X	  ; Push lower byte
+		pha
+		LOAD_RETURN
+		jmp DROP
+.endproc
+
 ; ( -- n)
 ; Copy the number on top of the return stack to the data stack.
 ; Tokenized R@
 .proc RFETCH
 		SAVE_RETURN
-		dex           ; Inline Put
-		dex
+		PUT
 		pla
 		sta $00,X     ; Push lower byte
 		sta $00		  ; Store lower byte
