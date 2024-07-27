@@ -4,7 +4,7 @@
 
 ; Defines the following words
 ; ADD SUB 1+ 1- ABS * / MOD/ 
-; MIN MAX NEGATE
+; MIN MAX NEGATE INVERT
 
 .include "core.asm"
 
@@ -31,9 +31,7 @@
 		lda $00,X
 		sbc $02,X
 		sta $02,X  ; Store low byte
-		inx        ; Inline Drop
-		inx
-		rts
+		jmp DROP
 .endproc
 
 ; ( n1 | u1 -- n2 | u2 )
@@ -83,7 +81,7 @@
 		lsr
 		sta lowByteW
 		tya
-		beq mul8_return
+		beq @ret
 		dey
 		sty hiByteW
 		lda #0
@@ -91,23 +89,21 @@
 			.if i > 0
 				ror lowByteW
 			.endif
-			bcc @rotate
-			adc hiByteWF_
-@rotate:
-		ror
-.endrepeat
+			bcc @rot
+			adc hiByteW
+@rot:	ror
+		.endrepeat
 		tay
 		lda lowByteW
 		ror
-mul8_return:
-		rts
+@ret: 	rts
 .endproc
 
-; 16-bit multiply with 32-bit product
-; High bytes are discarded
-; Modified version that uses the Y register
-; from 6502.org
-.proc MUL16
+; ( n1 n2 -- d )
+; n3 = n2 * n1
+; Tokenized M*
+; Modified version that uses the Y register from 6502.org
+.proc M_STAR
 		lda $00,X			; Load the first cell into W
 		sta $00,X
 		lda $01,X
@@ -143,9 +139,6 @@ rot_r:	ror			 		; rotate partial product
 		ror product 
 		dey
 		bne shift_r
-		jsr SWAP
-		inx
-		inx
 		rts
 .endproc
 
@@ -155,27 +148,65 @@ rot_r:	ror			 		; rotate partial product
 		lda $01,X
 		ora $03,X ; If the highbyte's or is zero 
 		beq @mul8 ; then use 8x8 multiplication
-		jsr MUL16
+		jsr M_STAR
+		jsr SWAP
+		jmp DROP
+@mul8:  jmp MUL8  ; Spliting the mul functions 
+.endproc
+
+
+//   R(0) := N(i)          -- Set the least-significant bit of R equal to bit i of the numerator
+//   if R ≥ D then
+//     R := R − D
+//     Q(i) := 1
+//   end
+
+; ( n1 n2 -- n4 n3 )
+; n3rn4 = n2 / n1
+; Tokenized MOD/
+.proc MODDIV
+		lda $00,X		; Move the top of stack into W and W2
+		sta lowByteW
+		lda $01,X
+		sta hiByteW
+		lda $01,X
+		sta lowByteW2
+		lda $02,X
+		sta hiByteW2
+		lda #0			; Clear the top of the stack
+		sta $00,X
+		sta $01,X
+		sta $02,X
+		sta $03,X
+		ldy #15			; Set to cell size minus 1
+@loop:	jsr LSHIFT		; Left-shift remainder by 1 bit
+		
+						; Set the least-significant bit of R 
+						; equal to bit i of the numerator
+
+						; If the reamainder is greater
+						; then the denominator
+						; Subtract the reamainder by the denominator
+						; set Quotinet bit i to one
+		dey
+		bpl @loop
 		rts
-@mul8:  jsr MUL8  ; Spliting the mul functions 
-		rts       ; Saves cycles on low numbers
 .endproc
 
 
 ; ( n1 n2 -- n3 )
 ; n3 = n2 / n1
 .proc DIV
-		sec
-
-		rts
+		jsr MODDIV
+		jsr SWAP	; Swap Q and R
+		jmp DROP	; Drop the remainder
 .endproc
 
-; ( n1 n2 -- n4 n3 )
-; n3rn4 = n2 / n1 
-.proc MODDIV
-		sec
-
-		rts
+; ( n1 n2 -- n3 )
+; Divide n1 by n2, giving the single-cell remainder n3.
+.proc MOD
+		jsr MODDIV
+		jmp DROP	; Drop the quotient
 .endproc
 
 
@@ -211,14 +242,22 @@ rot_r:	ror			 		; rotate partial product
 		rts
 .endproc
 
-; ( n1 -- n2 )
-; Negate n1, giving its arithmetic inverse n2. 
-.proc NEGATE
+; ( x1 -- x2 )
+; Invert all bits of x1, giving its logical inverse x2. 
+.proc INVERT
 		lda $00,X
 		eor #%11111111
 		sta $00,X
 		lda $01,X
 		eor #%11111111
 		sta $01,X
+		rts
+.endproc
+
+; ( n1 -- n2 )
+; Negate n1, giving its arithmetic inverse n2. 
+.proc NEGATE
+		jsr INVERT
+		jsr ONEADD
 		rts
 .endproc
