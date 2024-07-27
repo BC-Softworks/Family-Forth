@@ -3,8 +3,8 @@
 ;==========================================================;
 
 ; Defines the following words
-; ADD SUB 1+ 1- ABS * / MOD/ 
-; MIN MAX NEGATE INVERT
+; ADD SUB 1+ 1- ABS * / */ MOD/ 
+; MIN MAX NEGATE INVERT CHAR+
 
 .include "core.asm"
 
@@ -163,7 +163,7 @@ rot_r:	ror			 		; rotate partial product
 
 ; ( n1 n2 -- n4 n3 )
 ; n3rn4 = n2 / n1
-; Tokenized MOD/
+; Tokenized /MOD
 .proc MODDIV
 		lda $00,X		; Move the top of stack into W and W2
 		sta lowByteW
@@ -209,6 +209,13 @@ rot_r:	ror			 		; rotate partial product
 		jmp DROP	; Drop the quotient
 .endproc
 
+; ( n1 n2 n3 -- n4 )
+; Multiply n1 by n2 producing the intermediate double-cell result d.
+; Divide d by n3 giving the single-cell quotient n4. 
+.proc MULDIV
+		jsr M_STAR
+		jmp DIV
+.endproc
 
 ; ( n1 n2 -- n3 )
 ; n3 is the lesser value
@@ -260,4 +267,10 @@ rot_r:	ror			 		; rotate partial product
 		jsr INVERT
 		jsr ONEADD
 		rts
+.endproc
+
+; ( c-addr1 -- c-addr2 )
+; Add the size in address units of a character to c-addr1, giving c-addr2. 
+.proc CHAR_PLUS
+		jmp ONEADD
 .endproc
