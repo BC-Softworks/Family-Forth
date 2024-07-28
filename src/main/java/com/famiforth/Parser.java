@@ -17,19 +17,15 @@ import com.famiforth.Lexer.TokenType;
 public class Parser {
 
     final private Lexer lexer;
-    final private UserDictionary dictionary;
-
-    final File fileOut;
     final private List<List<String>> parsedDefinitions;
 
-    int radix = 16;
-
-    //TODO: Add cli argument for filename
+    final File fileOut;
     final static String DEFAULT_FILE_OUT = "out.asm";
 
+
     public Parser(Lexer scan, String dictionaryFile, String fileName) {
+        UserDictionary.initalize(dictionaryFile);
         this.lexer = scan;
-        this.dictionary = UserDictionary.getInstance(dictionaryFile);
         fileOut = new File(fileName);
         parsedDefinitions = new LinkedList<>();
     }
@@ -44,7 +40,7 @@ public class Parser {
 
     public void parse() throws IOException {
         while (lexer.hasNext()) {
-            List<String> procudureList = new ArrayList<>();
+            List<String> assemblyList = new ArrayList<>();
 
             Token token = lexer.next_token();
             switch (token.type) {
@@ -59,19 +55,18 @@ public class Parser {
                 case KEYWORD:
                     Keyword keyword = Keyword.getByValue(token.value);
                     if(keyword.equals(Keyword.COLON)){
-                        procudureList = parseColonStatement();
+                        assemblyList = parseColonStatement();
                     } else {
-                        procudureList = parseWord(token);
+                        assemblyList = parseWord(token);
                     }
                     break;
                 case FLOAT:
                     throw new SyntaxErrorException("Floating point numbers are currently unsupported.");
                 case INTEGER:
-                    // TODO: Add proc to push to top
-                    procudureList = List.of(integerToHex(token.value));
+                    assemblyList = List.of("PUSH " + integerToHex(token.value));
                     break;
                 case WORD:
-                    procudureList = parseWord(token);
+                    assemblyList = parseWord(token);
                     break;
                 default:
                     break;
@@ -79,10 +74,10 @@ public class Parser {
 
             // Used for debugging
             // Disable after tests are implemented
-            parsedDefinitions.add(procudureList);
+            parsedDefinitions.add(assemblyList);
 
             // TODO: Write to file instead of System.out
-            System.out.println(StringUtils.join(procudureList, System.lineSeparator()));
+            System.out.println(StringUtils.join(assemblyList, System.lineSeparator()));
         }
     }
 
@@ -96,12 +91,12 @@ public class Parser {
             throw new SyntaxErrorException("Unable to access an undefined word.");
         }
 
-        if (definition.isPrimitive) {
-            return definition.assembly;
+        if (definition.isPrimitive()) {
+            return definition.getAssembly();
         }
 
         List<String> list = new ArrayList<>();
-        for (Definition def : definition.words) {
+        for (Definition def : definition.getWords()) {
             list.addAll(expandDefinition(def));
         }
         return list;
@@ -114,7 +109,7 @@ public class Parser {
      * @return 
      */
     private List<String> parseWord(Token token) {
-        Definition word = dictionary.getDefinition(token.value);
+        Definition word = UserDictionary.getDefinition(token.value);
         return expandDefinition(word);
     }
 
@@ -144,8 +139,8 @@ public class Parser {
         }
 
         // Add the word to the dictionary
-        dictionary.addWord(name, Definition.createUserWordDefinition(name, procedureList.stream()
-                .map(dictionary::getDefinition)
+        UserDictionary.addWord(name, Definition.createUserWordDefinition(name, procedureList.stream()
+                .map(UserDictionary::getDefinition)
                 .collect(Collectors.toList())));
 
         return procedureList;
@@ -157,13 +152,22 @@ public class Parser {
      * @param input
      * @return
      */
-    private static String integerToHex(int input) {
+    protected static String integerToHex(int input) {
         boolean nonNegative = input >= 0;
-        String hex = Integer.toString(Math.abs(input), 16);
-        hex = hex.toUpperCase();
+        // If negative add one
+        if(!nonNegative){
+            input++;
+        }
+
+        String hex = Integer.toString(Math.abs(input), 16).toUpperCase();
+        // Pad the hex value with zeros
+        while(hex.length() % 4 != 0){
+            hex = "0" + hex;
+        }
+
         // Twos complment
         if(!nonNegative){
-            Arrays.stream(hex.split("")).map(Parser::invertHex).collect(Collectors.joining(""));
+            hex = Arrays.stream(hex.split("")).map(Parser::invertHex).collect(Collectors.joining(""));
         }
         return hex;
     }
@@ -177,6 +181,7 @@ public class Parser {
      * @return
      */
     private static String invertHex(String str){
+        System.out.print("Here");
         switch(str){
             case "0":
                 return "F";
