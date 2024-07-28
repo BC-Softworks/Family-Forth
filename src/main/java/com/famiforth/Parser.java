@@ -20,7 +20,9 @@ public class Parser {
     final private UserDictionary dictionary;
 
     final File fileOut;
-    final private List<List<String>> parsedDefinitions = new LinkedList<>();
+    final private List<List<String>> parsedDefinitions;
+
+    int radix = 16;
 
     //TODO: Add cli argument for filename
     final static String DEFAULT_FILE_OUT = "out.asm";
@@ -29,6 +31,7 @@ public class Parser {
         this.lexer = scan;
         this.dictionary = UserDictionary.getInstance(dictionaryFile);
         fileOut = new File(fileName);
+        parsedDefinitions = new LinkedList<>();
     }
 
     public Parser(Lexer scan, String dictionaryFile) {

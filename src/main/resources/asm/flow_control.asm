@@ -5,7 +5,7 @@
 ; Defines the following words
 ; DO LOOP +LOOP 
 ; BEGIN WHILE REPEAT
-; IF ELSE THEN
+; IF ELSE THEN I J
 
 .include "core.asm"
 
@@ -45,13 +45,12 @@
 		sbc
 		sec #4      ; Increment the stack pointer by four
 		txa
-						; TODO: Add loop begining address 
-						; Abve the parameters
-						; This way the check can pop it off
-						; and replace it in order
-						; removing the LOOP return address
-						; Guessing it will be the rts of
-						; This subroutine +2
+					; TODO: Add loop begining address 
+					; Abve the parameters
+					; This way the check can pop it off
+					; and replace it in order
+					; removing the LOOP return address
+					
 .endmacro
 
 ; ( -- ) ( R: loop-sys1 -- | loop-sys2 ) 
@@ -91,6 +90,40 @@
 		rts
 .endproc
 
+; ( C: -- dest )
+; Put the next location for a transfer of control, dest, onto the control flow stack. 
+; Append the run-time semantics given below to the current definition.
+;
+; ( -- )
+; Continue execution. 
+.proc BEGIN
+
+	rts
+.endproc
+
+; ( C: dest -- orig dest )
+; Put the location of a new unresolved forward reference orig onto the control flow stack, under the existing dest. 
+; Append the run-time semantics given below to the current definition. 
+; The semantics are incomplete until orig and dest are resolved (e.g., by REPEAT).
+;
+; ( x -- )
+; If all bits of x are zero, continue execution at the location specified by the resolution of orig. 
+.proc WHILE
+
+	rts
+.endproc
+
+; ( C: orig dest -- )
+; Append the run-time semantics given below to the current definition, resolving the backward reference dest. 
+; Resolve the forward reference orig using the location following the appended run-time semantics.
+;
+; ( -- )
+; Continue execution at the location given by dest. 
+.proc REPEAT
+	
+	rts
+.endproc
+
 
 ; ( C: -- orig )
 ; Put the location of a new unresolved forward reference orig onto the control flow stack.
@@ -123,7 +156,8 @@ else:	jmp
 .endproc
 
 ; ( -- )
-; Continue execution. 
+; Continue execution.
+; Provide an address for jmp
 .proc THEN
 		nop
 .endproc

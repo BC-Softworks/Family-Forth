@@ -212,9 +212,19 @@ rot_r:	ror			 		; rotate partial product
 ; ( n1 n2 n3 -- n4 )
 ; Multiply n1 by n2 producing the intermediate double-cell result d.
 ; Divide d by n3 giving the single-cell quotient n4. 
+; Tokenized */
 .proc MULDIV
 		jsr M_STAR
 		jmp DIV
+.endproc
+
+; ( n1 n2 n3 -- n4 n5 )
+; Multiply n1 by n2 producing the intermediate double-cell result d. 
+; Divide d by n3 producing the single-cell remainder n4 and the single-cell quotient n5.
+; Tokenized */MOD
+.proc MULDIVMOD
+		jsr M_STAR
+		jmp MODDIV
 .endproc
 
 ; ( n1 n2 -- n3 )
@@ -270,7 +280,11 @@ rot_r:	ror			 		; rotate partial product
 .endproc
 
 ; ( c-addr1 -- c-addr2 )
-; Add the size in address units of a character to c-addr1, giving c-addr2. 
+; Add the size in address units of a character to c-addr1, giving c-addr2.
+; Tokenized 'CHAR+'
 .proc CHAR_PLUS
 		jmp ONEADD
 .endproc
+
+
+

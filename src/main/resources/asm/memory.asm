@@ -4,12 +4,8 @@
 
 ; Defines the following words core words
 ; @ C@ 2@ ALIGN ALIGNED 2! 2@ 
-; CELLS CELL+ R> >R  R@ ALLOT HERE , 
-
-; We plan to implement the
-; optional Memory-Allocation word set ar a later date
-; ALLOCATE FREE RESIZE
-
+; CELLS CELL+ R> 2R> >R 2>R R@ 
+; ALLOT HERE , MOVE
 
 .include "core.asm"
 
@@ -51,19 +47,19 @@
 ; Returns two full cells
 ; Fetch command '2@'
 .proc TWO_SYM_AT
-  jsr SYM_AT    ; Leaves addr in W
-  inx			; Inline PUT
-  inx
-  lda #2	    ; Add 2 to the address
-  clc
-  adc lowByteW
-  sta $00,X     ; Then call @ again
-  lda #0
-  adc hiByteW	; Add zero and use carry
-  sta $01,X     ; 
-  jsr SYM_AT
-  jsr SWAP		; Then swap
-  rts  
+		jsr SYM_AT    ; Leaves addr in W
+		inx			; Inline PUT
+		inx
+		lda #2	    ; Add 2 to the address
+		clc
+		adc lowByteW
+		sta $00,X     ; Then call @ again
+		lda #0
+		adc hiByteW	; Add zero and use carry
+		sta $01,X     ; 
+		jsr SYM_AT
+		jsr SWAP		; Then swap
+		rts  
 .endproc
 
 ; ( -- )
@@ -136,8 +132,7 @@ loop:	lda ($00),Y   ; Load and store the low byte from the first byte
 		adc #1
 		tay
 		bne loop
-no_add: 
-		rts
+no_add: rts
 .endproc
 
 ; Save return value in W2
@@ -159,20 +154,20 @@ no_add:
 ; ( n1 -- n2 )
 ; n2 is the size in address units of n1 cells. 
 .proc CELLS
-	jmp LSHIFT
+		jmp LSHIFT
 .endproc
 
 ; ( a-addr1 -- a-addr2 )
 ; Add the size in address units of a cell to a-addr1, giving a-addr2. 
 .proc CELL+
-	clc
-	lda $00,X
-	adc #2
-	sta $00,X
-	lda $01,X ; Should handle the carry
-	adc #0
-	sta $01,X
-	rts
+		clc
+		lda $00,X
+		adc #2
+		sta $00,X
+		lda $01,X ; Should handle the carry
+		adc #0
+		sta $01,X
+		rts
 .endproc
 
 ; ( -- n)
@@ -189,6 +184,14 @@ no_add:
 		rts
 .endproc
 
+; ( -- x1 x2 ) ( R: x1 x2 -- )
+; Transfer cell pair x1 x2 from the return stack.
+.proc TWORFROM
+		jsr SWAP
+		jsr RFROM
+		jmp RFROM
+.endproc
+
 ; ( x -- ) ( R: -- x )
 ; Move x to the return stack.
 ; Tokenized >R
@@ -200,6 +203,16 @@ no_add:
 		pha
 		LOAD_RETURN
 		jmp DROP
+.endproc
+
+; ( x1 x2 -- ) ( R: -- x1 x2 )
+; Transfer cell pair x1 x2 to the return stack. 
+; Semantically equivalent to SWAP >R >R. 
+; Tokenized 2>R
+.proc TWOTOR
+		jsr SWAP
+		jsr TOR
+		jmp TOR
 .endproc
 
 ; ( -- n)
@@ -279,6 +292,12 @@ no_add:
 		jmp DROP			; Drop x from the parameter stack
 .endproc
 
+; ( addr1 addr2 u -- )
+; If u is greater than zero, copy the contents of u 
+; consecutive address units at addr1 to the u consecutive address units at addr2.
+; After MOVE completes, the u consecutive address units 
+; at addr2 contain exactly what the u consecutive address units at addr1 contained before the move. 
+.proc MOVE
 
-
+.endproc
 

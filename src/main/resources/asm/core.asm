@@ -7,7 +7,7 @@
 ; AND OR XOR 2* 2/ LSHIFT RSHIFT < > = DEPTH
 
 ; Defines the following words core extension words
-; NIP TUCK TRUE FALSE PICK U> U<
+; NIP TUCK TRUE FALSE PICK U> U< <>
 
 ;; Kernel "register" locations
 lowByteW   = $00
@@ -428,22 +428,22 @@ branch: lda false  ; A bit was set to 1
 ; ( -- true )
 ; Return a true flag, a single-cell value with all bits set. 
 .proc TRUE
-		dex			; Inline Put
-		dex
+		PUT
 		lda true
 		sta $00,X
 		sta $01,X
+		rts
 .endproc
 
 ; ( -- false )
 ; Return a false flag, a single-cell value with no bits set.
 ; Same as pushing 0 onto the stack
 .proc FALSE
-		dex			; Inline Put
-		dex
+		PUT
 		lda false
 		sta $00,X
 		sta $01,X
+		rts
 .endproc
 
 ; ( xu...x1 x0 u -- xu...x1 x0 xu )
@@ -518,3 +518,18 @@ _true:	lda true
 		rts
 .endproc
 
+; ( x1 x2 -- flag )
+; flag is true if and only if x1 is not bit-for-bit the same as x2.
+; Tokenized <>
+.proc NOTEQUALs
+		lda $00,X
+		cmp $02,X
+		bne @false
+		lda $01,X
+		cmp $03,X
+		bne @false
+		jsr TWODROP ; Drop x1 and x2
+		jmp TRUE	; x1 == x2
+@false:	jsr TWODROP
+		jmp FALSE
+.endproc
