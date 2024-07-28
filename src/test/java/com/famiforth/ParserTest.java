@@ -30,12 +30,26 @@ public class ParserTest {
      * Test Integer to signed hexadecimel conversion
      */
     public void integerToHexTest(){
-        assertEquals("0000", Parser.integerToHex(0));
-        assertEquals("0008", Parser.integerToHex(8));
-        assertEquals("000F", Parser.integerToHex(15));
-        assertEquals("0010", Parser.integerToHex(16));
-        assertEquals("FFFF", Parser.integerToHex(-1));
+        assertEquals("0000", ParserUtils.integerToHex(0));
+        assertEquals("0008", ParserUtils.integerToHex(8));
+        assertEquals("000F", ParserUtils.integerToHex(15));
+        assertEquals("0010", ParserUtils.integerToHex(16));
+        assertEquals("FFFF", ParserUtils.integerToHex(-1));
+        assertEquals("FFF8", ParserUtils.integerToHex(-8));
+        assertEquals("FFF1", ParserUtils.integerToHex(-15));
+        assertEquals("FFF0", ParserUtils.integerToHex(-16));
+    }
 
+    @Test
+    /**
+     * Test parsing integers
+     */
+    public void parseIntegersTest() throws IOException{
+        init("-3 -2 -1 0 1 2 3");
+        parser.parse();
+        List<List<String>> parsedDefinitions = parser.getParsedDefinitions();
+        assertEquals(7, parsedDefinitions.size());
+        assertEquals("[[PUSH #FD, #FF], [PUSH #FE, #FF], [PUSH #FF, #FF], [PUSH #00, #00], [PUSH #01, #00], [PUSH #02, #00], [PUSH #03, #00]]", parsedDefinitions.toString());
     }
 
     @Test
@@ -47,6 +61,7 @@ public class ParserTest {
         parser.parse();
         List<List<String>> parsedDefinitions = parser.getParsedDefinitions();
         assertEquals(1, parsedDefinitions.size());
+        assertEquals("[0=, SWAP, 0=, AND]", parsedDefinitions.get(0).toString());
     }
 
     @Test
@@ -59,5 +74,6 @@ public class ParserTest {
         List<List<String>> parsedDefinitions = parser.getParsedDefinitions();
         assertEquals(1, parsedDefinitions.size());
     }
+    
 
 }

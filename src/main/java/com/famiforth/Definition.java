@@ -1,6 +1,5 @@
 package com.famiforth;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,27 +35,31 @@ public class Definition {
     }
 
 
+    @SuppressWarnings("unchecked")
     public static List<Definition> fromJSONList(List<Object> list){
-        return list.stream().map(Definition::fromObject).collect(Collectors.toList());
+        if(list.isEmpty()){
+            return List.of();
+        }
+
+        return list.stream().map(obj -> (HashMap<String, Object>) obj)
+                            .map(Definition::fromHashMap)
+                            .collect(Collectors.toList());
     }
+
     
     /**
-     * Convert a JSONObject to a Definition
+     * Convert a HashMap of values to a Definition
      * @param obj
      * @return
      */
-    public static Definition fromObject(Object obj){
-        @SuppressWarnings("unchecked")
-        HashMap<String, Object> objMap =  (HashMap<String, Object>) obj;
-
-        System.out.print(objMap.get("assembly"));
-        System.out.print(objMap.get("words"));
+    @SuppressWarnings("unchecked")
+    public static Definition fromHashMap(HashMap<String, Object> map){
 
         Definition definition = new Definition();
-        definition.isPrimitive = Boolean.parseBoolean(objMap.get("isPrimitive").toString());
-        definition.name = (String) objMap.get("name");
-        //definition.words = List.of(objMap.get("words"));
-        //definition.assembly = List.of(objMap.get("assembly"));
+        definition.isPrimitive = Boolean.parseBoolean(map.get("isPrimitive").toString());
+        definition.name = map.get("name").toString();
+        definition.words = fromJSONList((List<Object>) map.get("words"));
+        definition.assembly = List.of(map.get("assembly").toString().split(","));
         return definition;
     }
 

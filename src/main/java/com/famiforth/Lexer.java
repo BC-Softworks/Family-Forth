@@ -61,7 +61,7 @@ public class Lexer {
     }
 
     public boolean hasNext() {
-        return scanner.hasNext();
+        return !currentLine.isEmpty() || scanner.hasNext();
     } 
 
     public boolean hasNextLine() {

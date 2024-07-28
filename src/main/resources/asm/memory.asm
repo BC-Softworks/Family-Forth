@@ -116,7 +116,6 @@
 		rts
 .endproc
 
-; TODO: TEST
 ; ( addr -- d)
 ; Leave on the stack the contents of the four consecutive  bytes
 ; beginning at addr, as for a double number. '2@'

@@ -1,7 +1,6 @@
-package com.famiforth;
+package com.famiforth.exceptions;
 
-public class SyntaxErrorException extends RuntimeException
-{
+public class SyntaxErrorException extends RuntimeException {
     public SyntaxErrorException() {}
 
     public SyntaxErrorException(String message) {

@@ -65,6 +65,15 @@ public class LexerTest {
         assertEquals(minShort, token.value);
     }
 
+    @Test
+    public void floatingPointNumberTest() throws IOException {
+        String pi = Double.valueOf(Math.PI).toString();
+        init(pi);
+        Token token = lexer.next_token();
+        assertEquals(TokenType.FLOAT, token.type);
+        assertEquals(pi, token.value);
+    }
+
 
     @Test
     public void ignoreCommentsTest() throws IOException {

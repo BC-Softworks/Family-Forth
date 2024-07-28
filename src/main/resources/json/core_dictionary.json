@@ -1,267 +1,267 @@
 [
     {
         "name": "DROP",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr DROP"],
         "words": []
     },
     {
         "name": "DUP",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr DUP"],
         "words": []
     },
     {
         "name": "SWAP",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr SWAP"],
         "words": []
     },
     {
         "name": "OVER",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr OVER"],
         "words": []
     },
     {
         "name": "ROT",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ROT"],
         "words": []
     },
     {
         "name": "0=",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ZEROEQU"],
         "words": []
     },
     {
         "name": "0<",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ZEROLESS"],
         "words": []
     },
     {
         "name": "0>",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ZEROGREATER"],
         "words": []
     },
     {
         "name": "AND",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ANDD"],
         "words": []
     },
     {
         "name": "OR",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr OR"],
         "words": []
     },
     {
         "name": "XOR",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr XOR"],
         "words": []
     },
     {
         "name": "2*",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr TWOSTAR"],
         "words": []
     },
     {
         "name": "2/",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr TWOSLASH"],
         "words": []
     },
     {
         "name": "LSHIFT",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr LSHIFT"],
         "words": []
     },
     {
         "name": "RSHIFT",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr RSHIFT"],
         "words": []
     },
     {
         "name": "<",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr LESS"],
         "words": []
     },
     {
         "name": ">",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr GREATER"],
         "words": []
     },
     {
         "name": "=",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr EQUAL"],
         "words": []
     },
     {
         "name": "NIP",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr NIP"],
         "words": []
     },
     {
         "name": "TUCK",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr TUCK"],
         "words": []
     },
     {
-        "name": "TRUE",
-        "isPrimitive": "true",
+        "name": true,
+        "isPrimitive": true,
         "assembly": ["jsr TRUE"],
         "words": []
     },
     {
         "name": "FALSE",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr FALSE"],
         "words": []
     },
     {
         "name": "PICK",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr PICK"],
         "words": []
     },
     {
         "name": "U>",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr UGREATER"],
         "words": []
     },
     {
         "name": "U<",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ULESS"],
         "words": []
     },
 
     {
         "name": "ADD",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ADDD"],
         "words": []
     },
     {
         "name": "SUB",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr SUBB"],
         "words": []
     },
     {
         "name": "1+",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ONEADD"],
         "words": []
     },
     {
         "name": "1-",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ONESUB"],
         "words": []
     },
     {
         "name": "ABS",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ABS"],
         "words": []
     },
     {
         "name": "*",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr MULT"],
         "words": []
     },
     {
         "name": "/",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr DIVI"],
         "words": []
     },
     {
         "name": "MOD/",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr DIV"],
         "words": []
     },
     {
         "name": "MIN",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr MIN"],
         "words": []
     },
     {
         "name": "MAX",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr MAX"],
         "words": []
     },
     {
         "name": "NEGATE",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr NEGATE"],
         "words": []
     },
     
     {
         "name": "@",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr SYM_AT"],
         "words": []
     },
     {
         "name": "C@",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr C_SYM_AT"],
         "words": []
     },
     {
         "name": "2@",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr TWO_SYM_AT"],
         "words": []
     },
     {
         "name": "ALIGNED",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr ALIGNED"],
         "words": []
     },
     {
         "name": "2!",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr TWO_STORE"],
         "words": []
     },
     {
         "name": "2@",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr TWO_FETCH"],
         "words": []
     },
     {
         "name": "R>",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr R_FORM"],
         "words": []
     },
     {
         "name": "R@",
-        "isPrimitive": "true",
+        "isPrimitive": true,
         "assembly": ["jsr RFETCH"],
         "words": []
     }

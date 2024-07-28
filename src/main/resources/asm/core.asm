@@ -306,9 +306,6 @@ r_zero: lda #0
 		rts
 .endproc
 
-; TODO: Finish implmenting LESS and GREATER
-;       Account for sign
-
 
 .macro CMP16
 		lda $00,X

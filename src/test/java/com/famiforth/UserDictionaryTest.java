@@ -17,6 +17,15 @@ public class UserDictionaryTest {
         dictionary = UserDictionary.initalize(testFileName);
         Definition def = UserDictionary.getDefinition("DROP");
         assertEquals("DROP", def.getName());
+        assertEquals(true, def.isPrimitive());
+        assertEquals(0, def.getWords().size());
+        assertEquals("[jsr DROP]", def.getAssembly().get(0));
+
+        def = UserDictionary.getDefinition("DUP");
+        assertEquals("DUP", def.getName());
+        assertEquals(true, def.isPrimitive());
+        assertEquals(0, def.getWords().size());
+        assertEquals("[jsr DUP]", def.getAssembly().get(0));
     }
     
 }
