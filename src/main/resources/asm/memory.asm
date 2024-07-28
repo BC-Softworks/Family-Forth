@@ -298,6 +298,29 @@ no_add: rts
 ; After MOVE completes, the u consecutive address units 
 ; at addr2 contain exactly what the u consecutive address units at addr1 contained before the move. 
 .proc MOVE
-
+		lda $00,X
+		and $01,X		; Compare low and high bytes
+		beq @end		; Skip if u = 0
+@loop:	ldy $04,X		; Load addr1 into Y
+		lda ($00),Y
+		ldy $02,X		; Load addr2 into Y
+		sta ($00),Y
+		jsr ONESUB		; Subtract one from u
+		inx				; Add one to addr1 and addr2
+		inx
+		jsr ONEADD		
+		inx
+		inx
+		jsr ONEADD		; Add one to addr1 and addr2
+		txa				; Reset stack pointer
+		sec
+		sbc #4
+		tax
+		lda $01,X		; Check if u = 0
+		bne @loop
+		lda $00,X
+		bne @loop
+@end:	jsr TWODROP		; Drop addr1, addr2, and u
+		jmp DROP
 .endproc
 
