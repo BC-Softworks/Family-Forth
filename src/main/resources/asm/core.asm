@@ -4,10 +4,10 @@
 
 ; Defines the following words
 ; DROP 2DROP DUP SWAP OVER 2DUP ?DUP ROT 0= 0< 0>
-; AND OR XOR 2* 2/ LSHIFT RSHIFT < > = DEPTH
+; AND OR XOR 2* 2/ LSHIFT RSHIFT < > = DEPTH BASE
 
 ; Defines the following words core extension words
-; NIP TUCK TRUE FALSE PICK U> U< <>
+; NIP TUCK TRUE FALSE PICK U> U< <> 0<>
 
 ;; Kernel "register" locations
 lowByteW   = $00
@@ -15,7 +15,10 @@ hiByteW    = $01
 lowByteW2  = $02
 hiByteW2   = $03
 lowByteDSP = $04
-hiByteDSP = $05
+hiByteDSP  = $05
+lowByteCFP = $06
+hiByteCFP  = $07
+radix	   = $08
 
 ;Boolean constant
 false = 0
@@ -28,7 +31,7 @@ true  = 255
 		dex
 .endmacro
 
-; Used to load constants onto the stack
+
 ; Used to load constants onto the stack
 .macro PUSH arg1
 		.if (.blank(arg))
@@ -151,8 +154,7 @@ true  = 255
 		inx
 		jsr SWAP     ; Doesn't affect x3
 		PUT
-		jsr SWAP
-		rts
+		jmp SWAP
 .endproc
 
 ;; Logical operations
@@ -160,25 +162,22 @@ true  = 255
 ; ( x -- flag )
 ; flag is true if and only if x is equal to zero.
 ; Tokenized 0=
-.proc ZEROEQU
+.proc ZEROEQUALS
 		lda false
 		cmp $00,X
-		bne @not_zero
+		bne @not_z
 		cmp $01,X
 		bne @not_z
 		lda true   ;true = #255
-		sta $00,X
-		sta $01,X
-		rts
 @not_z: sta $00,X
 		sta $01,X
 		rts
 .endproc
 
 ; Synonym of 0=
-.macro NOT
-		ZEROEQU
-.endmacro
+.proc NOT
+		jmp ZEROEQUALS
+.endproc
 
 ; ( n -- flag )
 ; flag is true if and only if n is less then zero.
@@ -312,9 +311,9 @@ r_zero: lda #0
 		cmp $02,X
 		lda $01,X
 		sbc $03,X
-		bvc skip ; N eor V
+		bvc skip 	; N eor V
 		eor #$80
-skip:
+skip:	nop			;
 .endmacro
 
 ; ( n1 n2 -- flag )
@@ -322,13 +321,11 @@ skip:
 ; Tokenized <
 .proc LESS
 		CMP16
-		bpl branch ; If N not set 
+		bpl @pos 	; If N not set 
 		lda true
-		sta $00,X
-		sta $01,X
-		rts
-branch: lda false  ; A bit was set to 1
-		sta $00,X
+		jmp @store
+@pos: 	lda false  	; A bit was set to 1
+@store:	sta $00,X
 		sta $01,X
 		rts
 .endproc
@@ -338,13 +335,11 @@ branch: lda false  ; A bit was set to 1
 ; Tokenized >
 .proc GREATER
 		CMP16
-		bmi branch ; N set
+		bmi @neg 	; N set
 		lda true
-		sta $00,X
-		sta $01,X
-		rts
-branch: lda false  ; A bit was set to 1
-		sta $00,X
+		jmp @store
+@neg: 	lda false  	; A bit was set to 1
+@store	sta $00,X
 		sta $01,X
 		rts
 .endproc
@@ -386,6 +381,15 @@ branch: lda false  ; A bit was set to 1
 		rts
 .endproc
 
+; ( -- a-addr )
+; a-addr is the address of a cell containing the current number-conversion radix {{2...36}}. 
+.proc BASE
+	lda radix
+	PUSHCELL A, #0
+	rts
+.endproc
+
+
 ;; Core Word Extensions
 
 ; ( x1 x2 -- x2 )
@@ -395,8 +399,7 @@ branch: lda false  ; A bit was set to 1
 		sta $02,X    ; Overwrite lowByte of second cell
 		lda $01,X    ; Load the highByte from the TOS
 		sta $03,X    ; Overwrite highByte of second cell
-		jsr DROP
-		rts
+		jmp DROP
 .endproc
 
 
@@ -404,8 +407,7 @@ branch: lda false  ; A bit was set to 1
 ; Copy the first (top) stack item below the second stack item. 
 .proc TUCK
 		jsr SWAP
-		jsr OVER
-		rts
+		jmp OVER
 .endproc
 
 ; ( n -- flag )
@@ -425,10 +427,7 @@ branch: lda false  ; A bit was set to 1
 ; ( -- true )
 ; Return a true flag, a single-cell value with all bits set. 
 .proc TRUE
-		PUT
-		lda true
-		sta $00,X
-		sta $01,X
+		PUSHCELL true, true
 		rts
 .endproc
 
@@ -436,10 +435,7 @@ branch: lda false  ; A bit was set to 1
 ; Return a false flag, a single-cell value with no bits set.
 ; Same as pushing 0 onto the stack
 .proc FALSE
-		PUT
-		lda false
-		sta $00,X
-		sta $01,X
+		PUSH false
 		rts
 .endproc
 
@@ -529,4 +525,21 @@ _true:	lda true
 		jmp TRUE	; x1 == x2
 @false:	jsr TWODROP
 		jmp FALSE
+.endproc
+
+; ( x -- flag )
+; flag is true if and only if x is not equal to zero. 
+; Tokenized 0<>
+.proc ZERONOTEQUALS
+		lda false
+		cmp $00,X
+		bne @not_z
+		cmp $01,X
+		bne @not_z
+		lda false
+		jmp @store
+@not_z:	lda true
+@store: sta $00,X
+		sta $01,X
+		rts
 .endproc
