@@ -3,8 +3,10 @@ package com.famiforth;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,7 +22,7 @@ public class Parser {
 
     final String fileName;
     FileOutputStream fileOut;
-    final static String DEFAULT_FILE_OUT = "build/out.asm";
+    final static List<String> defaultFilesToInclude = Arrays.asList("core.asm");
 
 
     public Parser(Lexer scan, String dictionaryFile, String fileName) {
@@ -30,16 +32,13 @@ public class Parser {
         assemblyListOut = new LinkedList<>();
     }
 
-    public Parser(Lexer scan, String dictionaryFile) {
-        this(scan, dictionaryFile, DEFAULT_FILE_OUT);
-    }
-
     public List<List<String>> getAssemblyListOut() {
         return assemblyListOut;
     }
 
     public void parse() throws IOException {
         fileOut = new FileOutputStream(new File(fileName));
+        writeFileHeader(fileOut, defaultFilesToInclude);
         while (lexer.hasNext()) {
             final List<String> assemblyList = new LinkedList<>();
 
@@ -78,6 +77,11 @@ public class Parser {
             assemblyList.clear();
         }
         fileOut.close();
+    }
+
+    private static void writeFileHeader(FileOutputStream fileOut, List<String> filesToInclude) throws IOException {
+        String includeBlock = filesToInclude.stream().map(str -> ".include " + str).collect(Collectors.joining(System.lineSeparator()));
+        fileOut.write((includeBlock + System.lineSeparator()).getBytes());
     }
 
     /**

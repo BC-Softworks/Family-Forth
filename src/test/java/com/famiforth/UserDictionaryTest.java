@@ -3,6 +3,7 @@ package com.famiforth;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -27,5 +28,12 @@ public class UserDictionaryTest {
         assertEquals(1, def.getWords().size());
         assertEquals("jsr DUP", def.getAssembly().get(0));
     }
-    
+
+    @Test
+    public void specialCharacterTest() throws IOException {
+        dictionary = UserDictionary.initalize(testFileName);
+        UserDictionary.addWord("?DROP", Definition.createPrimitiveDefinition("?DROP", List.of("jsr ZEROEQUALS", "jsr DROP")));
+        Definition def = UserDictionary.getDefinition("?DROP");
+        assertEquals("qDROP", def.getName());
+    }
 }

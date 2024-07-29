@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 
 public class UserDictionary {
@@ -81,16 +83,15 @@ public class UserDictionary {
      * @param def
      */
     public static void addWord(String word, Definition def) {
-        if (word == null) {
-            throw new IllegalArgumentException("Words can not be null.");
-        }
+        DefinitionUtils.validateName(word);
 
-        Definition existingDefinition = dictionary.get(word.toUpperCase());
+        String name = DefinitionUtils.convertToName(word);
+        Definition existingDefinition = dictionary.get(name);
         if (existingDefinition != null && existingDefinition.isPrimitive()) {
             throw new IllegalArgumentException(String.format("Error: Can not overrided primitives", word));
         }
 
-        dictionary.put(word.toUpperCase(), def);
+        dictionary.put(name, def);
     }
 
     static void addWord(Definition def) {
@@ -114,6 +115,6 @@ public class UserDictionary {
             return Definition.createPrimitiveDefinition("", List.of(String.format("PUSHCELL #%s, #%s", arr[0], arr[1])));
         }
 
-        return dictionary.get(word.toUpperCase());
+        return dictionary.get(DefinitionUtils.convertToName(word));
     }
 }

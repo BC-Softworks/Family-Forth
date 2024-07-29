@@ -52,7 +52,10 @@ public class Lexer {
 
         // If currentLine is populated
         // set str_token to the head
-        str_token = currentLine.poll().toUpperCase();
+        str_token = currentLine.poll();
+        // Remove all non ASCII Characters
+        str_token = str_token.replaceAll("[^\\x00-\\x7F]", "");
+        str_token = str_token.toUpperCase();
         tokenNumber += 1;
 	}
 

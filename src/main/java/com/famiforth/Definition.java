@@ -1,9 +1,12 @@
 package com.famiforth;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class Definition {
 
@@ -18,7 +21,7 @@ public class Definition {
     public static Definition createPrimitiveDefinition(String name, List<String> assembly) {
         Definition definition = new Definition();
         definition.isPrimitive = true;
-        definition.name = name;
+        definition.name = DefinitionUtils.convertToName(name);
         definition.words = List.of();
         definition.assembly = assembly;
 
@@ -28,7 +31,7 @@ public class Definition {
     public static Definition createUserWordDefinition(String name, List<String> words) {
         Definition definition = new Definition();
         definition.isPrimitive = false;
-        definition.name = name;
+        definition.name = DefinitionUtils.convertToName(name);
         definition.words = words;
         definition.assembly = List.of();
 
@@ -56,7 +59,7 @@ public class Definition {
 
         Definition definition = new Definition();
         definition.isPrimitive = Boolean.parseBoolean(map.get("isPrimitive").toString());
-        definition.name = map.get("name").toString();
+        definition.name = DefinitionUtils.convertToName(map.get("name").toString());
         definition.words = List.of(map.get("words").toString().split(","))
                 .stream()
                 .map(s -> s.substring(1, s.length() - 1))
