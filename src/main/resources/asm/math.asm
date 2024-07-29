@@ -74,30 +74,23 @@
 .endproc
 
 
-; Modified Mul8 optimized by Tepples
-; Runs in 120 cycles or less
+; 8x8 signed multiplication
 .proc MUL8
 		lda $00,X
 		ldy $02,X
-		lsr
+		lsr a  			; prime the carry bit for the loop
 		sta lowByteW
-		tya
-		beq @ret
-		dey
 		sty hiByteW
 		lda #0
-		.repeat 8, i
-			.if i > 0
-				ror lowByteW
-			.endif
-			bcc @rot
-			adc hiByteW
-@rot:	ror
-		.endrepeat
-		tay
-		lda lowByteW
-		ror
-@ret: 	rts
+		ldy #8
+loop:   bcc noadd 		; At the start of the loop, one bit of prodlo has already been
+		clc				; shifted out into the carry.
+		adc hiByteW
+noadd:  ror a
+		ror lowByteW  	; pull another bit out for the next iteration
+		dey         	; inc/dec don't modify carry; only shifts and adds do
+		bne loop
+		rts
 .endproc
 
 ; ( n1 n2 -- d )
@@ -117,28 +110,26 @@
 
 		n1 = lowByteW
 		n2 = lowByteW2
-		p = $00,X		; Store directly onto the stack
-						; Overwrites both factors
 mult16: lda #$00
-		sta p+2	 		; clear upper bits of p
-		sta p+3 
+		sta $02,X	 	; clear upper bits of product
+		sta $03,X 
 		ldy #$10		; set binary count to 16 
 		
 shift:	lsr n1+1 		; divide n1 by 2 
 		ror n1
 		bcc rot_r 
-		lda p+2	 		; get upper half of p and add n2
+		lda $02,X	 	; get upper half of pproduct and add n2
 		clc
 		adc n2
-		sta p+2
-		lda p+3 
+		sta $02,X
+		lda $03,X
 		adc n2+1
 
-rot_r:	ror			 	; rotate partial p 
-		sta p+3 
-		ror p+2
-		ror p+1 
-		ror p 
+rot_r:	ror			 	; rotate partial product
+		sta $03,X
+		ror $02,X
+		ror $01,X 
+		ror $00,X
 		dey
 		bne shift
 		rts
@@ -156,11 +147,11 @@ rot_r:	ror			 	; rotate partial p
 .endproc
 
 
-//   R(0) := N(i)          -- Set the least-significant bit of R equal to bit i of the numerator
-//   if R ≥ D then
-//     R := R − D
-//     Q(i) := 1
-//   end
+;   R(0) := N(i)          -- Set the least-significant bit of R equal to bit i of the numerator
+;   if R ≥ D then
+;     R := R − D
+;     Q(i) := 1
+;   end
 
 ; ( n1 n2 -- n4 n3 )
 ; n3rn4 = n2 / n1

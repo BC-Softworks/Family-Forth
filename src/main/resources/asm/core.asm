@@ -93,18 +93,18 @@ true  = 255
 ; Swaps the position of x1 and x2
 .proc SWAP
 		lda $00,X    ; Load the lowByte from the TOS
-		sta lowbyte_W
+		sta lowByteW
 		lda $01,X    ; Load the hiByte from the TOS
-		sta hibyte_W
+		sta hiByteW
 
 		lda $02,X    ; Load the lowByte
 		sta $00,X
 		lda $03,X    ; Load the hiByte
 		sta $01,X
 
-		lda lowbyte_W   ; Load the lowByte from W
+		lda lowByteW   ; Load the lowByte from W
 		sta $02,X
-		lda hibyte_W  ; Load the hiByte from W
+		lda hiByteW  ; Load the hiByte from W
 		sta $03,X
 
 		rts
@@ -340,7 +340,7 @@ skip:	nop			;
 		lda true
 		jmp @store
 @neg: 	lda false  	; A bit was set to 1
-@store	sta $00,X
+@store:	sta $00,X
 		sta $01,X
 		rts
 .endproc
@@ -369,14 +369,14 @@ branch: lda false  ; A bit was set to 1
 ; +n is the number of single-cell values contained in 
 ; the data stack before +n was placed on the stack
 .proc DEPTH
-		stx lowByte	; Store addr before dex
-		dex			; Add an empty highbyte
+		stx lowByteW	; Store addr before dex
+		dex				; Add an empty highbyte
 		lda #0		
 		sta $00,X
 		dex
-		sec			; Clear sub flag
-		lda #FF
-		sbc lowByte
+		sec				; Clear sub flag
+		lda #255
+		sbc lowByteW
 		sta $00,X
 		jsr RSHIFT
 		rts
@@ -386,7 +386,9 @@ branch: lda false  ; A bit was set to 1
 ; a-addr is the address of a cell containing the current number-conversion radix {{2...36}}. 
 .proc BASE
 	lda radix
-	PUSHCELL A, #0
+	sta $00,x
+	lda #0
+	sta $01,X
 	rts
 .endproc
 
@@ -396,17 +398,17 @@ branch: lda false  ; A bit was set to 1
 .proc UGREATER
 		lda $01,X
 		cmp $03,X
-		bpl _true	; High byte greater
-		bmi _false	; High byte lesser
+		bpl @true	; High byte greater
+		bmi @false	; High byte lesser
 		
 		lda $00,X	; Lowbyte check
 		cmp $02,X
-		bpl _true	; Low byte greater
+		bpl @true	; Low byte greater
 		
-_false:	lda false
-		jmp @drop
+@false:	lda false
+		beq @drop
 		
-_true:	lda true		
+@true:	lda true		
 		
 @drop:  inx
 		inx		
@@ -421,17 +423,17 @@ _true:	lda true
 .proc ULESS
 		lda $01,X
 		cmp $03,X
-		bmi _true	; High byte lesser
-		bpl _false	; High byte greater
+		bmi @true	; High byte lesser
+		bpl @false	; High byte greater
 		
 		lda $00,X	; Lowbyte check
 		cmp $02,X
-		bmi _true	; Low byte lesser
+		bmi @true	; Low byte lesser
 		
-_false:	lda false
-		jmp @drop
+@false:	lda false
+		beq @drop
 		
-_true:	lda true		
+@true:	lda true		
 		
 @drop:  inx
 		inx		
