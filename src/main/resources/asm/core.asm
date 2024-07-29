@@ -5,9 +5,10 @@
 ; Defines the following words
 ; DROP 2DROP DUP SWAP OVER 2DUP ?DUP ROT 0= 0< 0>
 ; AND OR XOR 2* 2/ LSHIFT RSHIFT < > = DEPTH BASE
-
+; U> U<
+; 
 ; Defines the following words core extension words
-; NIP TUCK TRUE FALSE PICK U> U< <> 0<>
+; NIP TUCK TRUE FALSE PICK  <> 0<>
 
 ;; Kernel "register" locations
 lowByteW   = $00
@@ -389,6 +390,56 @@ branch: lda false  ; A bit was set to 1
 	rts
 .endproc
 
+; ( u1 u2 -- flag )
+; flag is true if and only if u1 is greater than u2. 
+; U>
+.proc UGREATER
+		lda $01,X
+		cmp $03,X
+		bpl _true	; High byte greater
+		bmi _false	; High byte lesser
+		
+		lda $00,X	; Lowbyte check
+		cmp $02,X
+		bpl _true	; Low byte greater
+		
+_false:	lda false
+		jmp @drop
+		
+_true:	lda true		
+		
+@drop:  inx
+		inx		
+		sta $00,X	; Store true or false
+		sta $01,X	; to the TOS
+		rts
+.endproc
+
+; ( u1 u2 -- flag )
+; flag is true if and only if u1 is less than u2. 
+; U<
+.proc ULESS
+		lda $01,X
+		cmp $03,X
+		bmi _true	; High byte lesser
+		bpl _false	; High byte greater
+		
+		lda $00,X	; Lowbyte check
+		cmp $02,X
+		bmi _true	; Low byte lesser
+		
+_false:	lda false
+		jmp @drop
+		
+_true:	lda true		
+		
+@drop:  inx
+		inx		
+		sta $00,X	; Store true or false
+		sta $01,X	; to the TOS
+		rts
+.endproc
+
 
 ;; Core Word Extensions
 
@@ -459,56 +510,6 @@ branch: lda false  ; A bit was set to 1
 		lda ($00),Y ; Load xu's high byte indirectly
 		sta $01,X
 		rts        	; Don't need to drop anything
-.endproc
-
-; ( u1 u2 -- flag )
-; flag is true if and only if u1 is greater than u2. 
-; U>
-.proc UGREATER
-		lda $01,X
-		cmp $03,X
-		bpl _true	; High byte greater
-		bmi _false	; High byte lesser
-		
-		lda $00,X	; Lowbyte check
-		cmp $02,X
-		bpl _true	; Low byte greater
-		
-_false:	lda false
-		jmp @drop
-		
-_true:	lda true		
-		
-@drop:  inx
-		inx		
-		sta $00,X	; Store true or false
-		sta $01,X	; to the TOS
-		rts
-.endproc
-
-; ( u1 u2 -- flag )
-; flag is true if and only if u1 is less than u2. 
-; U<
-.proc ULESS
-		lda $01,X
-		cmp $03,X
-		bmi _true	; High byte lesser
-		bpl _false	; High byte greater
-		
-		lda $00,X	; Lowbyte check
-		cmp $02,X
-		bmi _true	; Low byte lesser
-		
-_false:	lda false
-		jmp @drop
-		
-_true:	lda true		
-		
-@drop:  inx
-		inx		
-		sta $00,X	; Store true or false
-		sta $01,X	; to the TOS
-		rts
 .endproc
 
 ; ( x1 x2 -- flag )

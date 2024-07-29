@@ -135,7 +135,12 @@ public class Lexer {
         UNTIL("UNTIL"),
         DO("DO"),
         LOOP("LOOP"),
-        PLUS_LOOP("+LOOP");
+        PLUS_LOOP("+LOOP"),
+        CASE("CASE"),
+        OF("OF"),
+        ENDOF("ENDOF"),
+        ENDCASE("ENDCASE"),
+        AGAIN("AGAIN");
 
         public final String value;
 

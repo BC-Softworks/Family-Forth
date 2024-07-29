@@ -5,6 +5,7 @@
 ; Defines the following words
 ; ADD SUB 1+ 1- ABS * / */ MOD/ 
 ; MIN MAX NEGATE INVERT CHAR+
+; UM* UM/MOD
 
 .include "core.asm"
 
@@ -104,41 +105,42 @@
 ; Tokenized M*
 ; Modified version that uses the Y register from 6502.org
 .proc M_STAR
-		lda $00,X			; Load the first cell into W
-		sta $00,X
+		lda $00,X		; Load the first cell into W
+		sta lowByteW
 		lda $01,X
-		sta $01,X
+		sta hiByteW
 
-		lda $02,X			; Load the first cell into W2
-		sta $02,X
+		lda $02,X		; Load the first cell into W2
+		sta lowByteW2
 		lda $03,X
-		sta $03,X
+		sta hiByteW2
 
-		multiplier = lowByteW
-		multiplicand = lowByteW2
-		product = $00,X		; Store directly onto the stack
-							; Overwrites both factors
+		n1 = lowByteW
+		n2 = lowByteW2
+		p = $00,X		; Store directly onto the stack
+						; Overwrites both factors
 mult16: lda #$00
-		sta product+2	 	; clear upper bits of product
-		sta product+3 
-		ldy #$10		   	; set binary count to 16 
-shift_r:
-		lsr multiplier+1 	; divide multiplier by 2 
-		ror multiplier
+		sta p+2	 		; clear upper bits of p
+		sta p+3 
+		ldy #$10		; set binary count to 16 
+		
+shift:	lsr n1+1 		; divide n1 by 2 
+		ror n1
 		bcc rot_r 
-		lda product+2	 	; get upper half of product and add multiplicand
+		lda p+2	 		; get upper half of p and add n2
 		clc
-		adc multiplicand
-		sta product+2
-		lda product+3 
-		adc multiplicand+1
-rot_r:	ror			 		; rotate partial product 
-		sta product+3 
-		ror product+2
-		ror product+1 
-		ror product 
+		adc n2
+		sta p+2
+		lda p+3 
+		adc n2+1
+
+rot_r:	ror			 	; rotate partial p 
+		sta p+3 
+		ror p+2
+		ror p+1 
+		ror p 
 		dey
-		bne shift_r
+		bne shift
 		rts
 .endproc
 
@@ -146,12 +148,11 @@ rot_r:	ror			 		; rotate partial product
 ; n3 = n2 * n1
 .proc MULT
 		lda $01,X
-		ora $03,X ; If the highbyte's or is zero 
-		beq @mul8 ; then use 8x8 multiplication
+		ora $03,X 	; If the highbyte's or is zero 
+		beq MUL8	; then use 8x8 multiplication
 		jsr M_STAR
 		jsr SWAP
 		jmp DROP
-@mul8:  jmp MUL8  ; Spliting the mul functions 
 .endproc
 
 
@@ -275,8 +276,7 @@ rot_r:	ror			 		; rotate partial product
 ; Negate n1, giving its arithmetic inverse n2. 
 .proc NEGATE
 		jsr INVERT
-		jsr ONEADD
-		rts
+		jmp ONEADD
 .endproc
 
 ; ( c-addr1 -- c-addr2 )
@@ -286,5 +286,19 @@ rot_r:	ror			 		; rotate partial product
 		jmp ONEADD
 .endproc
 
+; ( u1 u2 -- ud )
+; Multiply u1 by u2, giving the unsigned double-cell p ud.
+; All values and arithmetic are unsigned. 
+.proc UNSIGNEDMULT
+		
+.endproc
 
+; ( ud u1 -- u2 u3 )
+; Divide ud by u1, giving the quotient u3 and the remainder u2. 
+; All values and arithmetic are unsigned. 
+; An ambiguous condition exists if u1 is zero or if the quotient lies outside the range of a single-cell unsigned integer.
+; Tokenized UM/MOD
+.proc UNSIGNEDDIVMOD
+
+.endproc
 

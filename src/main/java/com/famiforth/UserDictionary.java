@@ -11,7 +11,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 
 public class UserDictionary {
@@ -86,8 +85,9 @@ public class UserDictionary {
             throw new IllegalArgumentException("Words can not be null.");
         }
 
-        if (dictionary.get(word.toUpperCase()) != null) {
-            throw new IllegalArgumentException(String.format("Error: %s is already defined", word));
+        Definition existingDefinition = dictionary.get(word.toUpperCase());
+        if (existingDefinition != null && existingDefinition.isPrimitive()) {
+            throw new IllegalArgumentException(String.format("Error: Can not overrided primitives", word));
         }
 
         dictionary.put(word.toUpperCase(), def);
@@ -107,10 +107,13 @@ public class UserDictionary {
         if(initalized == false){
             throw new IllegalStateException("User Dictionary has not been initalized");
         }
-        if (StringUtils.isBlank(word)) {
-            throw new IllegalArgumentException("No null word exists.");
+
+        // Create custom ananymous definitions for integers
+        if(Lexer.isInteger(word, 10)){
+            String[] arr = ParserUtils.littleEndian(word);
+            return Definition.createPrimitiveDefinition("", List.of(String.format("PUSHCELL #%s, #%s", arr[0], arr[1])));
         }
+
         return dictionary.get(word.toUpperCase());
     }
-
 }

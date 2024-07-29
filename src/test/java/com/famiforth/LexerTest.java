@@ -88,4 +88,12 @@ public class LexerTest {
         assertEquals(TokenType.END_COMMENT, token.type);
         assertEquals(")", token.value);
     }
+
+    @Test
+    public void skipLineTest() throws IOException {
+        init("\\");
+        Token token = lexer.next_token();
+        assertEquals(TokenType.SKIP_LINE, token.type);
+        assertEquals("\\", token.value);
+    }
 }

@@ -1,10 +1,10 @@
 package com.famiforth;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,30 +16,32 @@ import com.famiforth.exceptions.SyntaxErrorException;
 public class Parser {
 
     final private Lexer lexer;
-    final private List<List<String>> parsedDefinitions;
+    final private List<List<String>> assemblyListOut;
 
-    final File fileOut;
-    final static String DEFAULT_FILE_OUT = "out.asm";
+    final String fileName;
+    FileOutputStream fileOut;
+    final static String DEFAULT_FILE_OUT = "build/out.asm";
 
 
     public Parser(Lexer scan, String dictionaryFile, String fileName) {
         UserDictionary.initalize(dictionaryFile);
         this.lexer = scan;
-        fileOut = new File(fileName);
-        parsedDefinitions = new LinkedList<>();
+        this.fileName = fileName;
+        assemblyListOut = new LinkedList<>();
     }
 
     public Parser(Lexer scan, String dictionaryFile) {
         this(scan, dictionaryFile, DEFAULT_FILE_OUT);
     }
 
-    public List<List<String>> getParsedDefinitions() {
-        return parsedDefinitions;
+    public List<List<String>> getAssemblyListOut() {
+        return assemblyListOut;
     }
 
     public void parse() throws IOException {
+        fileOut = new FileOutputStream(new File(fileName));
         while (lexer.hasNext()) {
-            List<String> assemblyList = new LinkedList<>();
+            final List<String> assemblyList = new LinkedList<>();
 
             Token token = lexer.next_token();
             switch (token.type) {
@@ -54,19 +56,16 @@ public class Parser {
                 case KEYWORD:
                     Keyword keyword = Keyword.getByValue(token.value);
                     if(keyword.equals(Keyword.COLON)){
-                        assemblyList = parseColonStatement();
+                        parseColonStatement();
                     } else {
-                        assemblyList = parseWord(token);
+                        assemblyList.addAll(parseToken(token));
                     }
                     break;
                 case FLOAT:
                     throw new SyntaxErrorException("Floating point numbers are currently unsupported.");
                 case INTEGER:
-                    String[] arr = ParserUtils.littleEndian(token.value);
-                    assemblyList = List.of(String.format("PUSH #%s, #%s", arr[0], arr[1]));
-                    break;
                 case WORD:
-                    assemblyList = parseWord(token);
+                    assemblyList.addAll(parseToken(token));
                     break;
                 default:
                     break;
@@ -74,30 +73,11 @@ public class Parser {
 
             // Used for debugging
             // Disable after tests are implemented
-            parsedDefinitions.add(assemblyList);
-            System.out.println(StringUtils.join(assemblyList, System.lineSeparator()));
+            assemblyListOut.add(List.copyOf(assemblyList));
+            fileOut.write((StringUtils.join(assemblyList, System.lineSeparator()) + System.lineSeparator()).getBytes());
+            assemblyList.clear();
         }
-    }
-
-    /**
-     * Converts the provided Definition to a List of Strings
-     * @param definition
-     * @return
-     */
-    public List<String> expandDefinition(Definition definition) {
-        if(definition == null){
-            throw new SyntaxErrorException("Unable to access an undefined word.");
-        }
-
-        if (definition.isPrimitive()) {
-            return definition.getAssembly();
-        }
-
-        List<String> list = new LinkedList<>();
-        for (Definition def : definition.getWords()) {
-            list.addAll(expandDefinition(def));
-        }
-        return list;
+        fileOut.close();
     }
 
     /**
@@ -106,9 +86,8 @@ public class Parser {
      * @param token
      * @return 
      */
-    private List<String> parseWord(Token token) {
-        Definition word = UserDictionary.getDefinition(token.value);
-        return expandDefinition(word);
+    private List<String> parseToken(Token token) {
+        return UserDictionary.getDefinition(token.value).expandDefinition();
     }
 
     /**
@@ -123,24 +102,20 @@ public class Parser {
      * @return
      * @throws IOException
      */
-    private List<String> parseColonStatement() throws IOException {
+    private void parseColonStatement() throws IOException {
         String name = lexer.next_token().value;
         if (Keyword.getByValue(name) == Keyword.SEMICOLON) {
             throw new SyntaxErrorException("Empty definition");
         }
 
-        List<String> assemblyList = new LinkedList<>();
+        List<String> wordList = new LinkedList<>();
         Token token = lexer.next_token();
         while (Keyword.getByValue(token.value) != Keyword.SEMICOLON) {
-            assemblyList.add(token.value);
+            wordList.add(token.value);
             token = lexer.next_token();
         }
 
         // Add the word to the dictionary
-        UserDictionary.addWord(name, Definition.createUserWordDefinition(name, assemblyList.stream()
-                .map(UserDictionary::getDefinition)
-                .collect(Collectors.toList())));
-
-        return assemblyList;
+        UserDictionary.addWord(name, Definition.createUserWordDefinition(name, wordList));
     }
 }
