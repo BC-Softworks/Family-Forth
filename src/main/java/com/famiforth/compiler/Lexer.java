@@ -1,4 +1,4 @@
-package com.famiforth;
+package com.famiforth.compiler;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -104,10 +104,10 @@ public class Lexer {
 
     // Define Token and token types
     public class Token {
-        String value;
-        TokenType type;
-        int lineNumber;
-        int tokenNumber;
+        public String value;
+        public TokenType type;
+        protected int lineNumber;
+        protected int tokenNumber;
 
         public Token(String value, TokenType type, int lineNumber, int tokenNumber) {
             this.value = value;

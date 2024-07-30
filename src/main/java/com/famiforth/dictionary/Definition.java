@@ -1,4 +1,4 @@
-package com.famiforth;
+package com.famiforth.dictionary;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -158,7 +158,7 @@ public class Definition {
      * @param definition
      * @return a subroutine where all user defined words are inlined to the given depth
      */
-    public List<String> flattenDefinition(int depth) {
+    public List<String> flattenDefinition() {
         if (isPrimitive()) {
             return getAssembly();
         }
@@ -166,9 +166,5 @@ public class Definition {
         return getWords().stream().map(UserDictionary::getDefinition)
                             .map(Definition::flattenDefinition)
                             .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
-    }
-
-    public List<String> flattenDefinition() {
-        return flattenDefinition(128);
     }
 }

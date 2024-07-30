@@ -1,10 +1,7 @@
 package com.famiforth;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -15,25 +12,20 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-/** FamilyForth cross compiler
- * @author Edward Conn
-*/
-public class Compiler {
+import com.famiforth.compiler.Compiler;
 
-    final String DEFAULT_FILE_OUT = "build/out.asm";
-    final String DEFAULT_DICTIONARY_LOCATION = "src/main/resources/base_dictionary.json";
 
-    final Lexer scan;
-    final Parser parser;
+public class FamilyForth {
+    static final String DEFAULT_FILE_OUT = "build/out.asm";
+    static final String DEFAULT_DICTIONARY_LOCATION = "src/main/resources/base_dictionary.json";
 
-    String fileIn;
-    String fileOut = DEFAULT_FILE_OUT;
-    String customDictionary = DEFAULT_DICTIONARY_LOCATION;
+    static String fileIn;
+    static String fileOut = DEFAULT_FILE_OUT;
+    static String customDictionary = DEFAULT_DICTIONARY_LOCATION;
 
-    public Compiler(String[] args) {
+    private static void parseArguments(String args[]){
         CommandLineParser cmdLine = new DefaultParser();
         Options options = createOptions();
-        Reader reader = null;
 
         try {
             CommandLine cmd = cmdLine.parse(options, args);
@@ -72,19 +64,12 @@ public class Compiler {
                 System.exit(0);
             }
 
-            // Create a FileReader if the provided file is accessible
-            reader = new FileReader(new File(fileIn));
-
-        } catch (FileNotFoundException | ParseException ex) {
+        } catch (ParseException ex) {
             System.err.println("Error: " + ex.getMessage());
         }
-
-        // Create a Lexer and Parser using the parsed options
-        scan = new Lexer(reader);
-        parser = new Parser(scan, customDictionary, fileOut);
     }
-
-    private Options createOptions() {
+    
+    private static Options createOptions() {
         Option dic = new Option("d", "dictionary", true, "Custom dictionary");
         Option help = new Option("h", "help", false, "print this message");
         Option out = new Option("o", "output", true, "Place the output into <file>");
@@ -93,18 +78,13 @@ public class Compiler {
                             .addOption(out);
     }
 
-    private void parseFile() throws IOException {
-        parser.parse();
-    }
-
     public static void main(String args[]) throws IOException {
-        Compiler comp = new Compiler(args);
+        parseArguments(args);
         try {
-            comp.parseFile();
+            new Compiler(fileIn, fileOut, customDictionary).parseFile();
         } catch (Throwable e) {
             System.err.println("     " + e.getMessage());
             System.exit(1);
         }
     }
-
 }

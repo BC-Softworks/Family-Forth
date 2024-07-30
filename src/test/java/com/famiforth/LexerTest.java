@@ -11,8 +11,9 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.famiforth.Lexer.Token;
-import com.famiforth.Lexer.TokenType;
+import com.famiforth.compiler.Lexer;
+import com.famiforth.compiler.Lexer.Token;
+import com.famiforth.compiler.Lexer.TokenType;
 
 public class LexerTest {
 

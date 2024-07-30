@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.famiforth.dictionary.Definition;
+import com.famiforth.dictionary.UserDictionary;
+
 public class UserDictionaryTest {
     
     final String testFileName = "src/test/resources/test_dictionary.json";

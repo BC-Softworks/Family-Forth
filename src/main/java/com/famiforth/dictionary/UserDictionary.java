@@ -1,4 +1,4 @@
-package com.famiforth;
+package com.famiforth.dictionary;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,12 +100,6 @@ public class UserDictionary {
     public static Definition getDefinition(String word) {
         if(initalized == false){
             throw new IllegalStateException("User Dictionary has not been initalized");
-        }
-
-        // Create custom anonymous definitions for integers
-        if(Lexer.isInteger(word, 10)){
-            String[] arr = ParserUtils.littleEndian(word);
-            return Definition.createPrimitiveDefinition("", List.of(String.format("PUSHCELL #%s, #%s", arr[0], arr[1])));
         }
 
         return dictionary.get(DefinitionUtils.convertToName(word));

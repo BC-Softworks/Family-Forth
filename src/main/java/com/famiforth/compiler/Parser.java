@@ -1,18 +1,14 @@
-package com.famiforth;
+package com.famiforth.compiler;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.famiforth.Lexer.Keyword;
-import com.famiforth.Lexer.Token;
-import com.famiforth.Lexer.TokenType;
+import com.famiforth.compiler.Lexer.Keyword;
+import com.famiforth.compiler.Lexer.Token;
+import com.famiforth.compiler.Lexer.TokenType;
+import com.famiforth.dictionary.Definition;
+import com.famiforth.dictionary.UserDictionary;
 import com.famiforth.exceptions.SyntaxErrorException;
 
 /** FamilyForth Parser
@@ -21,30 +17,20 @@ import com.famiforth.exceptions.SyntaxErrorException;
 public class Parser {
 
     final private Lexer lexer;
-    final private List<List<String>> assemblyListOut;
 
-    final String fileName;
-    FileOutputStream fileOut;
-    final static List<String> defaultFilesToInclude = Arrays.asList("core.asm");
-
-
-    public Parser(Lexer scan, String dictionaryFile, String fileName) {
+    public Parser(Lexer scan, String dictionaryFile) {
         UserDictionary.initalize(dictionaryFile);
         this.lexer = scan;
-        this.fileName = fileName;
-        assemblyListOut = new LinkedList<>();
     }
 
-    public List<List<String>> getAssemblyListOut() {
-        return assemblyListOut;
-    }
+    public boolean hasNext() {
+        return lexer != null && lexer.hasNext();
+    } 
 
-    public void parse() throws IOException {
-        fileOut = new FileOutputStream(new File(fileName));
-        writeFileHeader(fileOut, defaultFilesToInclude);
-        while (lexer.hasNext()) {
-            final List<String> assemblyList = new LinkedList<>();
+    public List<String> parse() throws IOException {
+        List<String> result = null;
 
+        while(result == null && lexer.hasNext()){
             Token token = lexer.next_token();
             switch (token.type) {
                 case SKIP_LINE:
@@ -60,31 +46,21 @@ public class Parser {
                     if(keyword.equals(Keyword.COLON)){
                         parseColonStatement();
                     } else {
-                        assemblyList.addAll(parseToken(token));
+                        result = parseToken(token);
                     }
                     break;
                 case FLOAT:
                     throw new SyntaxErrorException("Floating point numbers are currently unsupported.");
                 case INTEGER:
                 case WORD:
-                    assemblyList.addAll(parseToken(token));
+                    result = parseToken(token);
                     break;
                 default:
                     break;
             }
-
-            // Used for debugging
-            // Disable after tests are implemented
-            assemblyListOut.add(List.copyOf(assemblyList));
-            fileOut.write((StringUtils.join(assemblyList, System.lineSeparator()) + System.lineSeparator()).getBytes());
-            assemblyList.clear();
         }
-        fileOut.close();
-    }
 
-    private static void writeFileHeader(FileOutputStream fileOut, List<String> filesToInclude) throws IOException {
-        String includeBlock = filesToInclude.stream().map(str -> String.format(".include \"%s\"", str)).collect(Collectors.joining(System.lineSeparator()));
-        fileOut.write((includeBlock + System.lineSeparator()).getBytes());
+        return result;
     }
 
     /**
@@ -94,6 +70,12 @@ public class Parser {
      * @return 
      */
     private List<String> parseToken(Token token) {
+        // TOD: Create custom anonymous definitions for integers
+        if(TokenType.INTEGER.equals(token.type)){
+            String[] arr = ParserUtils.littleEndian(token.value);
+            return List.of(String.format("PUSHCELL #%s, #%s", arr[0], arr[1]));
+        } 
+        
         return UserDictionary.getDefinition(token.value).flattenDefinition();
     }
 

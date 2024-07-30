@@ -1,4 +1,4 @@
-package com.famiforth;
+package com.famiforth.dictionary;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package com.famiforth;
+package com.famiforth.compiler;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ public class ParserUtils {
      * @param input
      * @return
      */
-    protected static String integerToHex(int input) {
+    public static String integerToHex(int input) {
         boolean nonNegative = input >= 0;
         // If negative add one
         if(!nonNegative){
