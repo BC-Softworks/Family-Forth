@@ -23,7 +23,9 @@ public class Compiler {
     final Lexer scan;
     final Parser parser;
 
-    String fileOut;
+    String fileIn;
+    String fileOut = DEFAULT_FILE_OUT;
+    String customDictionary = DEFAULT_DICTIONARY_LOCATION;
 
   public Compiler(String[] args) {
     CommandLineParser cmdLine = new DefaultParser();
@@ -39,10 +41,20 @@ public class Compiler {
             System.exit(0);
         }
 
+        if(cmd.hasOption("d")){
+            customDictionary = cmd.getOptionValue("d");
+            if(!new File(customDictionary).canWrite()){
+                System.err.println("Error: Unable to open provided dictionary.");
+                System.exit(0);
+            }
+        }
+
         if(cmd.hasOption("o")){
             fileOut = cmd.getOptionValue("o");
-        } else {
-            fileOut = DEFAULT_FILE_OUT;
+            if(!new File(fileOut).canWrite()){
+                System.err.println("Error: Unable to write to output file.");
+                System.exit(0);
+            }
         }
 
         List<String> unparsedArgs = cmd.getArgList();
@@ -51,27 +63,31 @@ public class Compiler {
             System.exit(0);
         }
 
-        File fileIn = new File(unparsedArgs.get(0));
-        if(!fileIn.canRead()){
+        fileIn = unparsedArgs.get(0);
+        if(!new File(fileIn).canRead()){
             System.err.println("Error: Unable to read source file.");
             System.exit(0);
         }
-        reader = new FileReader(fileIn);
+
+        // Create a FileReader if the provided file is accessible
+        reader = new FileReader(new File(fileIn));
 
     } catch (FileNotFoundException | ParseException ex) {
         System.err.println("Error: " + ex.getMessage());
     }
 
-
+    // Create a Lexer and Parser using the parsed options
     scan = new Lexer(reader);
-    parser = new Parser(scan, DEFAULT_DICTIONARY_LOCATION, DEFAULT_FILE_OUT);
+    parser = new Parser(scan, customDictionary, fileOut);
   }
 
     private Options createOptions() {
+        Option dic = new Option("d", "dictionary", true, "Custom dictionary");
         Option help = new Option("h", "help", false, "print this message");
-        Option out = new Option("o", "Place the output into <file>");
-        return new Options().addOption(help)
-                .addOption(out);
+        Option out = new Option("o", "output", true, "Place the output into <file>");
+        return new Options().addOption(dic)
+                            .addOption(help)
+                            .addOption(out);
     }
 
     private void parseFile() throws IOException {
