@@ -9,6 +9,9 @@ import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
 
+/** FamilyForth Lexer
+ * @author Edward Conn
+*/
 public class Lexer {
 
     private static Scanner scanner;
@@ -33,7 +36,7 @@ public class Lexer {
     /**
      * Advance to the next token
      * This is done by line instead of 
-     * directly grabing next for easier debugging
+     * directly grabbing next for easier debugging
      * @throws IOException
      */
 

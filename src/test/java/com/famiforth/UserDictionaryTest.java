@@ -32,7 +32,7 @@ public class UserDictionaryTest {
     @Test
     public void specialCharacterTest() throws IOException {
         dictionary = UserDictionary.initalize(testFileName);
-        UserDictionary.addWord("?DROP", Definition.createPrimitiveDefinition("?DROP", List.of("jsr ZEROEQUALS", "jsr DROP")));
+        UserDictionary.addWord(Definition.createPrimitiveDefinition("?DROP", List.of("jsr ZEROEQUALS", "jsr DROP")));
         Definition def = UserDictionary.getDefinition("?DROP");
         assertEquals("qDROP", def.getName());
     }

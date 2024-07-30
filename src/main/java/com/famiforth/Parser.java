@@ -15,6 +15,9 @@ import com.famiforth.Lexer.Token;
 import com.famiforth.Lexer.TokenType;
 import com.famiforth.exceptions.SyntaxErrorException;
 
+/** FamilyForth Parser
+ * @author Edward Conn
+*/
 public class Parser {
 
     final private Lexer lexer;
@@ -91,7 +94,7 @@ public class Parser {
      * @return 
      */
     private List<String> parseToken(Token token) {
-        return UserDictionary.getDefinition(token.value).expandDefinition();
+        return UserDictionary.getDefinition(token.value).flattenDefinition();
     }
 
     /**
@@ -120,6 +123,6 @@ public class Parser {
         }
 
         // Add the word to the dictionary
-        UserDictionary.addWord(name, Definition.createUserWordDefinition(name, wordList));
+        UserDictionary.addWord(Definition.createUserWordDefinition(name, wordList));
     }
 }

@@ -5,8 +5,24 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.famiforth.exceptions.SyntaxErrorException;
+
 public class DefinitionUtils {
     
+    /**
+     * Capitalizes the word and then replaces the special charaters in the word.
+     * @param word
+     * @return a valid {@link Definition} name
+     */
+    public static String convertToName(String word){
+        validateName(word);
+        return replaceSpecialCharacters(word.toUpperCase());
+    }
+
+    /**
+     * Throws an exception if the provided word is invalid.
+     * @param word
+     */
     public static void validateName(String word){
         if (word == null) {
             throw new IllegalArgumentException("Words can not be null.");
@@ -14,21 +30,14 @@ public class DefinitionUtils {
 
         // Throw an error is a fobidden character is found.
         if (StringUtils.containsAny(word, "^`{|}~[]\\\"")) {
-            throw new IllegalArgumentException("Illegal character in name: " + word);
+            throw new SyntaxErrorException("Illegal character in name: " + word);
         }
     }
 
-    public static String convertToName(String word){
-        // Set word to uppercase
-        // Map special characters to lowercase values
-        return replaceSpecialCharacters(word.toUpperCase());
-    }
-
     /**
-     * Replace the special charaters in the word
-     * Words map directly to subroutines and special characters are forbidden in cc65 proc labels
-     * @param word
-     * @return 
+     * Replaces the special charaters in the word
+     * @param word the word to be validated
+     * @return the word with special characters replaced with lowercase letters
      */
     private static String replaceSpecialCharacters(String word) {
         return Arrays.asList(word.split("")).stream().map(str -> {

@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 
+/**
+ * A singleton object containing all words currently known by the compiler
+ * A special condition exists for integers which have anonymous definitions 
+ */
 public class UserDictionary {
     private static boolean initalized = false;
 
@@ -75,25 +79,16 @@ public class UserDictionary {
     }
 
     /**
-     * Capitalizes the word before adding it to the inner Dictionary
-     * 
-     * @param str
+     * Adds a newly compiled word to the UserDictionary
      * @param def
      */
-    public static void addWord(String word, Definition def) {
-        DefinitionUtils.validateName(word);
-
-        String name = DefinitionUtils.convertToName(word);
-        Definition existingDefinition = dictionary.get(name);
+    public static void addWord(Definition def) {
+        Definition existingDefinition = dictionary.get(def.getName());
         if (existingDefinition != null && existingDefinition.isPrimitive()) {
-            throw new IllegalArgumentException(String.format("Error: Can not overrided primitives", word));
+            throw new IllegalArgumentException(String.format("Error: Can not override primitives"));
         }
 
-        dictionary.put(name, def);
-    }
-
-    static void addWord(Definition def) {
-        addWord(def.getName(), def);
+        dictionary.put(def.getName(), def);
     }
 
     /**
