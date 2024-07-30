@@ -39,7 +39,9 @@ public class ParserUtils {
 
         // Twos complment
         if(!nonNegative){
-            hex = Arrays.stream(hex.split("")).map(ParserUtils::invertHex).collect(Collectors.joining(""));
+            hex = Arrays.stream(hex.split(""))
+                        .map(ParserUtils::invertHex)
+                        .collect(Collectors.joining(""));
         }
         return hex;
     }
@@ -53,41 +55,8 @@ public class ParserUtils {
      * @return
      */
     protected static String invertHex(String str){
-        switch(str){
-            case "0":
-                return "F";
-            case "1":
-                return "E";
-            case "2":
-                return "D";
-            case "3":
-                return "C";
-            case "4":
-                return "B";
-            case "5":
-                return "A";
-            case "6":
-                return "9";
-            case "7":
-                return "8";
-            case "8":
-                return "7";
-            case "9":
-                return "6";
-            case "A":
-                return "5";
-            case "B":
-                return "4";
-            case "C":
-                return "3";
-            case "D":
-                return "2";
-            case "E":
-                return "1";
-            case "F":
-                return "0";
-            default:
-                throw new IllegalArgumentException("Invalid hex character.");
-        }
+        final String hexNumerals = "0123456789ABCDEF";
+        int index = 15 - hexNumerals.indexOf(str);
+        return hexNumerals.substring(index, index + 1) ;
     }
 }
