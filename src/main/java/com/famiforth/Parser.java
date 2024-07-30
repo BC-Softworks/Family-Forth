@@ -80,7 +80,7 @@ public class Parser {
     }
 
     private static void writeFileHeader(FileOutputStream fileOut, List<String> filesToInclude) throws IOException {
-        String includeBlock = filesToInclude.stream().map(str -> ".include " + str).collect(Collectors.joining(System.lineSeparator()));
+        String includeBlock = filesToInclude.stream().map(str -> String.format(".include \"%s\"", str)).collect(Collectors.joining(System.lineSeparator()));
         fileOut.write((includeBlock + System.lineSeparator()).getBytes());
     }
 
