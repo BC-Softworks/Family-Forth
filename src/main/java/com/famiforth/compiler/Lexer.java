@@ -91,9 +91,9 @@ public class Lexer {
             type = TokenType.BEGIN_COMMENT;
         } else if(")".equals(str_token)){
             type = TokenType.END_COMMENT;
-        } else if(isInteger(str_token, 10)){
+        } else if(LexerUtils.isInteger(str_token, 10)){
             type = TokenType.INTEGER;
-        } else if(isFloat(str_token)){
+        } else if(LexerUtils.isFloat(str_token)){
             type = TokenType.FLOAT;
         } else {
             type = TokenType.WORD;
@@ -128,25 +128,13 @@ public class Lexer {
         WORD
     }
 
+    /**
+     * Keywords are not defined in the dictionary 
+     * but instead are handle directly by the parser
+     */
     public enum Keyword{
         COLON(":"),
-        SEMICOLON(";"),
-        END("END"),
-        IF("IF"),
-        ELSE("ELSE"),
-        THEN("THEN"),
-        BEGIN("BEGIN"),
-        WHILE("WHILE"),
-        REPEAT("REPEAT"),
-        UNTIL("UNTIL"),
-        DO("DO"),
-        LOOP("LOOP"),
-        PLUS_LOOP("+LOOP"),
-        CASE("CASE"),
-        OF("OF"),
-        ENDOF("ENDOF"),
-        ENDCASE("ENDCASE"),
-        AGAIN("AGAIN");
+        SEMICOLON(";");
 
         public final String value;
 
@@ -161,58 +149,5 @@ public class Lexer {
 
     public static boolean isKeyword(String str){
         return Arrays.stream(Keyword.values()).anyMatch(v -> v.value.equals(str));
-    }
-
-    /**
-     * Check if a string is an integer
-     * Max an min values are not checked
-     * Bounds checkign is left up to the parser
-     * @param s
-     * @param radix
-     * @return boolean
-     */
-    public static boolean isInteger(String s, int radix) {
-        // Reject empty Strings
-        if(StringUtils.isBlank(s)){
-            return false;
-        }
-
-        for(int i = 0; i < s.length(); i++) {
-            if(i == 0 && (s.charAt(i) == '-' || s.charAt(i) == '+')) {
-                // Ignore leading sign unless it is the only symbol
-                if(s.length() == 1) {
-                    return false;
-                }
-            } else if(Character.digit(s.charAt(i), radix) < 0){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Check if a string is an floating point number
-     * These are not supported and are rejected by the parser
-     * @param s
-     * @param radix
-     * @return boolean
-     */
-    public static boolean isFloat(String s) {
-        // Reject empty Strings
-        if(StringUtils.isBlank(s)){
-            return false;
-        }
-
-        for(int i = 0; i < s.length(); i++) {
-            if(i == 0 && (s.charAt(i) == '-' || s.charAt(i) == '+')) {
-                // Ignore leading sign unless it is the only symbol
-                if(s.length() == 1) {
-                    return false;
-                }
-            } else if(!(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.')){
-                return false;
-            }
-        }
-        return true;
     }
 }

@@ -40,14 +40,17 @@ public class Compiler {
         writeFileHeader(defaultFilesToInclude);
 
         // Used for debugging
-        Stack<List<String>> parsedWords = new Stack<>();
+        List<List<String>> parsedWords = new Stack<>();
 
         while(parser.hasNext()){
-            parsedWords.add(parser.parse());
-            fileOutputStream.write((StringUtils.join(parsedWords.firstElement(), lineSeparator) + lineSeparator).getBytes());
+            List<String> parsedWord = parser.parse();
+            if(!(parsedWord == null || parsedWord.isEmpty())){
+                parsedWords.add(parsedWord);
+                fileOutputStream.write((StringUtils.join(parsedWord, lineSeparator) + lineSeparator).getBytes());
+            }
         }
+        // Close FileOutputStream
         fileOutputStream.close();
-
         System.out.println("Compilation successful.");
     }
 

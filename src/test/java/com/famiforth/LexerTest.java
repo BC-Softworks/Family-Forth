@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.famiforth.compiler.Lexer;
 import com.famiforth.compiler.Lexer.Token;
 import com.famiforth.compiler.Lexer.TokenType;
+import com.famiforth.compiler.LexerUtils;
 
 public class LexerTest {
 
@@ -29,7 +30,7 @@ public class LexerTest {
 
     @Test
     public void keywordTest() throws IOException {
-        init(": ; END IF ELSE THEN BEGIN WHILE REPEAT UNTIL DO LOOP +LOOP");
+        init(": ;");
 
         do {
             Token token = lexer.next_token();
@@ -96,5 +97,20 @@ public class LexerTest {
         Token token = lexer.next_token();
         assertEquals(TokenType.SKIP_LINE, token.type);
         assertEquals("\\", token.value);
+    }
+
+    @Test
+    /**
+     * Test Integer to signed hexadecimel conversion
+     */
+    public void integerToHexTest(){
+        assertEquals("0000", LexerUtils.integerToHex(0));
+        assertEquals("0008", LexerUtils.integerToHex(8));
+        assertEquals("000F", LexerUtils.integerToHex(15));
+        assertEquals("0010", LexerUtils.integerToHex(16));
+        assertEquals("FFFF", LexerUtils.integerToHex(-1));
+        assertEquals("FFF8", LexerUtils.integerToHex(-8));
+        assertEquals("FFF1", LexerUtils.integerToHex(-15));
+        assertEquals("FFF0", LexerUtils.integerToHex(-16));
     }
 }

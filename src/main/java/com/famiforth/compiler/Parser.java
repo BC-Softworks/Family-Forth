@@ -28,39 +28,37 @@ public class Parser {
     } 
 
     public List<String> parse() throws IOException {
-        List<String> result = null;
-
-        while(result == null && lexer.hasNext()){
-            Token token = lexer.next_token();
-            switch (token.type) {
-                case SKIP_LINE:
-                    lexer.skipLine();
-                    continue;
-                case BEGIN_COMMENT:
-                    while (token.type != TokenType.END_COMMENT) {
-                        token = lexer.next_token();
-                    }
-                    continue;
-                case KEYWORD:
-                    Keyword keyword = Keyword.getByValue(token.value);
-                    if(keyword.equals(Keyword.COLON)){
-                        parseColonStatement();
-                    } else {
-                        result = parseToken(token);
-                    }
-                    break;
-                case FLOAT:
-                    throw new SyntaxErrorException("Floating point numbers are currently unsupported.");
-                case INTEGER:
-                case WORD:
-                    result = parseToken(token);
-                    break;
-                default:
-                    break;
-            }
+        // Return null if out of tokens to parse
+        if(!lexer.hasNext()){
+            return null;
         }
 
-        return result;
+        Token token = lexer.next_token();
+        // TokensTypes that return an empty list
+        if(Lexer.TokenType.SKIP_LINE.equals(token.type)){
+            lexer.skipLine();
+            return List.of();
+        } else if (Lexer.TokenType.BEGIN_COMMENT.equals(token.type)){
+            while (lexer.next_token().type != TokenType.END_COMMENT);
+            return List.of();
+        } else if(Lexer.TokenType.KEYWORD.equals(token.type) && Keyword.getByValue(token.value).equals(Keyword.COLON)){
+            parseColonStatement();
+            return List.of();
+        }
+        
+        // TokensTypes that return a populated list
+        if(Lexer.TokenType.WORD.equals(token.type)){
+            return parseWord(token);
+        } else if(Lexer.TokenType.INTEGER.equals(token.type)){
+            return parseInteger(token);
+        }
+        
+        // TokensTypes that result in an exception
+        if(Lexer.TokenType.FLOAT.equals(token.type)){
+            throw new SyntaxErrorException("Floating point numbers are currently unsupported.");
+        }
+
+        throw new SyntaxErrorException(token.value, token.lineNumber);
     }
 
     /**
@@ -69,14 +67,14 @@ public class Parser {
      * @param token
      * @return 
      */
-    private List<String> parseToken(Token token) {
-        // TOD: Create custom anonymous definitions for integers
-        if(TokenType.INTEGER.equals(token.type)){
-            String[] arr = ParserUtils.littleEndian(token.value);
-            return List.of(String.format("PUSHCELL #%s, #%s", arr[0], arr[1]));
-        } 
-        
+    private List<String> parseWord(Token token) {
         return UserDictionary.getDefinition(token.value).flattenDefinition();
+    }
+
+    // TOD: Create custom anonymous definitions for integers
+    // TOD: Allow 32 bit values
+    private List<String> parseInteger(Token token){
+        return UserDictionary.getIntegerDefinition(token.value).flattenDefinition();
     }
 
     /**

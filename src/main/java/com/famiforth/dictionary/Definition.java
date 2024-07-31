@@ -83,41 +83,40 @@ public class Definition {
      * @param isMacro
      */
     public static Definition createPrimitiveDefinition(String name, List<String> assembly, boolean isMacro) {
-        Definition def = createUserWordDefinition(name, assembly);
-        def.isMacro = isMacro;
-        return def;
-    }
-    public static Definition createPrimitiveDefinition(String name, List<String> assembly) {
         Definition definition = new Definition();
         definition.isPrimitive = true;
-        definition.isMacro = false;
+        definition.isMacro = isMacro;
         definition.name = DefinitionUtils.convertToName(name);
         definition.words = List.of();
         definition.assembly = assembly;
 
         return definition;
     }
+    public static Definition createPrimitiveDefinition(String name, List<String> assembly) {
+        return createUserWordDefinition(name, assembly, false);
+
+    }
+    
     /**
      * Create a higher level word constructed from 
      * already defined subroutines and macros
      * @param name
      * @param words
-     * @param isMacro
+     * @param isMacro 
      */
     public static Definition createUserWordDefinition(String name, List<String> words, boolean isMacro) {
-        Definition def = createUserWordDefinition(name, words);
-        def.isMacro = isMacro;
-        return def;
-    }
-    public static Definition createUserWordDefinition(String name, List<String> words) {
         Definition definition = new Definition();
         definition.isPrimitive = false;
-        definition.isMacro = false;
+        definition.isMacro = isMacro;
         definition.name = DefinitionUtils.convertToName(name);
         definition.words = words;
-        definition.assembly = List.of(String.join("jsr", name," "));
+        // Prepend jsr if isMacro is false
+        definition.assembly = isMacro ? List.of(name) : List.of(String.join("jsr", name, " "));
 
         return definition;
+    }
+    public static Definition createUserWordDefinition(String name, List<String> words) {
+        return createUserWordDefinition(name, words, false);
     }
     @SuppressWarnings("unchecked")
     public static List<Definition> fromJSONList(List<Object> list) {
@@ -139,6 +138,7 @@ public class Definition {
 
         Definition definition = new Definition();
         definition.isPrimitive = Boolean.parseBoolean(map.get("isPrimitive").toString());
+        definition.isMacro = Boolean.parseBoolean(map.get("isMacro").toString());
         definition.name = DefinitionUtils.convertToName(map.get("name").toString());
         definition.words = List.of(map.get("words").toString().split(","))
                 .stream()

@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 
+import com.famiforth.compiler.LexerUtils;
+
 /**
  * A singleton object containing all words currently known by the compiler
  * A special condition exists for integers which have anonymous definitions 
@@ -102,6 +104,11 @@ public class UserDictionary {
             throw new IllegalStateException("User Dictionary has not been initalized");
         }
 
-        return dictionary.get(DefinitionUtils.convertToName(word));
+        return LexerUtils.isInteger(word, 10) ? getIntegerDefinition(word) : dictionary.get(DefinitionUtils.convertToName(word));
+    }
+
+    public static Definition getIntegerDefinition(String word){
+        String[] arr = LexerUtils.littleEndian(word);
+        return Definition.createPrimitiveDefinition(word, List.of(String.format("PUSHCELL #%s, #%s", arr[0], arr[1])), true);
     }
 }

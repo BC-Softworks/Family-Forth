@@ -2,150 +2,175 @@
     {
         "name": "DROP",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr DROP"],
         "words": []
     },
     {
         "name": "DUP",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr DUP"],
         "words": []
     },
     {
         "name": "SWAP",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr SWAP"],
         "words": []
     },
     {
         "name": "OVER",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr OVER"],
         "words": []
     },
     {
         "name": "ROT",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ROT"],
         "words": []
     },
     {
         "name": "0=",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ZEROEQU"],
         "words": []
     },
     {
         "name": "0<",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ZEROLESS"],
         "words": []
     },
     {
         "name": "0>",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ZEROGREATER"],
         "words": []
     },
     {
         "name": "AND",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ANDD"],
         "words": []
     },
     {
         "name": "OR",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr OR"],
         "words": []
     },
     {
         "name": "XOR",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr XOR"],
         "words": []
     },
     {
         "name": "2*",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr TWOSTAR"],
         "words": []
     },
     {
         "name": "2/",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr TWOSLASH"],
         "words": []
     },
     {
         "name": "LSHIFT",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr LSHIFT"],
         "words": []
     },
     {
         "name": "RSHIFT",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr RSHIFT"],
         "words": []
     },
     {
         "name": "<",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr LESS"],
         "words": []
     },
     {
         "name": ">",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr GREATER"],
         "words": []
     },
     {
         "name": "=",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr EQUAL"],
         "words": []
     },
     {
         "name": "NIP",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr NIP"],
         "words": []
     },
     {
         "name": "TUCK",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr TUCK"],
         "words": []
     },
     {
         "name": true,
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr TRUE"],
         "words": []
     },
     {
         "name": "FALSE",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr FALSE"],
         "words": []
     },
     {
         "name": "PICK",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr PICK"],
         "words": []
     },
     {
         "name": "U>",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr UGREATER"],
         "words": []
     },
     {
         "name": "U<",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ULESS"],
         "words": []
     },
@@ -153,66 +178,77 @@
     {
         "name": "ADD",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ADDD"],
         "words": []
     },
     {
         "name": "SUB",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr SUBB"],
         "words": []
     },
     {
         "name": "1+",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ONEADD"],
         "words": []
     },
     {
         "name": "1-",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ONESUB"],
         "words": []
     },
     {
         "name": "ABS",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ABS"],
         "words": []
     },
     {
         "name": "*",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr MULT"],
         "words": []
     },
     {
         "name": "/",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr DIVI"],
         "words": []
     },
     {
         "name": "MOD/",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr DIV"],
         "words": []
     },
     {
         "name": "MIN",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr MIN"],
         "words": []
     },
     {
         "name": "MAX",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr MAX"],
         "words": []
     },
     {
         "name": "NEGATE",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr NEGATE"],
         "words": []
     },
@@ -220,48 +256,56 @@
     {
         "name": "@",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr SYM_AT"],
         "words": []
     },
     {
         "name": "C@",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr C_SYM_AT"],
         "words": []
     },
     {
         "name": "2@",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr TWO_SYM_AT"],
         "words": []
     },
     {
         "name": "ALIGNED",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr ALIGNED"],
         "words": []
     },
     {
         "name": "2!",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr TWO_STORE"],
         "words": []
     },
     {
         "name": "2@",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr TWO_FETCH"],
         "words": []
     },
     {
         "name": "R>",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr R_FORM"],
         "words": []
     },
     {
         "name": "R@",
         "isPrimitive": true,
+		"isMacro": false,
         "assembly": ["jsr RFETCH"],
         "words": []
     }

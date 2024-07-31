@@ -41,8 +41,8 @@ public class DefinitionUtils {
      */
     private static String replaceSpecialCharacters(String word) {
         return Arrays.asList(word.split("")).stream().map(str -> {
-            String specialCharString = "!#$%&'()*+,<:;/.?=>@_-~";
-            String lowercaseAlphabet = "abcdefghijklmnopqrstuvw";
+            String specialCharString = "$%&()~:;?";
+            String lowercaseAlphabet = "abcdefghq";
             if(specialCharString.contains(str)) {
                 int index = specialCharString.indexOf(str);
                 return lowercaseAlphabet.substring(index, index + 1);
