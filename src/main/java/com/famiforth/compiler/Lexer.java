@@ -9,6 +9,8 @@ import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.famiforth.compiler.LexerToken.TokenType;
+
 /** FamilyForth Lexer
  * @author Edward Conn
 */
@@ -79,11 +81,11 @@ public class Lexer {
      * @return The next Token object
      * @throws IOException
      */
-    public Token next_token() throws IOException {
+    public LexerToken next_token() throws IOException {
         advance();
 
         TokenType type;
-        if(isKeyword(str_token)){
+        if(Keyword.isKeyword(str_token)){
             type = TokenType.KEYWORD;
         } else if("\\".equals(str_token)){
             type = TokenType.SKIP_LINE;
@@ -99,55 +101,6 @@ public class Lexer {
             type = TokenType.WORD;
         }
         
-        return new Token(str_token, type, lineNumber, tokenNumber);
-    }
-
-    // Define Token and token types
-    public class Token {
-        public String value;
-        public TokenType type;
-        protected int lineNumber;
-        protected int tokenNumber;
-
-        public Token(String value, TokenType type, int lineNumber, int tokenNumber) {
-            this.value = value;
-            this.type = type;
-            this.lineNumber = lineNumber;
-            this.tokenNumber = tokenNumber;
-        }
-    }
-
-
-    public enum TokenType{
-        SKIP_LINE,
-        BEGIN_COMMENT,
-        END_COMMENT,
-        KEYWORD,
-        FLOAT,
-        INTEGER,
-        WORD
-    }
-
-    /**
-     * Keywords are not defined in the dictionary 
-     * but instead are handle directly by the parser
-     */
-    public enum Keyword{
-        COLON(":"),
-        SEMICOLON(";");
-
-        public final String value;
-
-        private Keyword(String value) {
-            this.value = value;
-        }
-
-        public static Keyword getByValue(String value){
-            return Arrays.stream(Keyword.values()).filter(key -> key.value.equals(value)).findFirst().orElse(null);
-        }
-    }
-
-    public static boolean isKeyword(String str){
-        return Arrays.stream(Keyword.values()).anyMatch(v -> v.value.equals(str));
+        return new LexerToken(str_token, type, lineNumber, tokenNumber);
     }
 }

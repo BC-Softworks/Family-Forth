@@ -14,7 +14,7 @@ public class DefinitionUtils {
      * @param word
      * @return a valid {@link Definition} name
      */
-    public static String convertToName(String word){
+    public static String convertToVaildLabel(String word){
         validateName(word);
         return replaceSpecialCharacters(word.toUpperCase());
     }

@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.famiforth.compiler.Lexer.Keyword;
-import com.famiforth.compiler.Lexer.Token;
-import com.famiforth.compiler.Lexer.TokenType;
-import com.famiforth.dictionary.Definition;
 import com.famiforth.dictionary.UserDictionary;
 import com.famiforth.exceptions.SyntaxErrorException;
 
@@ -33,28 +29,28 @@ public class Parser {
             return null;
         }
 
-        Token token = lexer.next_token();
+        LexerToken token = lexer.next_token();
         // TokensTypes that return an empty list
-        if(Lexer.TokenType.SKIP_LINE.equals(token.type)){
+        if(LexerToken.TokenType.SKIP_LINE.equals(token.type)){
             lexer.skipLine();
             return List.of();
-        } else if (Lexer.TokenType.BEGIN_COMMENT.equals(token.type)){
-            while (lexer.next_token().type != TokenType.END_COMMENT);
+        } else if (LexerToken.TokenType.BEGIN_COMMENT.equals(token.type)){
+            while (lexer.next_token().type != LexerToken.TokenType.END_COMMENT);
             return List.of();
-        } else if(Lexer.TokenType.KEYWORD.equals(token.type) && Keyword.getByValue(token.value).equals(Keyword.COLON)){
+        } else if(LexerToken.TokenType.KEYWORD.equals(token.type) && Keyword.getByValue(token.value).equals(Keyword.COLON)){
             parseColonStatement();
             return List.of();
         }
         
         // TokensTypes that return a populated list
-        if(Lexer.TokenType.WORD.equals(token.type)){
+        if(LexerToken.TokenType.WORD.equals(token.type)){
             return parseWord(token);
-        } else if(Lexer.TokenType.INTEGER.equals(token.type)){
+        } else if(LexerToken.TokenType.INTEGER.equals(token.type)){
             return parseInteger(token);
         }
         
         // TokensTypes that result in an exception
-        if(Lexer.TokenType.FLOAT.equals(token.type)){
+        if(LexerToken.TokenType.FLOAT.equals(token.type)){
             throw new SyntaxErrorException("Floating point numbers are currently unsupported.");
         }
 
@@ -64,17 +60,20 @@ public class Parser {
     /**
      * Get the Token's Definition from the dictionary
      * Throws an error if no Definition is found
-     * @param token
+     * @param toke
      * @return 
      */
-    private List<String> parseWord(Token token) {
-        return UserDictionary.getDefinition(token.value).flattenDefinition();
+    private List<String> parseWord(LexerToken token) {
+        if(UserDictionary.isMacro(token.value)){
+            return UserDictionary.getFlattenedDefinition(token.value);
+        }
+        return List.of(UserDictionary.getSubroutine(token.value));
     }
 
     // TOD: Create custom anonymous definitions for integers
     // TOD: Allow 32 bit values
-    private List<String> parseInteger(Token token){
-        return UserDictionary.getIntegerDefinition(token.value).flattenDefinition();
+    private List<String> parseInteger(LexerToken token){
+        return UserDictionary.getFlattenedDefinition(token.value);
     }
 
     /**
@@ -96,13 +95,14 @@ public class Parser {
         }
 
         List<String> wordList = new LinkedList<>();
-        Token token = lexer.next_token();
+        LexerToken token = lexer.next_token();
         while (Keyword.getByValue(token.value) != Keyword.SEMICOLON) {
             wordList.add(token.value);
             token = lexer.next_token();
         }
 
         // Add the word to the dictionary
-        UserDictionary.addWord(Definition.createUserWordDefinition(name, wordList));
+        UserDictionary.addUserDefinedWord(name, false, wordList);
+        
     }
 }

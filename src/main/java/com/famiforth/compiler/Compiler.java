@@ -61,4 +61,23 @@ public class Compiler {
         fileOutputStream.write((includeBlock + lineSeparator).getBytes());
     }
 
+    /**
+     * Write a new subroutine to fileOutputStream
+     * NOTE: Does not check if the last line is a rts or jmp
+     * @param name Name of the new subroutine
+     * @param procLines Contents of the subroutine
+     * @throws IOException
+     */
+    private void writeProc(String name, List<String> procLines) throws IOException {
+        final String procHeader = String.format(".proc %s", name) + lineSeparator;
+        final String procFooter = ".endproc" + lineSeparator;
+        String indentedLines = procLines.stream()
+                                        .map(str -> String.format("\t%s", str))
+                                        .collect(Collectors.joining(lineSeparator))
+                                        + lineSeparator;
+        fileOutputStream.write((procHeader).getBytes());
+        fileOutputStream.write((indentedLines).getBytes());
+        fileOutputStream.write((procFooter).getBytes());
+    }
+
 }

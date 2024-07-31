@@ -104,7 +104,7 @@ public class ParserTest {
         assertEquals("PUSHCELL #04, #00", assemblyListOut.get(2).get(0));
         assertEquals("PUSHCELL #01, #00", assemblyListOut.get(3).get(0));
         assertEquals("PUSHCELL #02, #00", assemblyListOut.get(4).get(0));
-        assertEquals("PUSHCELL #03, #00 \n jsr PICK \n PUSHCELL #03, #00 \n jsr PICK", StringUtils.join(assemblyListOut.get(5), " \n "));
+        assertEquals("jsr 2OVER", StringUtils.join(assemblyListOut.get(5), " \n "));
 
     }
     

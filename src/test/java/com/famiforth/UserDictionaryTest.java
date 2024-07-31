@@ -19,24 +19,19 @@ public class UserDictionaryTest {
     @Test
     public void initalizationTest() throws IOException {
         dictionary = UserDictionary.initalize(testFileName);
-        Definition def = UserDictionary.getDefinition("DROP");
-        assertEquals("DROP", def.getName());
-        assertEquals(true, def.isPrimitive());
-        assertEquals(1, def.getWords().size());
-        assertEquals("jsr DROP", def.getAssembly().get(0));
 
-        def = UserDictionary.getDefinition("DUP");
-        assertEquals("DUP", def.getName());
+        Definition def = UserDictionary.getDefinition("DUP");
         assertEquals(true, def.isPrimitive());
-        assertEquals(1, def.getWords().size());
-        assertEquals("jsr DUP", def.getAssembly().get(0));
+        assertEquals("DUP", def.getName());
+        assertEquals("DUP", def.getLabel());
+        assertEquals(0, def.getWords().size());
     }
 
     @Test
     public void specialCharacterTest() throws IOException {
         dictionary = UserDictionary.initalize(testFileName);
-        UserDictionary.addWord(Definition.createPrimitiveDefinition("?DROP", List.of("jsr ZEROEQUALS", "jsr DROP")));
+        UserDictionary.addUserDefinedWord("?DROP", "qDROP", false, List.of("ZEROEQUALS", "DROP"));
         Definition def = UserDictionary.getDefinition("?DROP");
-        assertEquals("qDROP", def.getName());
+        assertEquals("?DROP", def.getName());
     }
 }

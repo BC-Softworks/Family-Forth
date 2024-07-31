@@ -12,8 +12,8 @@ import java.util.Random;
 import org.junit.Test;
 
 import com.famiforth.compiler.Lexer;
-import com.famiforth.compiler.Lexer.Token;
-import com.famiforth.compiler.Lexer.TokenType;
+import com.famiforth.compiler.LexerToken;
+import com.famiforth.compiler.LexerToken.TokenType;
 import com.famiforth.compiler.LexerUtils;
 
 public class LexerTest {
@@ -33,8 +33,8 @@ public class LexerTest {
         init(": ;");
 
         do {
-            Token token = lexer.next_token();
-            assertEquals(TokenType.KEYWORD, token.type);
+            LexerToken token = lexer.next_token();
+            assertEquals(LexerToken.TokenType.KEYWORD, token.type);
         } while(lexer.hasNext());
     }
 
@@ -51,7 +51,7 @@ public class LexerTest {
         String randString = Character.toString(new Random().nextInt(25) + 'a').repeat(java.lang.Math.abs(new Random().nextInt() % 64));
 
         init(randString);
-        Token token = lexer.next_token();
+        LexerToken token = lexer.next_token();
         assertEquals(TokenType.WORD, token.type);
         assertEquals(randString.toUpperCase(), token.value);
     }
@@ -62,7 +62,7 @@ public class LexerTest {
     public void signedNumberTest() throws IOException {
         String minShort = "" + Short.MIN_VALUE;
         init(minShort);
-        Token token = lexer.next_token();
+        LexerToken token = lexer.next_token();
         assertEquals(TokenType.INTEGER, token.type);
         assertEquals(minShort, token.value);
     }
@@ -71,7 +71,7 @@ public class LexerTest {
     public void floatingPointNumberTest() throws IOException {
         String pi = Double.valueOf(Math.PI).toString();
         init(pi);
-        Token token = lexer.next_token();
+        LexerToken token = lexer.next_token();
         assertEquals(TokenType.FLOAT, token.type);
         assertEquals(pi, token.value);
     }
@@ -80,7 +80,7 @@ public class LexerTest {
     @Test
     public void ignoreCommentsTest() throws IOException {
         init("( addr -- x )");
-        Token token = lexer.next_token();
+        LexerToken token = lexer.next_token();
         assertEquals(TokenType.BEGIN_COMMENT, token.type);
         assertEquals("(", token.value);
         lexer.next_token();
@@ -94,7 +94,7 @@ public class LexerTest {
     @Test
     public void skipLineTest() throws IOException {
         init("\\");
-        Token token = lexer.next_token();
+        LexerToken token = lexer.next_token();
         assertEquals(TokenType.SKIP_LINE, token.type);
         assertEquals("\\", token.value);
     }

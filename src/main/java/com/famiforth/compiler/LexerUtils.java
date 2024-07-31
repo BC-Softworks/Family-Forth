@@ -7,10 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class LexerUtils {
 
-    // Utils class, no need to create an instance.
-    LexerUtils(){}
-
-/**
+    /**
      * Check if a string is an integer
      * Max an min values are not checked
      * Bounds checkign is left up to the parser
@@ -64,9 +61,9 @@ public class LexerUtils {
     }
 
     /**
-     * Convert integer to array of 16 bit little endian hex values
-     * @param input
-     * @return
+     * Convert Integer String to array of 16 bit little endian hex values
+     * @param input Integer
+     * @return Integer as String array of hex bytes
      */
     public static String[] littleEndian(String input){
         String hex = integerToHex(input);
@@ -114,4 +111,7 @@ public class LexerUtils {
         int index = 15 - hexNumerals.indexOf(str);
         return hexNumerals.substring(index, index + 1) ;
     }
+
+    // Utils class, no need to create an instance.
+    LexerUtils(){}
 }

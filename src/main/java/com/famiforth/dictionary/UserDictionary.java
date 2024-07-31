@@ -21,18 +21,8 @@ import com.famiforth.compiler.LexerUtils;
  */
 public class UserDictionary {
     private static boolean initalized = false;
-
     private static UserDictionary instance = null;
     private static Dictionary<String, Definition> dictionary;
-
-    // Prevent the creation of an empty dictionary
-    private UserDictionary() {
-    }
-
-    private UserDictionary(String fileName) throws IOException {
-        dictionary = new Hashtable<String, Definition>();
-        populateDictionary(fileName);
-    }
 
     /**
      * Create instance of singleton dictionary
@@ -40,17 +30,98 @@ public class UserDictionary {
      * @param fileName
      * @return UserDictionary instance
      */
-    public static UserDictionary initalize(String fileName) {
+    public static UserDictionary initalize(final String fileName) {
         if (instance == null) {
             try {
                 instance = new UserDictionary(fileName);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 System.err.println(e);
                 throw new RuntimeException(e);
             }
             initalized = true;
         }
         return instance;
+    }
+
+    /**
+     * Adds a newly compiled primitive word to the UserDictionary
+     * @param name
+     * @param words
+     */
+    public static void addPrimitiveWord(String name, String label, boolean isMacro) {
+        addWord(new Definition(name, label, isMacro));
+    }
+
+    /**
+     * Adds a newly compiled user defined word to the UserDictionary
+     * @param name
+     * @param words
+     */
+    public static void addUserDefinedWord(String name, String label, boolean isMacro, final List<String> words) {
+        addWord(new Definition(name, label, isMacro, words));
+    }
+
+    public static void addUserDefinedWord(String name, boolean isMacro, final List<String> words) {
+        addWord(new Definition(name, isMacro, words));
+    }
+
+    /**
+     * Throws an IllegalStateException if the Dictionary has not be initialized
+     * 
+     * @param word
+     * @return name of the subroutine stored in the Dictionary
+     */
+    public static String getSubroutine(final String name) {
+        assert !LexerUtils.isInteger(name, 10);
+        assert !isMacro(name);
+
+        initCheck();
+        return "jsr " + getDefinition(name).getLabel();
+    }
+
+
+    /**
+     * Throws an IllegalStateException if the Dictionary has not be initialized
+     * 
+     * Fetches the Definition of the word from the dictionary 
+     * and checks if it is a macro
+     * @param word
+     */
+    public static boolean isMacro(final String word) {
+        initCheck();
+        return getDefinition(word).isMacro();
+    }
+
+    /**
+     * Throws an IllegalStateException if the Dictionary has not be initialized
+     * 
+     * @param word
+     * @return Fully flattened definition as a list of assembly opcodes and operands
+     */
+    public static List<String> getFlattenedDefinition(final String word) {
+        initCheck();
+        final Definition def = LexerUtils.isInteger(word, 10) ? getIntegerDefinition(word) : getDefinition(word);
+        return def.flattenDefinition();
+    }
+
+    /**
+     * Throws an IllegalStateException if the Dictionary has not be initialized
+     * @param word
+     * @return Definition of the provided word
+     */
+    public static Definition getDefinition(final String word) {
+        initCheck();
+        return dictionary.get(word);
+    }
+
+    /**
+     * @param word
+     * @return Definition of the provided word
+    */
+    static Definition getIntegerDefinition(final String word){
+        initCheck();
+        final String[] arr = LexerUtils.littleEndian(word);
+        return new Definition(word, String.format("PUSHCELL #%s, #%s", arr[0], arr[1]), true);
     }
 
     /**
@@ -61,31 +132,36 @@ public class UserDictionary {
      * @param jsonFilePaths
      * @throws IOException
      */
-    protected static void populateDictionary(Collection<String> jsonFilePaths) throws IOException {
+    private static void populateDictionary(final Collection<String> jsonFilePaths) throws IOException {
         File file;
-        for (String fileName : jsonFilePaths) {
+        for (final String fileName : jsonFilePaths) {
             file = new File(fileName);
-            Path filePath = Paths.get(file.toURI());
+            final Path filePath = Paths.get(file.toURI());
             try {
-                JSONArray jsonArr = new JSONArray(Files.readAllLines(filePath).stream().collect(Collectors.joining()));
+                final JSONArray jsonArr = new JSONArray(Files.readAllLines(filePath).stream().collect(Collectors.joining()));
                 Definition.fromJSONList(jsonArr.toList()).forEach(UserDictionary::addWord);
-            } catch (IOException error) {
+            } catch (final IOException error) {
                 System.err.println("Failed to open: " + fileName);
                 throw error;
             }
         }
     }
 
-    private static void populateDictionary(String jsonFilePath) throws IOException {
+    /**
+     * Throws an IllegalStateException if the Dictionary has not be initialized
+     */
+    private static void initCheck() {
+        if(initalized == false){
+            throw new IllegalStateException("User Dictionary has not been initalized");
+        }
+    }
+    
+    private static void populateDictionary(final String jsonFilePath) throws IOException {
         populateDictionary(List.of(jsonFilePath));
     }
 
-    /**
-     * Adds a newly compiled word to the UserDictionary
-     * @param def
-     */
-    public static void addWord(Definition def) {
-        Definition existingDefinition = dictionary.get(def.getName());
+    private static void addWord(final Definition def) {
+        final Definition existingDefinition = dictionary.get(def.getName());
         if (existingDefinition != null && existingDefinition.isPrimitive()) {
             throw new IllegalArgumentException(String.format("Error: Can not override primitives"));
         }
@@ -93,22 +169,12 @@ public class UserDictionary {
         dictionary.put(def.getName(), def);
     }
 
-    /**
-     * Throws an IllegalArgumentException if the string is blank or null.
-     * 
-     * @param word
-     * @return Definition of the provided word
-     */
-    public static Definition getDefinition(String word) {
-        if(initalized == false){
-            throw new IllegalStateException("User Dictionary has not been initalized");
-        }
-
-        return LexerUtils.isInteger(word, 10) ? getIntegerDefinition(word) : dictionary.get(DefinitionUtils.convertToName(word));
+    // Prevent the creation of an empty dictionary
+    private UserDictionary() {
     }
 
-    public static Definition getIntegerDefinition(String word){
-        String[] arr = LexerUtils.littleEndian(word);
-        return Definition.createPrimitiveDefinition(word, List.of(String.format("PUSHCELL #%s, #%s", arr[0], arr[1])), true);
+    private UserDictionary(final String fileName) throws IOException {
+        dictionary = new Hashtable<String, Definition>();
+        populateDictionary(fileName);
     }
 }
