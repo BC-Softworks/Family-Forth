@@ -1,4 +1,4 @@
-package com.famiforth.compiler;
+package com.famiforth.generator;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import com.famiforth.exceptions.GeneratorException;
 import com.famiforth.parser.ParserToken;
 import com.famiforth.parser.dictionary.UserDictionary;
 
-public class AssemblyGenerator {
+public class AssemblyGenerator implements Generator {
     private FileOutputStream fileOutputStream;
 
     private static List<String> defaultFilesToInclude = Arrays.asList("core.asm", "macros.asm");
@@ -22,19 +22,23 @@ public class AssemblyGenerator {
         this.fileOutputStream = fileOutputStream;
     }
 
+    @Override
     public void writeFileHeader(List<String> headerFileList) throws IOException {
         writeLines(headerFileList.stream().map(str -> String.format(".include \"%s\"", str)).collect(Collectors.toList()));
     }
 
+    @Override
     public void writeFileHeader() throws IOException {
         writeFileHeader(defaultFilesToInclude);
     }
 
+    @Override
     public void generate(ParserToken token) throws IOException{
-        List<String> lines = null;
+        List<String> lines = new ArrayList<>();
         switch(token.type){
             case COLON:
                 lines = token.isMacro() ? generateMacro(token) : generateSubroutine(token);
+                break;
             case IF:
                 lines = generateIfStatement(token);
                 break;
@@ -44,11 +48,14 @@ public class AssemblyGenerator {
             case THEN:
                 lines = generateThenStatement(token);
                 break;
-            case INTEGER:
-                lines = token.def.getWords();
+            case DO:
+                lines = generateIfStatement(token);
                 break;
-            case WORD:
-                lines = token.def.getWords();
+            case LOOP:
+                lines = generateElseStatement(token);
+                break;
+            case INTEGER:
+                lines = List.of((token.def.isMacro() ? "" : "jsr") + token.def.getLabel());
                 break;
             default:
                 break;
@@ -57,6 +64,7 @@ public class AssemblyGenerator {
         writeLines(lines);
     }
 
+    @Override
     public void close() throws IOException{
         fileOutputStream.close();
     }
@@ -70,19 +78,19 @@ public class AssemblyGenerator {
     protected void writeLines(List<String> lines) throws IOException {
         lines.forEach(line -> {
             try {
-                fileOutputStream.write((line + lineSeparator).getBytes());
+                fileOutputStream.write((line).getBytes());
+                fileOutputStream.write((lineSeparator).getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new GeneratorException(e.getMessage());
             }
         });
-        fileOutputStream.write((lineSeparator).getBytes());
     }
 
     private List<String> generateMacro(ParserToken token) {
         final String macroHeader = String.format(".macro %s", token.def.getLabel());
         final List<String> words = token.def.getWords();
-        final String macroFooter = ".endmacro" + System.lineSeparator();
+        final String macroFooter = ".endmacro";
 
         List<String> macroList = new LinkedList<>();
         macroList.add(macroHeader);
@@ -94,30 +102,28 @@ public class AssemblyGenerator {
     }
 
     private List<String> generateSubroutine(ParserToken token) {
-        final String macroHeader = String.format(".proc %s", token.def.getLabel());
+        final String procHeader = String.format(".proc %s", token.def.getLabel());
         final List<String> words = token.def.getWords();
-        final String macroFooter = ".endproc" + System.lineSeparator();
+        final String procFooter = ".endproc";
 
         List<String> subroutineList = new LinkedList<>();
-        subroutineList.add(macroHeader);
+        subroutineList.add(procHeader);
         subroutineList.addAll(words.stream().map(UserDictionary::getFlattenedDefinition)
                                     .map(lst -> String.format("\t%s", lst.get(0)))
                                     .collect(Collectors.toList()));
-        subroutineList.add(macroFooter);
+        subroutineList.add(procFooter);
         return subroutineList;
     }
 
     private List<String> generateIfStatement(ParserToken token) {
-        List<String> ifMacro = new ArrayList<>(1);
-        ifMacro.add(String.format("%s else_%d", token.def.getLabel(), token.offset));
-        return ifMacro;
+        return List.of(String.format("%s else_%d", token.def.getLabel(), token.condOffset));
     }
 
     private List<String> generateElseStatement(ParserToken token) {
-        return List.of("clc", String.format("bcc then_%4d", token.offset), String.format("else_%4d:", token.offset));
+        return List.of("clc", String.format("bcc then_%d", token.condOffset), String.format("else_%d:", token.condOffset));
     }
 
     private List<String> generateThenStatement(ParserToken token) {
-        return List.of(String.format("then_%4d:", token.offset));
+        return List.of(String.format("then_%d:", token.condOffset));
     }
 }

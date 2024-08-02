@@ -3,6 +3,7 @@ package com.famiforth.parser;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import com.famiforth.exceptions.SyntaxErrorException;
 import com.famiforth.lexer.Keyword;
@@ -21,14 +22,15 @@ public class Parser {
 
     // Total number of IF Keywords encountered
     private int ifCounter;
-    // Offset used for nested control flow statements
-    private int labelOffset;
+
+    // Total number of DO Keywords encountered
+    private int doCounter;
 
     public Parser(Lexer scan, String dictionaryFile) {
         UserDictionary.initalize(dictionaryFile);
         this.lexer = scan;
         ifCounter = 0;
-        labelOffset = -1;
+        doCounter = 0;
     }
 
     public boolean hasNext() {
@@ -53,7 +55,7 @@ public class Parser {
                 lexer.skipLine();
                 return null;
             case BEGIN_COMMENT:
-                while (lexer.next_token().type != LexerToken.TokenType.END_COMMENT);
+                while (!LexerToken.TokenType.END_COMMENT.equals(lexer.next_token().type));
                 return null;
             // TokensTypes that return a ParserToken
             case KEYWORD:
@@ -63,26 +65,30 @@ public class Parser {
                 DefinitionType type = null;
                 if(key.equals(Keyword.COLON)){
                     type = DefinitionType.COLON;
-                    def = parseColonStatement();
+                    def = parseColonStatement(token);
                 } else if(key.equals(Keyword.IF)){
                     ifCounter++;
-                    labelOffset++;
                     type = DefinitionType.IF;
                     def = getDefinition(token);
                 } else if(key.equals(Keyword.ELSE)){
-                    labelOffset--;
                     type = DefinitionType.ELSE;
                     def = getDefinition(token);
                 } else if(key.equals(Keyword.THEN)){
-                    labelOffset--;
                     type = DefinitionType.THEN;
                     def = getDefinition(token);
+                } else if(key.equals(Keyword.DO)){
+                    doCounter++;
+                    type = DefinitionType.DO;
+                    def = getDefinition(token);
+                } else if(key.equals(Keyword.LOOP)){
+                    type = DefinitionType.LOOP;
+                    def = getDefinition(token);
                 }
-                return new ParserToken(def, type, ifCounter + labelOffset);
+                return new ParserToken(def, type, ifCounter, doCounter);
             case WORD:
-                return new ParserToken(getDefinition(token), DefinitionType.WORD, ifCounter + labelOffset);
+                return new ParserToken(getDefinition(token), DefinitionType.WORD, ifCounter, doCounter);
             case INTEGER:
-                return new ParserToken(UserDictionary.getIntegerDefinition(token.value), DefinitionType.INTEGER, ifCounter + labelOffset);
+                return new ParserToken(UserDictionary.getIntegerDefinition(token.value), DefinitionType.INTEGER, ifCounter, doCounter);
             // TokensTypes that result in an exception
             case END_COMMENT:
                 throw new SyntaxErrorException("A comment can not be closed if it was not opened");
@@ -107,22 +113,33 @@ public class Parser {
         return def;
     }
 
-    private Definition parseColonStatement() throws IOException {
-        String name = lexer.next_token().value;
-        if (Keyword.getByValue(name) == Keyword.SEMICOLON) {
-            throw new SyntaxErrorException("Empty definition");
+    private Definition parseColonStatement(LexerToken lexerToken) throws IOException {
+        LexerToken token = lexerToken;
+        Queue<String> wordList = new LinkedList<>();
+        while(true) {
+            token = skipComments(lexer.next_token());
+            if(!(Keyword.SEMICOLON).equals(Keyword.getByValue(token.value))){
+                wordList.add(token.value);
+            } else {
+                break;
+            }
         }
-        
-        List<String> wordList = new LinkedList<>();
-        LexerToken token = lexer.next_token();
-        while(Keyword.getByValue(token.value) != Keyword.SEMICOLON) {
-            wordList.add(token.value);
-            token = lexer.next_token();
-        }
+
+        // Poll the name of the word
+        String name = wordList.poll();
 
         // Add the word to the dictionary
-        UserDictionary.addUserDefinedWord(name, false, wordList);
+        UserDictionary.addUserDefinedWord(name, false, List.copyOf(wordList));
 
+        // Return newly created Definition
         return UserDictionary.getDefinition(name);
+    }
+
+    private LexerToken skipComments(LexerToken token) {
+        if((LexerToken.TokenType.BEGIN_COMMENT).equals(token.type)){
+            while (!LexerToken.TokenType.END_COMMENT.equals(lexer.next_token().type));
+            return lexer.next_token();
+        }
+        return token;
     }
 }

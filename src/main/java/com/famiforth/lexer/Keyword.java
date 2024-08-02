@@ -11,7 +11,9 @@ public enum Keyword{
     SEMICOLON(";"),
     IF("IF"),
     ELSE("ELSE"),
-    THEN("THEN");
+    THEN("THEN"),
+    DO("DO"),
+    LOOP("LOOP");
 
     public final String value;
 

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Stack;
 
+import com.famiforth.generator.AssemblyGenerator;
+import com.famiforth.generator.Generator;
 import com.famiforth.lexer.Lexer;
 import com.famiforth.parser.Parser;
 import com.famiforth.parser.ParserToken;
@@ -18,7 +20,7 @@ import com.famiforth.parser.ParserToken;
 public class Compiler {
 
     private Parser parser;
-    private AssemblyGenerator generator;
+    private Generator generator;
 
     public Compiler(String fileIn, String fileOut, String customDictionary) {
 

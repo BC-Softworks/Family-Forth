@@ -6,12 +6,15 @@ public class ParserToken {
 
     public final Definition def;
     public final DefinitionType type;
-    public final int offset;
+    public final int condOffset;
+    public final int loopOffset;
 
-    public ParserToken(Definition def, DefinitionType type, int offset) {
+
+    public ParserToken(Definition def, DefinitionType type, int condOffset, int loopOffset) {
         this.def = def;
         this.type = type;
-        this.offset = offset;
+        this.condOffset = condOffset;
+        this.loopOffset = loopOffset;
     }
 
     public boolean isMacro(){
@@ -23,6 +26,8 @@ public class ParserToken {
         IF,
         ELSE,
         THEN,
+        DO,
+        LOOP,
         INTEGER,
         WORD
     }

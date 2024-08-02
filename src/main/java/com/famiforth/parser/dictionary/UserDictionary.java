@@ -48,6 +48,7 @@ public class UserDictionary {
      * Adds a newly compiled primitive word to the UserDictionary
      * @param name
      * @param words
+     * @param isMacro
      */
     public static void addPrimitiveWord(String name, String label, boolean isMacro) {
         addWord(new Definition(name, label, isMacro));
@@ -57,11 +58,8 @@ public class UserDictionary {
      * Adds a newly compiled user defined word to the UserDictionary
      * @param name
      * @param words
+     * @param isMacro
      */
-    public static void addUserDefinedWord(String name, String label, boolean isMacro, final List<String> words) {
-        addWord(new Definition(name, label, isMacro, words));
-    }
-
     public static void addUserDefinedWord(String name, boolean isMacro, final List<String> words) {
         addWord(new Definition(name, isMacro, words));
     }
@@ -79,7 +77,6 @@ public class UserDictionary {
         initCheck();
         return "jsr " + getDefinition(name).getLabel();
     }
-
 
     /**
      * Fetches the Definition of the word from the dictionary 
@@ -130,7 +127,7 @@ public class UserDictionary {
         return new Definition(word, String.format("PUSHCELL #%s, #%s", arr[0], arr[1]), true);
     }
 
-    /**
+    /**s
      * Populate the current dictionary instance with the
      * contents of the provided JSON files. If a word is encountered twice,
      * a warning will be logged and the first definitions will be perserved.

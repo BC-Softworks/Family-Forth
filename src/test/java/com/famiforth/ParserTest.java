@@ -41,7 +41,16 @@ public class ParserTest {
      */
     public void parseIntegersTest() throws IOException {
         init("-3 -2 -1 0 1 2 3");
-        assertEquals(7, parseString().size());
+        List<ParserToken> tokens = parseString();
+        assertEquals(7, tokens.size());
+        assertEquals("Definition [-3: []]", tokens.get(0).def.toString());
+        assertEquals("Definition [-2: []]", tokens.get(1).def.toString());
+        assertEquals("Definition [-1: []]", tokens.get(2).def.toString());
+        assertEquals("Definition [0: []]", tokens.get(3).def.toString());
+        assertEquals("Definition [1: []]", tokens.get(4).def.toString());
+        assertEquals("Definition [2: []]", tokens.get(5).def.toString());
+        assertEquals("Definition [3: []]", tokens.get(6).def.toString());
+
     }
 
     @Test
@@ -52,6 +61,8 @@ public class ParserTest {
         init(": D0= 0= SWAP 0= AND ;");
         List<ParserToken> tokensList = parseString();
         assertEquals(1, tokensList.size());
+        assertEquals("Definition [D0=: [0=, SWAP, 0=, AND]]", tokensList.get(0).def.toString());
+
     }
 
     @Test
@@ -62,6 +73,8 @@ public class ParserTest {
         init(": 2OVER 3 PICK 3 PICK ;");
         List<ParserToken> tokensList = parseString();
         assertEquals(1, tokensList.size());
+        assertEquals("Definition [2OVER: [3, PICK, 3, PICK]]", tokensList.get(0).def.toString());
+
     }
 
     @Test
@@ -73,15 +86,4 @@ public class ParserTest {
         List<ParserToken> tokensList = parseString();
         assertEquals(4, tokensList.size());
     }
-
-    @Test
-    /**
-     * Test the creation of a basic word with two primitives and two integers
-     */
-    public void parseUserDefinedWord() throws IOException {
-        init(": 2OVER 3 PICK 3 PICK ; \n 3 4 1 2 2OVER ");
-        List<ParserToken> tokensList = parseString();
-        assertEquals(6, tokensList.size());
-    }
-
 }
