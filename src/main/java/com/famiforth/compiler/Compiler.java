@@ -5,12 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import com.famiforth.lexer.Lexer;
+import com.famiforth.parser.Parser;
+import com.famiforth.parser.ParserToken;
 
 /** FamilyForth cross compiler
  * @author Edward Conn
@@ -18,66 +18,38 @@ import org.apache.commons.lang3.StringUtils;
 public class Compiler {
 
     private Parser parser;
-    private FileOutputStream fileOutputStream;
-
-    final static List<String> defaultFilesToInclude = Arrays.asList("core.asm");
-    final static String lineSeparator = System.lineSeparator();
+    private AssemblyGenerator generator;
 
     public Compiler(String fileIn, String fileOut, String customDictionary) {
 
-        // Create a Lexer and Parser using the parsed options
+        // Create a Lexer, Parser, and Generator using the parsed options
         try {
-            parser = new Parser(new Lexer(new FileReader(new File(fileIn))), customDictionary);
-            fileOutputStream = new FileOutputStream(new File(fileOut));
+            Lexer lexer = new Lexer(new FileReader(new File(fileIn)));
+            parser = new Parser(lexer, customDictionary);
+            generator = new AssemblyGenerator(new FileOutputStream(new File(fileOut)));
         } catch (FileNotFoundException ex) {
             System.err.println("Error: " + ex.getMessage());
         }
     }
 
-
-    public void parseFile() throws IOException {
+    public void compile() throws IOException {
         // Write assembly header block first
-        writeFileHeader(defaultFilesToInclude);
+        generator.writeFileHeader();
 
         // Used for debugging
-        List<List<String>> parsedWords = new Stack<>();
+        List<ParserToken> parsedWords = new Stack<>();
 
         while(parser.hasNext()){
-            List<String> parsedWord = parser.parse();
-            if(!(parsedWord == null || parsedWord.isEmpty())){
-                parsedWords.add(parsedWord);
-                fileOutputStream.write((StringUtils.join(parsedWord, lineSeparator) + lineSeparator).getBytes());
+            ParserToken token = parser.parse();
+            if(token != null){
+                generator.generate(token);
+                // Used for debugging
+                parsedWords.add(token);
             }
         }
+
         // Close FileOutputStream
-        fileOutputStream.close();
+        generator.close();
         System.out.println("Compilation successful.");
     }
-
-    private void writeFileHeader(List<String> headerFileList) throws IOException {
-        String includeBlock = headerFileList.stream()
-                                            .map(str -> String.format(".include \"%s\"", str))
-                                            .collect(Collectors.joining(lineSeparator));
-        fileOutputStream.write((includeBlock + lineSeparator).getBytes());
-    }
-
-    /**
-     * Write a new subroutine to fileOutputStream
-     * NOTE: Does not check if the last line is a rts or jmp
-     * @param name Name of the new subroutine
-     * @param procLines Contents of the subroutine
-     * @throws IOException
-     */
-    private void writeProc(String name, List<String> procLines) throws IOException {
-        final String procHeader = String.format(".proc %s", name) + lineSeparator;
-        final String procFooter = ".endproc" + lineSeparator;
-        String indentedLines = procLines.stream()
-                                        .map(str -> String.format("\t%s", str))
-                                        .collect(Collectors.joining(lineSeparator))
-                                        + lineSeparator;
-        fileOutputStream.write((procHeader).getBytes());
-        fileOutputStream.write((indentedLines).getBytes());
-        fileOutputStream.write((procFooter).getBytes());
-    }
-
 }

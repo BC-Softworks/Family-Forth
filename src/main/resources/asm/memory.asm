@@ -3,7 +3,7 @@
 ;==========================================================;
 
 ; Defines the following words core words
-; @ C@ 2@ ALIGN ALIGNED 2! 2@ 
+; @ C@ ! 2! 2@ ALIGN ALIGNED 
 ; CELLS CELL+ R> 2R> >R 2>R R@ 
 ; ALLOT HERE , MOVE
 
@@ -99,21 +99,33 @@
 		rts
 .endproc
 
+; ( x a-addr -- )
+; Store the cell x1 at a-addr,
+; Tokenized "!"
+.proc STORE
+		lda $00,X
+		sta lowByteW	; Store the low byte of the address
+		lda $01,X
+		sta hiByteW		; Store the high byte of the address
+		ldy #0			; Set offset to zero
+		lda $02,X
+		sta ($00),Y		; Store the lowbyte at a-addr
+		iny
+		lda $03,X		; Store the lowbyte at a-addr + 1
+		sta ($00),Y
+		jmp TWODROP		; Drop the address and x from the stack
+.endproc
+
 ; ( x1 x2 a-addr -- )
 ; Store the cell pair x1 x2 at a-addr, with x2 at a-addr and x1 at the
 ; next consecutive cell. "2!"
 .proc TWOSTORE
-		ldy #0
-		lda $02,X
-		lda $03,X
-		sta ($00),Y
-		sta ($01),Y
-		ldy #2
-		lda $04,X
-		lda $05,X
-		sta ($00),Y
-		sta ($01),Y
-		rts
+		jsr DUP
+		jsr ROT
+		jsr SWAP
+		jsr STORE
+		jsr CELL+
+		jmp STORE
 .endproc
 
 ; ( addr -- d)

@@ -1,11 +1,11 @@
-package com.famiforth.compiler;
+package com.famiforth.lexer;
 
 // Define Token and token types
 public class LexerToken {
     public String value;
     public TokenType type;
-    protected int lineNumber;
-    protected int tokenNumber;
+    public int lineNumber;
+    public int tokenNumber;
 
     public LexerToken(String value, TokenType type, int lineNumber, int tokenNumber) {
         this.value = value;

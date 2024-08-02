@@ -1,4 +1,4 @@
-package com.famiforth.dictionary;
+package com.famiforth.parser.dictionary;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 
-import com.famiforth.compiler.LexerUtils;
+import com.famiforth.compiler.CompilerUtils;
+import com.famiforth.exceptions.SyntaxErrorException;
 
 /**
  * A singleton object containing all words currently known by the compiler
@@ -72,7 +73,7 @@ public class UserDictionary {
      * @return name of the subroutine stored in the Dictionary
      */
     public static String getSubroutine(final String name) {
-        assert !LexerUtils.isInteger(name, 10);
+        assert !CompilerUtils.isInteger(name, 10);
         assert !isMacro(name);
 
         initCheck();
@@ -81,11 +82,11 @@ public class UserDictionary {
 
 
     /**
-     * Throws an IllegalStateException if the Dictionary has not be initialized
-     * 
      * Fetches the Definition of the word from the dictionary 
      * and checks if it is a macro
      * @param word
+     * @throws IllegalStateException if the UserDictionary has not be initialized
+     * @throws NullPointerException if the word is not defined in the UserDictionary
      */
     public static boolean isMacro(final String word) {
         initCheck();
@@ -93,14 +94,18 @@ public class UserDictionary {
     }
 
     /**
-     * Throws an IllegalStateException if the Dictionary has not be initialized
      * 
      * @param word
      * @return Fully flattened definition as a list of assembly opcodes and operands
+     * @throws IllegalStateException if the UserDictionary has not be initialized
+     * @throws SyntaxErrorException if the word is not defined in the UserDictionary
      */
     public static List<String> getFlattenedDefinition(final String word) {
         initCheck();
-        final Definition def = LexerUtils.isInteger(word, 10) ? getIntegerDefinition(word) : getDefinition(word);
+        final Definition def = CompilerUtils.isInteger(word, 10) ? getIntegerDefinition(word) : getDefinition(word);
+        if(def == null){
+            throw new SyntaxErrorException("Undefined word \"" + word + "\" referenced.");
+        }
         return def.flattenDefinition();
     }
 
@@ -108,6 +113,7 @@ public class UserDictionary {
      * Throws an IllegalStateException if the Dictionary has not be initialized
      * @param word
      * @return Definition of the provided word
+     * @throws NullPointerException if the word is not defined in the UserDictionary
      */
     public static Definition getDefinition(final String word) {
         initCheck();
@@ -118,9 +124,9 @@ public class UserDictionary {
      * @param word
      * @return Definition of the provided word
     */
-    static Definition getIntegerDefinition(final String word){
+    public static Definition getIntegerDefinition(final String word){
         initCheck();
-        final String[] arr = LexerUtils.littleEndian(word);
+        final String[] arr = CompilerUtils.littleEndian(word);
         return new Definition(word, String.format("PUSHCELL #%s, #%s", arr[0], arr[1]), true);
     }
 

@@ -11,10 +11,10 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.famiforth.compiler.Lexer;
-import com.famiforth.compiler.LexerToken;
-import com.famiforth.compiler.LexerToken.TokenType;
-import com.famiforth.compiler.LexerUtils;
+import com.famiforth.compiler.CompilerUtils;
+import com.famiforth.lexer.Lexer;
+import com.famiforth.lexer.LexerToken;
+import com.famiforth.lexer.LexerToken.TokenType;
 
 public class LexerTest {
 
@@ -30,12 +30,12 @@ public class LexerTest {
 
     @Test
     public void keywordTest() throws IOException {
-        init(": ;");
+        init(": ; IF ELSE THEN");
 
-        do {
+        for(int i = 0; i < 5; i++) {
             LexerToken token = lexer.next_token();
             assertEquals(LexerToken.TokenType.KEYWORD, token.type);
-        } while(lexer.hasNext());
+        }
     }
 
     // Test valid user defined words are recognized
@@ -104,13 +104,13 @@ public class LexerTest {
      * Test Integer to signed hexadecimel conversion
      */
     public void integerToHexTest(){
-        assertEquals("0000", LexerUtils.integerToHex(0));
-        assertEquals("0008", LexerUtils.integerToHex(8));
-        assertEquals("000F", LexerUtils.integerToHex(15));
-        assertEquals("0010", LexerUtils.integerToHex(16));
-        assertEquals("FFFF", LexerUtils.integerToHex(-1));
-        assertEquals("FFF8", LexerUtils.integerToHex(-8));
-        assertEquals("FFF1", LexerUtils.integerToHex(-15));
-        assertEquals("FFF0", LexerUtils.integerToHex(-16));
+        assertEquals("0000", CompilerUtils.integerToHex(0));
+        assertEquals("0008", CompilerUtils.integerToHex(8));
+        assertEquals("000F", CompilerUtils.integerToHex(15));
+        assertEquals("0010", CompilerUtils.integerToHex(16));
+        assertEquals("FFFF", CompilerUtils.integerToHex(-1));
+        assertEquals("FFF8", CompilerUtils.integerToHex(-8));
+        assertEquals("FFF1", CompilerUtils.integerToHex(-15));
+        assertEquals("FFF0", CompilerUtils.integerToHex(-16));
     }
 }

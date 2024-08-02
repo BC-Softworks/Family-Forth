@@ -118,5 +118,20 @@
         "name": "U<",
         "label": "ULESS",
         "isMacro": false
+    },
+    {
+        "name": "IF",
+        "label": "IF",
+        "isMacro": true
+    },
+    {
+        "name": "ELSE",
+        "label": "ELSE",
+        "isMacro": true
+    },
+    {
+        "name": "THEN",
+        "label": "THEN",
+        "isMacro": true
     }
 ]

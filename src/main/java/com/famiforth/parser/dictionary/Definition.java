@@ -1,4 +1,4 @@
-package com.famiforth.dictionary;
+package com.famiforth.parser.dictionary;
 
 import java.util.ArrayList;
 import java.util.HashMap;

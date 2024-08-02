@@ -27,6 +27,41 @@
 		pha
 .endmacro
 
+
+; ( C: -- orig )
+; Put the location of a new unresolved forward reference orig onto the control flow stack.
+; Append the run-time semantics given below to the current definition. 
+; The semantics are incomplete until orig is resolved, e.g., by THEN or ELSE. 
+
+; ( x -- )
+; If all bits of x are zero, continue execution
+; at the location specified by the resolution of orig. 
+.macro IF label
+		lda $00,X
+		and $01,X
+		beq label
+.endmacro
+
+; ( C: orig1 -- orig2 )
+; Put the location of a new unresolved forward reference orig2 onto the control flow stack. 
+; Append the run-time semantics given below to the current definition. 
+; The semantics will be incomplete until orig2 is resolved (e.g., by THEN). 
+; Resolve the forward reference orig1 using the location following the appended run-time semantics. 
+
+; ( -- )
+; Continue execution at the location given by the resolution of orig2. 
+.proc ELSE
+		nop
+.endproc
+
+; ( -- )
+; Continue execution.
+; Provide an address for jmp
+.proc THEN
+		nop
+.endproc
+
+
 ; ( n1 | u1 n2 | u2 -- ) ( R: -- loop-sys )
 ; Set up loop control parameters with index n2 | u2 and limit n1 | u1.
 ; An ambiguous condition exists if n1 | u1 and n2 | u2 are not both the same type.
@@ -122,42 +157,4 @@
 .proc REPEAT
 	
 	rts
-.endproc
-
-
-; ( C: -- orig )
-; Put the location of a new unresolved forward reference orig onto the control flow stack.
-; Append the run-time semantics given below to the current definition. 
-; The semantics are incomplete until orig is resolved, e.g., by THEN or ELSE. 
-
-; ( x -- )
-; If all bits of x are zero, continue execution
-; at the location specified by the resolution of orig. 
-.macro IF label1, label2
-		lda $00,X
-		bne 
-		lda $01,X
-		bne else
-else:	jmp
-
-.endmacro
-
-; ( C: orig1 -- orig2 )
-; Put the location of a new unresolved forward reference orig2 onto the control flow stack. 
-; Append the run-time semantics given below to the current definition. 
-; The semantics will be incomplete until orig2 is resolved (e.g., by THEN). 
-; Resolve the forward reference orig1 using the location following the appended run-time semantics. 
-
-; ( -- )
-; Continue execution at the location given by the resolution of orig2. 
-.proc ELSE
-
-		
-.endproc
-
-; ( -- )
-; Continue execution.
-; Provide an address for jmp
-.proc THEN
-		nop
 .endproc

@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.famiforth.dictionary.Definition;
-import com.famiforth.dictionary.UserDictionary;
+import com.famiforth.parser.dictionary.Definition;
+import com.famiforth.parser.dictionary.UserDictionary;
 
 public class UserDictionaryTest {
     
@@ -30,8 +30,9 @@ public class UserDictionaryTest {
     @Test
     public void specialCharacterTest() throws IOException {
         dictionary = UserDictionary.initalize(testFileName);
-        UserDictionary.addUserDefinedWord("?DROP", "qDROP", false, List.of("ZEROEQUALS", "DROP"));
+        UserDictionary.addUserDefinedWord("?DROP", false, List.of("ZEROEQUALS", "DROP"));
         Definition def = UserDictionary.getDefinition("?DROP");
         assertEquals("?DROP", def.getName());
+        assertEquals("qDROP", def.getLabel());
     }
 }

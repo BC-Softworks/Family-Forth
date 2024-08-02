@@ -22,6 +22,7 @@ public class FamilyForth {
     static String fileIn;
     static String fileOut = DEFAULT_FILE_OUT;
     static String customDictionary = DEFAULT_DICTIONARY_LOCATION;
+    static String[] includedFiles;
 
     private static void parseArguments(String args[]){
         CommandLineParser cmdLine = new DefaultParser();
@@ -42,6 +43,10 @@ public class FamilyForth {
                     System.err.println("Error: Unable to open provided dictionary.");
                     System.exit(0);
                 }
+            }
+
+            if(cmd.hasOption("i")){
+                includedFiles = cmd.getOptionValues("i");
             }
 
             if(cmd.hasOption("o")){
@@ -72,18 +77,21 @@ public class FamilyForth {
     private static Options createOptions() {
         Option dic = new Option("d", "dictionary", true, "Custom dictionary");
         Option help = new Option("h", "help", false, "print this message");
+        Option include = new Option("i", "include", true, "assembly files to include");
         Option out = new Option("o", "output", true, "Place the output into <file>");
         return new Options().addOption(dic)
                             .addOption(help)
+                            .addOption(include)
                             .addOption(out);
     }
 
     public static void main(String args[]) throws IOException {
         parseArguments(args);
         try {
-            new Compiler(fileIn, fileOut, customDictionary).parseFile();
+            Compiler compiler = new Compiler(fileIn, fileOut, customDictionary);
+            compiler.compile();
         } catch (Throwable e) {
-            System.err.println("     " + e.getMessage());
+            System.err.println("\t" + e.getMessage());
             System.exit(1);
         }
     }

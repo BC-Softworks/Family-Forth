@@ -1,6 +1,5 @@
-package com.famiforth.compiler;
+package com.famiforth.lexer;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -9,23 +8,23 @@ import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.famiforth.compiler.LexerToken.TokenType;
+import com.famiforth.compiler.CompilerUtils;
+import com.famiforth.lexer.LexerToken.TokenType;
 
 /** FamilyForth Lexer
  * @author Edward Conn
+ * @since v0.1
 */
 public class Lexer {
 
     private static Scanner scanner;
     private static Queue<String> currentLine;
     private static String str_token;
-
-
+    
+    // Total number of tokens lexed
     private static int tokenNumber;
+    // Total of lines lexed
     private static int lineNumber;
-
-	@SuppressWarnings("unused")
-    private Lexer() {}
 
 	public Lexer(Reader input) {
 		scanner = new Scanner(input);
@@ -35,14 +34,36 @@ public class Lexer {
         lineNumber = 0;
 	}
 
+    public void skipLine(){
+        currentLine.clear();
+    }
+
+    public boolean hasNext() {
+        return !currentLine.isEmpty() || scanner.hasNext();
+    } 
+
+    /**
+     * @return True if there is a remaining line
+     * @throws IllegalStateException if this scanner is closed
+     */
+    public boolean hasNextLine() {
+        return scanner.hasNextLine();
+    } 
+
+    /**
+     * @return The Tokenized string provided by the Scanner
+     */
+    public LexerToken next_token() {
+        advance();
+        return new LexerToken(str_token, getType(), lineNumber, tokenNumber);
+    }
+
     /**
      * Advance to the next token
      * This is done by line instead of 
      * directly grabbing next for easier debugging
-     * @throws IOException
      */
-
-    protected static void advance() throws IOException  {
+    protected static void advance() {
         if(currentLine.isEmpty()){
             if(scanner.hasNextLine()){
                 String[] nextLine = StringUtils.split(scanner.nextLine());
@@ -52,6 +73,7 @@ public class Lexer {
                 // Ensure the scanner has been closed
                 // Then set str_token to null
                 scanner.close();
+                return;
             }
         }
 
@@ -64,26 +86,8 @@ public class Lexer {
         tokenNumber += 1;
 	}
 
-    public void skipLine(){
-        currentLine.clear();
-    }
 
-    public boolean hasNext() {
-        return !currentLine.isEmpty() || scanner.hasNext();
-    } 
-
-    public boolean hasNextLine() {
-        return scanner.hasNextLine();
-    } 
-
-    /**
-     * 
-     * @return The next Token object
-     * @throws IOException
-     */
-    public LexerToken next_token() throws IOException {
-        advance();
-
+    private TokenType getType() {
         TokenType type;
         if(Keyword.isKeyword(str_token)){
             type = TokenType.KEYWORD;
@@ -93,14 +97,13 @@ public class Lexer {
             type = TokenType.BEGIN_COMMENT;
         } else if(")".equals(str_token)){
             type = TokenType.END_COMMENT;
-        } else if(LexerUtils.isInteger(str_token, 10)){
+        } else if(CompilerUtils.isInteger(str_token, 10)){
             type = TokenType.INTEGER;
-        } else if(LexerUtils.isFloat(str_token)){
+        } else if(CompilerUtils.isFloat(str_token)){
             type = TokenType.FLOAT;
         } else {
             type = TokenType.WORD;
         }
-        
-        return new LexerToken(str_token, type, lineNumber, tokenNumber);
+        return type;
     }
 }

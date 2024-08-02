@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class LexerUtils {
+public class CompilerUtils {
 
     /**
      * Check if a string is an integer
@@ -92,7 +92,7 @@ public class LexerUtils {
         // Twos complment
         if(!nonNegative){
             hex = Arrays.stream(hex.split(""))
-                        .map(LexerUtils::invertHex)
+                        .map(CompilerUtils::invertHex)
                         .collect(Collectors.joining(""));
         }
         return hex;
@@ -113,5 +113,5 @@ public class LexerUtils {
     }
 
     // Utils class, no need to create an instance.
-    LexerUtils(){}
+    CompilerUtils(){}
 }

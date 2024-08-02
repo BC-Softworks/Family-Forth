@@ -1,4 +1,4 @@
-package com.famiforth.compiler;
+package com.famiforth.lexer;
 
 import java.util.Arrays;
 
@@ -8,7 +8,10 @@ import java.util.Arrays;
  */
 public enum Keyword{
     COLON(":"),
-    SEMICOLON(";");
+    SEMICOLON(";"),
+    IF("IF"),
+    ELSE("ELSE"),
+    THEN("THEN");
 
     public final String value;
 
