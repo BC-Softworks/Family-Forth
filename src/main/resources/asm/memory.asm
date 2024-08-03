@@ -146,22 +146,6 @@ loop:	lda ($00),Y   ; Load and store the low byte from the first byte
 no_add: rts
 .endproc
 
-; Save return value in W2
-.macro SAVE_RETURN
-		pla
-		sta lowByteW2
-		pla
-		sta hiByteW2
-.endmacro
-
-; Load return value from W2
-.macro LOAD_RETURN
-		lda lowByteW2
-		pha
-		lda hiByteW2
-		pha
-.endmacro
-
 ; ( n1 -- n2 )
 ; n2 is the size in address units of n1 cells. 
 .proc CELLS
@@ -184,6 +168,7 @@ no_add: rts
 ; ( -- n)
 ; Transfer n from the return stack to the data stack.
 ; Tokenized R>
+; IMPORTANT: Doesn't use W
 .proc RFROM
 		SAVE_RETURN
 		PUT
@@ -198,14 +183,15 @@ no_add: rts
 ; ( -- x1 x2 ) ( R: x1 x2 -- )
 ; Transfer cell pair x1 x2 from the return stack.
 .proc TWORFROM
-		jsr SWAP
 		jsr RFROM
-		jmp RFROM
+		jsr RFROM
+		jmp SWAP
 .endproc
 
 ; ( x -- ) ( R: -- x )
 ; Move x to the return stack.
 ; Tokenized >R
+; IMPORTANT: Doesn't use W
 .proc TOR
 		SAVE_RETURN
 		sta $01,X     ; Push higher byte
@@ -234,11 +220,11 @@ no_add: rts
 		PUT
 		pla
 		sta $00,X     ; Push lower byte
-		sta $00		  ; Store lower byte
+		sta lowByteW  ; Store lower byte
 		pla
 		sta $01,X	  ; Push higher byte
 		pha
-		lda $00		  ; Load lowbyte to push back onto the stack
+		lda lowByteW  ; Load lowbyte to push back onto the stack
 		pha
 		LOAD_RETURN
 		rts

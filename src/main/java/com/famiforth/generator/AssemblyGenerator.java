@@ -12,24 +12,21 @@ import com.famiforth.exceptions.GeneratorException;
 import com.famiforth.parser.ParserToken;
 import com.famiforth.parser.dictionary.UserDictionary;
 
-public class AssemblyGenerator implements Generator {
-    private FileOutputStream fileOutputStream;
+public class AssemblyGenerator extends AbstractGenerator {
 
     private static List<String> defaultFilesToInclude = Arrays.asList("core.asm", "macros.asm");
-    private static String lineSeparator = System.lineSeparator();
-
-    public AssemblyGenerator(FileOutputStream fileOutputStream){
-        this.fileOutputStream = fileOutputStream;
-    }
-
-    @Override
-    public void writeFileHeader(List<String> headerFileList) throws IOException {
-        writeLines(headerFileList.stream().map(str -> String.format(".include \"%s\"", str)).collect(Collectors.toList()));
+    
+    public AssemblyGenerator(FileOutputStream fileOutputStream) {
+        super(fileOutputStream);
     }
 
     @Override
     public void writeFileHeader() throws IOException {
         writeFileHeader(defaultFilesToInclude);
+    }
+
+    private void writeFileHeader(List<String> headerFileList) throws IOException {
+        writeLines(headerFileList.stream().map(str -> String.format(".include \"%s\"", str)).collect(Collectors.toList()));
     }
 
     @Override
@@ -48,13 +45,9 @@ public class AssemblyGenerator implements Generator {
             case THEN:
                 lines = generateThenStatement(token);
                 break;
-            case DO:
-                lines = generateIfStatement(token);
-                break;
-            case LOOP:
-                lines = generateElseStatement(token);
-                break;
             case INTEGER:
+                lines = List.of(token.def.getLabel());
+            case WORD:
                 lines = List.of((token.def.isMacro() ? "" : "jsr") + token.def.getLabel());
                 break;
             default:
@@ -62,11 +55,6 @@ public class AssemblyGenerator implements Generator {
         }
 
         writeLines(lines);
-    }
-
-    @Override
-    public void close() throws IOException{
-        fileOutputStream.close();
     }
 
     /**
@@ -78,8 +66,8 @@ public class AssemblyGenerator implements Generator {
     protected void writeLines(List<String> lines) throws IOException {
         lines.forEach(line -> {
             try {
-                fileOutputStream.write((line).getBytes());
-                fileOutputStream.write((lineSeparator).getBytes());
+                getFileOutputStream().write((line).getBytes());
+                getFileOutputStream().write((lineSeparator).getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new GeneratorException(e.getMessage());

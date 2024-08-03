@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Stack;
 
 import com.famiforth.generator.AssemblyGenerator;
-import com.famiforth.generator.Generator;
+import com.famiforth.generator.AbstractGenerator;
 import com.famiforth.lexer.Lexer;
 import com.famiforth.parser.Parser;
 import com.famiforth.parser.ParserToken;
@@ -20,7 +20,7 @@ import com.famiforth.parser.ParserToken;
 public class Compiler {
 
     private Parser parser;
-    private Generator generator;
+    private AbstractGenerator generator;
 
     public Compiler(String fileIn, String fileOut, String customDictionary) {
 
@@ -52,6 +52,6 @@ public class Compiler {
 
         // Close FileOutputStream
         generator.close();
-        System.out.println("Compilation successful.");
+        System.out.println("Program compiled successful.");
     }
 }

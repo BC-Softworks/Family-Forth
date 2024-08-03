@@ -33,6 +33,22 @@ true  = 255
 		dex
 .endmacro
 
+; Save return value in W2
+.macro SAVE_RETURN
+		pla
+		sta lowByteW2
+		pla
+		sta hiByteW2
+.endmacro
+
+; Load return value from W2
+.macro LOAD_RETURN
+		lda lowByteW2
+		pha
+		lda hiByteW2
+		pha
+.endmacro
+
 
 ; Used to load constants onto the stack
 .macro PUSH arg1
@@ -149,8 +165,7 @@ true  = 255
 
 ; ( x1 x2 x3 -- x2 x3 x1 )
 ; Rotate the top three stack entries.
-; Optimized back moving the stack pointer
-; instead of the objects.
+; Optimized by moving the stack pointer instead of the objects.
 .proc ROT
 		inx          ; Inline Drop
 		inx
