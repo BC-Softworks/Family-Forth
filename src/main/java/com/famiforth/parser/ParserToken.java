@@ -6,15 +6,16 @@ public class ParserToken {
 
     public final Definition def;
     public final DefinitionType type;
-    public final int condOffset;
-    public final int loopOffset;
+    public final Integer reference;
 
-
-    public ParserToken(Definition def, DefinitionType type, int condOffset, int loopOffset) {
+    public ParserToken(Definition def, DefinitionType type, Integer reference) {
         this.def = def;
         this.type = type;
-        this.condOffset = condOffset;
-        this.loopOffset = loopOffset;
+        this.reference = reference;
+    }
+
+    public ParserToken(Definition def, DefinitionType type) {
+        this(def, type, null);
     }
 
     public boolean isMacro(){

@@ -1,6 +1,7 @@
 package com.famiforth.parser;
 
 import java.io.IOException;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -18,17 +19,16 @@ import com.famiforth.parser.dictionary.UserDictionary;
 */
 public class Parser {
 
-    final private Lexer lexer;
+    private final Lexer lexer;
+    private final Deque<Integer> cfStack;
 
-    // Total number of IF Keywords encountered
     private int ifCounter;
-
-    // Total number of DO Keywords encountered
     private int doCounter;
 
     public Parser(Lexer scan, String dictionaryFile) {
         UserDictionary.initalize(dictionaryFile);
         this.lexer = scan;
+        this.cfStack = new LinkedList<>();
         ifCounter = 0;
         doCounter = 0;
     }
@@ -39,10 +39,9 @@ public class Parser {
 
     /**
      * Parser the next vaild set of tokend from the lexer
-     * @throws IOException 
+     * @throws IOException
      */
     public ParserToken parse() throws IOException {
-        // Return null if out of tokens to parse
         if(!lexer.hasNext()){
             return null;
         }
@@ -63,32 +62,37 @@ public class Parser {
 
                 Definition def = null;
                 DefinitionType type = null;
+                Integer reference = null;
                 if(key.equals(Keyword.COLON)){
                     type = DefinitionType.COLON;
                     def = parseColonStatement(token);
                 } else if(key.equals(Keyword.IF)){
-                    ifCounter++;
                     type = DefinitionType.IF;
                     def = getDefinition(token);
+                    cfStack.add(ifCounter++);
                 } else if(key.equals(Keyword.ELSE)){
                     type = DefinitionType.ELSE;
                     def = getDefinition(token);
+                    reference = cfStack.pollLast();
+                    cfStack.add(ifCounter++);
                 } else if(key.equals(Keyword.THEN)){
                     type = DefinitionType.THEN;
                     def = getDefinition(token);
+                    reference = cfStack.pollLast();
                 } else if(key.equals(Keyword.DO)){
-                    doCounter++;
                     type = DefinitionType.DO;
                     def = getDefinition(token);
+                    cfStack.add(doCounter++);
                 } else if(key.equals(Keyword.LOOP)){
                     type = DefinitionType.LOOP;
                     def = getDefinition(token);
+                    reference = cfStack.pollLast();
                 }
-                return new ParserToken(def, type, ifCounter, doCounter);
+                return new ParserToken(def, type, reference);
             case WORD:
-                return new ParserToken(getDefinition(token), DefinitionType.WORD, ifCounter, doCounter);
+                return new ParserToken(getDefinition(token), DefinitionType.WORD);
             case INTEGER:
-                return new ParserToken(UserDictionary.getIntegerDefinition(token.value), DefinitionType.INTEGER, ifCounter, doCounter);
+                return new ParserToken(UserDictionary.getIntegerDefinition(token.value), DefinitionType.INTEGER);
             // TokensTypes that result in an exception
             case END_COMMENT:
                 throw new SyntaxErrorException("A comment can not be closed if it was not opened");

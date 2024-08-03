@@ -36,9 +36,9 @@ true  = 255
 ; Save return value in W2
 .macro SAVE_RETURN
 		pla
-		sta lowByteW2
-		pla
 		sta hiByteW2
+		pla
+		sta lowByteW2
 .endmacro
 
 ; Load return value from W2

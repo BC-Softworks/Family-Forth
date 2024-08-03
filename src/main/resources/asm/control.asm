@@ -38,16 +38,20 @@
 
 ; ( -- )
 ; Continue execution at the location given by the resolution of orig2. 
-.proc ELSE
+.macro ELSE
 		nop
-.endproc
+.endmacro
 
+; ( C: orig -- )
+; Append the run-time semantics given below to the current definition.
+; Resolve the forward reference orig using the location of the appended run-time semantics. 
+;
 ; ( -- )
 ; Continue execution.
 ; Provide an address for jmp
-.proc THEN
+.macro THEN
 		nop
-.endproc
+.endmacro
 
 
 ; ( n1 | u1 n2 | u2 -- ) ( R: -- loop-sys )
@@ -78,7 +82,58 @@
 		jsr DROP		; Drop the flag
 		jsr ONEADD		; Add one to the counter
 		jsr TWOTOR		; push the limit and counter back onto the return stack
-		lda highByteW  	; Load the highByte of the addr in the W register
+		lda highByteW	; Load the highByte of the addr in the W register
+		pla           	; Push the highByte of the start of the loop
+		lda lowByteW  	; Load the lowbyte of the addr in the W register
+		pla           	; Push the lowbyte of the start of the loop
+		rts				; Return to the top of the loop
+@end:					; Set the return to address end of loop
+		jsr TWODROP		; Drop address, limit, counter, and flag
+		jmp TWODROP
+.endproc
+
+; ( -- ) ( R: loop-sys -- )
+;
+; Discard the current loop control parameters.
+; An ambiguous condition exists if they are unavailable.
+; Continue execution immediately following the innermost syntactically enclosing DO...LOOP or DO...+LOOP. 
+.macro LEAVE addr
+	pla 		; Load each param and drop them on the floor
+	pla			; Six bytes, three cells
+	pla
+	pla
+	pla
+	pla
+	clc
+	bcc addr	; Branch to after LOOP or +LOOP
+.endmacro
+
+
+
+; ( C: do-sys -- )
+; Append the run-time semantics given below to the current definition.
+; Resolve the destination of all unresolved occurrences of LEAVE between the location given 
+; by do-sys and the next location for a transfer of control, to execute the words following +LOOP.
+;
+; ( n -- ) ( R: loop-sys1 -- | loop-sys2 )
+; An ambiguous condition exists if the loop control parameters are unavailable.
+; Add n to the loop index. If the loop index did not cross the boundary between the
+; loop limit minus one and the loop limit, continue execution at the beginning of the loop.
+; Otherwise, discard the current loop control parameters and continue execution immediately following the loop. 
+.proc PLUSLOOP
+		pla           	; Save the fall through address
+		sta lowByteW  	; Store the lowbyte of the addr in the W register
+		pla           	; Repeat for the high byte
+		sta hiByteW
+		jsr RFROM		; Load the tol addr to the data stack
+		jsr TWORFROM	; Load the limit and counter
+		jsr ONEADD		; Add one to the counter
+		jsr TWODUP		; Duplicate the limit and counter
+		jsr EQUAL		; Check if equal
+		bne @end		; Numbers are equal end loop
+		jsr DROP		; Drop the flag
+		jsr TWOTOR		; push the limit and counter back onto the return stack
+		lda highByteW	; Load the highByte of the addr in the W register
 		pla           	; Push the highByte of the start of the loop
 		lda lowByteW  	; Load the lowbyte of the addr in the W register
 		pla           	; Push the lowbyte of the start of the loop
@@ -95,7 +150,8 @@
 ; ( -- )
 ; Continue execution. 
 .proc BEGIN
-
+	jsr GET_PC	; Places the address of this line in W2
+	LOAD_RETURN ; Places the previous line on the return stack
 	rts
 .endproc
 
@@ -106,10 +162,14 @@
 ;
 ; ( x -- )
 ; If all bits of x are zero, continue execution at the location specified by the resolution of orig. 
-.proc WHILE
-
-	rts
-.endproc
+.macro WHILE arg1, arg2
+	SAVE_RETURN	; Store dest in W2
+	lda arg1	; Push orig on to the stack
+	pha
+	lda arg2
+	pha
+	LOAD_RETURN ; Place dest on top of orig
+.endmacro
 
 ; ( C: orig dest -- )
 ; Append the run-time semantics given below to the current definition, resolving the backward reference dest. 
@@ -117,7 +177,10 @@
 ;
 ; ( -- )
 ; Continue execution at the location given by dest. 
-.proc REPEAT
-	
-	rts
-.endproc
+.macro REPEAT
+	SAVE_RETURN	; Store dest in W2
+	pha			; Drop orig
+	pha
+	LOAD_RETURN ; Place dest on top of orig
+	rts			; Jump to dest
+.endmacro
