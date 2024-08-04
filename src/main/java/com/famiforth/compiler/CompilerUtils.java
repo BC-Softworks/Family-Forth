@@ -9,11 +9,9 @@ public class CompilerUtils {
 
     /**
      * Check if a string is an integer
-     * Max an min values are not checked
-     * Bounds checkign is left up to the parser
+     * Max and min values are not checked
      * @param s
      * @param radix
-     * @return boolean
      */
     public static boolean isInteger(String s, int radix) {
         // Reject empty Strings
@@ -36,10 +34,9 @@ public class CompilerUtils {
 
     /**
      * Check if a string is an floating point number
-     * These are not supported and are rejected by the parser
+     * These are not yet supported and are rejected by the parser
      * @param s
      * @param radix
-     * @return boolean
      */
     public static boolean isFloat(String s) {
         // Reject empty Strings
@@ -62,7 +59,7 @@ public class CompilerUtils {
 
     /**
      * Convert Integer String to array of 16 bit little endian hex values
-     * @param input Integer
+     * @param input Integer 
      * @return Integer as String array of hex bytes
      */
     public static String[] littleEndian(String input){
@@ -71,10 +68,20 @@ public class CompilerUtils {
     }
 
     /**
+     * Convert Integer String to array of 16 bit little endian hex values
+     * @param input Integer 
+     * @return Integer as String array of hex bytes
+     */
+    public static String[] littleEndian(Integer input){
+        String hex = integerToHex(input);
+        return new String[]{hex.substring(2, 4), hex.substring(0, 2) };
+    }
+
+    /**
      * Convert integers to signed hex strings
      * Negative numbers are returned in twos complment form
      * @param input
-     * @return
+     * @return hex string
      */
     public static String integerToHex(int input) {
         boolean nonNegative = input >= 0;
@@ -104,7 +111,8 @@ public class CompilerUtils {
 
     /**
      * Return the twos complment of a single hex character
-     * @return
+     * @return The inversion of the given hex character
+     * @throws NullPointerException if str is null
      */
     protected static String invertHex(String str){
         final String hexNumerals = "0123456789ABCDEF";
