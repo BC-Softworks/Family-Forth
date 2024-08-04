@@ -2,7 +2,6 @@ package com.famiforth.generator;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,9 +11,13 @@ import com.famiforth.exceptions.GeneratorException;
 import com.famiforth.parser.ParserToken;
 import com.famiforth.parser.dictionary.UserDictionary;
 
+/** FamilyForth Code Generator
+ * @author Edward Conn
+*/
 public class AssemblyGenerator extends AbstractGenerator {
 
-    private static List<String> defaultFilesToInclude = Arrays.asList("core.asm", "macros.asm");
+    private static final String JSR = "jsr ";
+    private static List<String> defaultFilesToInclude = Arrays.asList("init.asm");
     
     public AssemblyGenerator(FileOutputStream fileOutputStream) {
         super(fileOutputStream);
@@ -31,10 +34,13 @@ public class AssemblyGenerator extends AbstractGenerator {
 
     @Override
     public void generate(ParserToken token) throws IOException{
-        List<String> lines = new ArrayList<>();
+        List<String> lines = new LinkedList<>();
         switch(token.type){
             case COLON:
                 lines = token.isMacro() ? generateMacro(token) : generateSubroutine(token);
+                break;
+            case CODE:
+                lines = token.def.getWords();
                 break;
             case IF:
                 lines = generateIfStatement(token);
@@ -45,10 +51,24 @@ public class AssemblyGenerator extends AbstractGenerator {
             case THEN:
                 lines = generateThenStatement(token);
                 break;
+            case LOOP:
+            case PLUSLOOP:
+                lines = generateLoopStatement(token);
+                break;
+            case LEAVE:
+                lines = generateLeaveStatement(token);
+                break;
+            case WHILE:
+                lines = generateWhileStatement(token);
+                break;
             case INTEGER:
                 lines = List.of(token.def.getLabel());
+            // Control word macros that do not need a label / take arguments
+            case DO:
+            case BEGIN:
+            case REPEAT:
             case WORD:
-                lines = List.of((token.def.isMacro() ? "" : "jsr") + token.def.getLabel());
+                lines = List.of((token.def.isMacro() ? "" : JSR) + token.def.getLabel());
                 break;
             default:
                 break;
@@ -82,9 +102,9 @@ public class AssemblyGenerator extends AbstractGenerator {
 
         List<String> macroList = new LinkedList<>();
         macroList.add(macroHeader);
-        macroList.addAll(words.stream().map(UserDictionary::getFlattenedDefinition)
-                            .map(lst -> String.format("\t%s", lst.get(0)))
-                            .collect(Collectors.toList()));
+        macroList.addAll(words.stream().map(UserDictionary::getDefinition)
+                                        .map(def -> String.format("\t%s%s", def.isMacro() ? "" : JSR, def.getLabel()))
+                                        .collect(Collectors.toList()));
         macroList.add(macroFooter);
         return macroList;
     }
@@ -96,22 +116,43 @@ public class AssemblyGenerator extends AbstractGenerator {
 
         List<String> subroutineList = new LinkedList<>();
         subroutineList.add(procHeader);
-        subroutineList.addAll(words.stream().map(UserDictionary::getFlattenedDefinition)
-                                    .map(lst -> String.format("\t%s", lst.get(0)))
+        subroutineList.addAll(words.stream()
+                                    .map(UserDictionary::getDefinition)
+                                    .map(def -> String.format("\t%s%s", def.isMacro() ? "" : JSR, def.getLabel()))
                                     .collect(Collectors.toList()));
         subroutineList.add(procFooter);
         return subroutineList;
     }
 
     private List<String> generateIfStatement(ParserToken token) {
-        return List.of(String.format("%s else_%d", token.def.getLabel(), token.condOffset));
+        return List.of(String.format("%s %s", token.def.getLabel(), token.reference.getLeft()));
     }
 
     private List<String> generateElseStatement(ParserToken token) {
-        return List.of("clc", String.format("bcc then_%d", token.condOffset), String.format("else_%d:", token.condOffset));
+        List<String> lst = new LinkedList<>();
+        lst.add("clc");
+        lst.add(String.format("bcc %s", token.reference.getLeft()));
+        lst.add(String.format("%s: %s", token.reference.getRight(), token.def.getLabel()));
+        return lst;
     }
 
     private List<String> generateThenStatement(ParserToken token) {
-        return List.of(String.format("then_%d:", token.condOffset));
+        return List.of(String.format("%s: %s", token.reference.getLeft(), token.def.getLabel()));
     }
+
+    private List<String> generateLoopStatement(ParserToken token) {
+        List<String> lst = new LinkedList<>();
+        lst.add(String.format("%s", token.def.getLabel()));
+        lst.add(String.format("%s", token.reference.getLeft()));
+        return lst;
+    }
+
+    private List<String> generateLeaveStatement(ParserToken token) {
+        return List.of(String.format("%s %s", token.def.getLabel(), token.reference.getLeft()));
+    }
+
+    private List<String> generateWhileStatement(ParserToken token) {
+        return List.of(String.format("%s %s", token.reference.getLeft(), token.def.getLabel()));
+    }
+
 }
