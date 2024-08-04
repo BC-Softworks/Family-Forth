@@ -65,20 +65,6 @@ public class UserDictionary {
     }
 
     /**
-     * Throws an IllegalStateException if the Dictionary has not be initialized
-     * 
-     * @param word
-     * @return name of the subroutine stored in the Dictionary
-     */
-    public static String getSubroutine(final String name) {
-        assert !CompilerUtils.isInteger(name, 10);
-        assert !isMacro(name);
-
-        initCheck();
-        return "jsr " + getDefinition(name).getLabel();
-    }
-
-    /**
      * Fetches the Definition of the word from the dictionary 
      * and checks if it is a macro
      * @param word
@@ -114,7 +100,17 @@ public class UserDictionary {
      */
     public static Definition getDefinition(final String word) {
         initCheck();
-        return dictionary.get(word);
+        Definition def = dictionary.get(word);
+        if(def != null){
+            return def;
+        }
+
+        // If the definition is not found, check if the word is a number.
+        if(CompilerUtils.isInteger(word, 10)){
+            return getIntegerDefinition(word);
+        }
+
+        throw new NullPointerException(String.format("The word, %s, is not defined in the dictionary.", word));
     }
 
     /**
@@ -125,6 +121,14 @@ public class UserDictionary {
         initCheck();
         final String[] arr = CompilerUtils.littleEndian(word);
         return new Definition(word, String.format("PUSHCELL #%s, #%s", arr[0], arr[1]), true);
+    }
+
+    /**
+     * @param word
+     * @return A one use definition
+    */
+    public static Definition getAnonymousDefinition(final String label){
+        return new Definition("", label, true);
     }
 
     /**s
