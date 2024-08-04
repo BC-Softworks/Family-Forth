@@ -116,7 +116,7 @@ public class Definition {
      */
     protected List<String> flattenDefinition() {
         if (isPrimitive()) {
-            return List.of(isMacro ? getLabel() : UserDictionary.getSubroutine(getName()));
+            return List.of(getLabel());
         }
 
         return getWords().stream().map(UserDictionary::getDefinition)
