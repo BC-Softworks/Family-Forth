@@ -9,6 +9,11 @@
 
 .include "core.asm"
 
+; Include guard
+.ifndef MEMORY_GUARD
+	MEMORY_GUARD = 1
+.endif
+
 ; ( a-addr -- x ) 
 ; Returns the full cell
 ; Fetch command '@'
@@ -124,7 +129,7 @@
 		jsr ROT
 		jsr SWAP
 		jsr STORE
-		jsr CELL+
+		jsr CELLPLUS
 		jmp STORE
 .endproc
 
@@ -153,8 +158,9 @@ no_add: rts
 .endproc
 
 ; ( a-addr1 -- a-addr2 )
-; Add the size in address units of a cell to a-addr1, giving a-addr2. 
-.proc CELL+
+; Add the size in address units of a cell to a-addr1, giving a-addr2.
+; Tokenized CELL+
+.proc CELLPLUS
 		clc
 		lda $00,X
 		adc #2

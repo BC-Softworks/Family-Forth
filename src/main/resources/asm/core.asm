@@ -10,6 +10,11 @@
 ; Defines the following words core extension words
 ; NIP TUCK TRUE FALSE PICK  <> 0<>
 
+; Include guard
+.ifndef CORE_GUARD
+	CORE_GUARD = 1
+.endif
+
 ;; Kernel "register" locations
 
 lowByteW   = $00

@@ -133,5 +133,35 @@
         "name": "THEN",
         "label": "THEN",
         "isMacro": true
+    },
+    {
+        "name": "DO",
+        "label": "DO",
+        "isMacro": true
+    },
+    {
+        "name": "LOOP",
+        "label": "LOOP",
+        "isMacro": true
+    },
+    {
+        "name": "+LOOP",
+        "label": "PLUSLOOP",
+        "isMacro": true
+    },
+    {
+        "name": "LEAVE",
+        "label": "LEAVE %s",
+        "isMacro": true
+    },
+    {
+        "name": "BEGIN",
+        "label": "BEGIN",
+        "isMacro": true
+    },
+    {
+        "name": "WHILE",
+        "label": "WHILE #%s, #%s",
+        "isMacro": true
     }
 ]

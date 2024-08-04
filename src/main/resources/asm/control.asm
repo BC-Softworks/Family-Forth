@@ -7,7 +7,21 @@
 ; BEGIN WHILE REPEAT
 ; IF ELSE THEN I J
 
-.include "memory.asm"
+.ifndef CONTROL_GUARD
+	CONTROL_GUARD = 1
+.endif
+
+.ifndef MEMORY_GUARD
+	.include "memory.asm"
+.endif
+
+.ifndef MATH_GUARD
+	.include "math.asm"
+.endif
+
+.ifndef CORE_GUARD
+	.include "core.asm"
+.endif
 
 ; Stores the program counter in W2
 .proc GET_PC
@@ -82,14 +96,13 @@
 		jsr DROP		; Drop the flag
 		jsr ONEADD		; Add one to the counter
 		jsr TWOTOR		; push the limit and counter back onto the return stack
-		lda highByteW	; Load the highByte of the addr in the W register
+		lda hiByteW		; Load the highByte of the addr in the W register
 		pla           	; Push the highByte of the start of the loop
 		lda lowByteW  	; Load the lowbyte of the addr in the W register
 		pla           	; Push the lowbyte of the start of the loop
 		rts				; Return to the top of the loop
-@end:					; Set the return to address end of loop
-		jsr TWODROP		; Drop address, limit, counter, and flag
-		jmp TWODROP
+@end:	jsr TWODROP		; Set the return to address end of loop
+		jmp TWODROP		; Drop address, limit, counter, and flag
 .endproc
 
 ; ( -- ) ( R: loop-sys -- )
@@ -108,8 +121,6 @@
 	bcc addr	; Branch to after LOOP or +LOOP
 .endmacro
 
-
-
 ; ( C: do-sys -- )
 ; Append the run-time semantics given below to the current definition.
 ; Resolve the destination of all unresolved occurrences of LEAVE between the location given 
@@ -121,9 +132,9 @@
 ; loop limit minus one and the loop limit, continue execution at the beginning of the loop.
 ; Otherwise, discard the current loop control parameters and continue execution immediately following the loop. 
 .proc PLUSLOOP
-		pla           	; Save the fall through address
+		pla				; Save the fall through address
 		sta lowByteW  	; Store the lowbyte of the addr in the W register
-		pla           	; Repeat for the high byte
+		pla				; Repeat for the high byte
 		sta hiByteW
 		jsr RFROM		; Load the tol addr to the data stack
 		jsr TWORFROM	; Load the limit and counter
@@ -133,14 +144,13 @@
 		bne @end		; Numbers are equal end loop
 		jsr DROP		; Drop the flag
 		jsr TWOTOR		; push the limit and counter back onto the return stack
-		lda highByteW	; Load the highByte of the addr in the W register
+		lda hiByteW		; Load the highByte of the addr in the W register
 		pla           	; Push the highByte of the start of the loop
 		lda lowByteW  	; Load the lowbyte of the addr in the W register
 		pla           	; Push the lowbyte of the start of the loop
-		rts				; Return to the top of the loop
-@end:					; Set the return to address end of loop
-		jsr TWODROP		; Drop address, limit, counter, and flag
-		jmp TWODROP
+		rts				; Return to the top of the loop			
+@end:	jsr TWODROP		; Set the return to address end of loop
+		jmp TWODROP		; Drop address, limit, counter, and flag
 .endproc
 
 ; ( C: -- dest )
@@ -149,38 +159,29 @@
 ;
 ; ( -- )
 ; Continue execution. 
-.proc BEGIN
-	jsr GET_PC	; Places the address of this line in W2
-	LOAD_RETURN ; Places the previous line on the return stack
-	rts
-.endproc
+.macro BEGIN
+		nop
+.endmacro
 
-; ( C: dest -- orig dest )
-; Put the location of a new unresolved forward reference orig onto the control flow stack, under the existing dest. 
-; Append the run-time semantics given below to the current definition. 
+; ( C: dest -- orig dest ) <-- This implmentation uses return stack
+; Put the location of a new unresolved forward reference orig onto the control flow stack, under the existing dest.
+; Append the run-time semantics given below to the current definition.
 ; The semantics are incomplete until orig and dest are resolved (e.g., by REPEAT).
 ;
 ; ( x -- )
 ; If all bits of x are zero, continue execution at the location specified by the resolution of orig. 
-.macro WHILE arg1, arg2
-	SAVE_RETURN	; Store dest in W2
-	lda arg1	; Push orig on to the stack
-	pha
-	lda arg2
-	pha
-	LOAD_RETURN ; Place dest on top of orig
+.macro WHILE label
+		lda $00,X
+		and $01,X
+		beq label
 .endmacro
 
-; ( C: orig dest -- )
+; ( C: orig dest -- ) <-- This implmentation uses return stack
 ; Append the run-time semantics given below to the current definition, resolving the backward reference dest. 
 ; Resolve the forward reference orig using the location following the appended run-time semantics.
 ;
 ; ( -- )
 ; Continue execution at the location given by dest. 
 .macro REPEAT
-	SAVE_RETURN	; Store dest in W2
-	pha			; Drop orig
-	pha
-	LOAD_RETURN ; Place dest on top of orig
-	rts			; Jump to dest
+		nop         ; Jumps to dest then jmp to orig on next loop
 .endmacro

@@ -7,7 +7,13 @@
 ; MIN MAX NEGATE INVERT CHAR+
 ; UM* UM/MOD
 
-.include "core.asm"
+.ifndef MATH_GUARD
+	MATH_GUARD = 1
+.endif
+
+.ifndef CORE_GUARD
+	.include "core.asm"
+.endif
 
 ; ( n1 n2 -- n3 )
 ; n3 = n2 + n1
