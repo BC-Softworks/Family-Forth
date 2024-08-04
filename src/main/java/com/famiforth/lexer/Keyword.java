@@ -9,11 +9,18 @@ import java.util.Arrays;
 public enum Keyword{
     COLON(":"),
     SEMICOLON(";"),
+    CODE("CODE"),
+    ENDCODE("ENDCODE"),
     IF("IF"),
     ELSE("ELSE"),
     THEN("THEN"),
     DO("DO"),
-    LOOP("LOOP");
+    LOOP("LOOP"),
+    PLUSLOOP("LOOP+"),
+    LEAVE("LEAVE"),
+    BEGIN("BEGIN"),
+    WHILE("WHILE"),
+    REPEAT("REPEAT");
 
     public final String value;
 
@@ -22,10 +29,10 @@ public enum Keyword{
     }
 
     public static Keyword getByValue(String value){
-        return Arrays.stream(Keyword.values()).filter(key -> key.value.equals(value)).findFirst().orElse(null);
+        return Arrays.stream(Keyword.values()).filter(key -> key.value.equalsIgnoreCase(value)).findFirst().orElse(null);
     }
     
     public static boolean isKeyword(String str){
-        return Arrays.stream(Keyword.values()).anyMatch(v -> v.value.equals(str));
+        return Arrays.stream(Keyword.values()).anyMatch(v -> v.value.equalsIgnoreCase(str));
     }
 }
