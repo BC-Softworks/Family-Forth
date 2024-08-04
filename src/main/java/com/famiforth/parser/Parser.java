@@ -5,6 +5,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.StringJoiner;
 
 import com.famiforth.exceptions.SyntaxErrorException;
 import com.famiforth.lexer.Keyword;
@@ -24,6 +25,7 @@ public class Parser {
 
     private int ifCounter;
     private int doCounter;
+    private int beginCounter;
 
     public Parser(Lexer scan, String dictionaryFile) {
         UserDictionary.initalize(dictionaryFile);
@@ -31,6 +33,7 @@ public class Parser {
         this.cfStack = new LinkedList<>();
         ifCounter = 0;
         doCounter = 0;
+        beginCounter = 0;
     }
 
     public boolean hasNext() {
@@ -58,35 +61,71 @@ public class Parser {
                 return null;
             // TokensTypes that return a ParserToken
             case KEYWORD:
-                Keyword key = Keyword.getByValue(token.value);
-
                 Definition def = null;
                 DefinitionType type = null;
                 Integer reference = null;
-                if(key.equals(Keyword.COLON)){
-                    type = DefinitionType.COLON;
-                    def = parseColonStatement(token);
-                } else if(key.equals(Keyword.IF)){
-                    type = DefinitionType.IF;
-                    def = getDefinition(token);
-                    cfStack.add(ifCounter++);
-                } else if(key.equals(Keyword.ELSE)){
-                    type = DefinitionType.ELSE;
-                    def = getDefinition(token);
-                    reference = cfStack.pollLast();
-                    cfStack.add(ifCounter++);
-                } else if(key.equals(Keyword.THEN)){
-                    type = DefinitionType.THEN;
-                    def = getDefinition(token);
-                    reference = cfStack.pollLast();
-                } else if(key.equals(Keyword.DO)){
-                    type = DefinitionType.DO;
-                    def = getDefinition(token);
-                    cfStack.add(doCounter++);
-                } else if(key.equals(Keyword.LOOP)){
-                    type = DefinitionType.LOOP;
-                    def = getDefinition(token);
-                    reference = cfStack.pollLast();
+                switch(Keyword.getByValue(token.value)) {
+                    case COLON:
+                        type = DefinitionType.COLON;
+                        def = parseColonStatement(token);
+                        break;
+                    case CODE:
+                        type = DefinitionType.CODE;
+                        def = parseCodeBlock(token);
+                        break;
+                    case IF:
+                        type = DefinitionType.IF;
+                        def = getDefinition(token);
+                        cfStack.add(ifCounter++);
+                        break;
+                    case ELSE:
+                        type = DefinitionType.ELSE;
+                        def = getDefinition(token);
+                        reference = cfStack.pollLast();
+                        break;
+                    case THEN:
+                        type = DefinitionType.THEN;
+                        def = getDefinition(token);
+                        reference = cfStack.pollLast();
+                        break;
+                    case DO:
+                        type = DefinitionType.DO;
+                        def = getDefinition(token);
+                        cfStack.add(doCounter++);
+                        break;
+                    case LOOP:
+                        type = DefinitionType.LOOP;
+                        def = getDefinition(token);
+                        reference = cfStack.pollLast();
+                        break;
+                    case PLUSLOOP:
+                        type = DefinitionType.PLUSLOOP;
+                        def = getDefinition(token);
+                        reference = cfStack.pollLast();
+                        break;
+                    case LEAVE:
+                        type = DefinitionType.LEAVE;
+                        def = getDefinition(token);
+                        reference = cfStack.getLast();
+                        break;
+                    case BEGIN:
+                        type = DefinitionType.BEGIN;
+                        def = getDefinition(token);
+                        cfStack.add(beginCounter++);
+                        break;
+                    case WHILE:
+                        type = DefinitionType.WHILE;
+                        def = getDefinition(token);
+                        reference = cfStack.getLast();
+                        cfStack.add(beginCounter++);
+                        break;
+                    case REPEAT:
+                        type = DefinitionType.REPEAT;
+                        def = getDefinition(token);
+                        reference = cfStack.pollLast();
+                        break;
+                    default:
+                        throw new SyntaxErrorException("Compilation time word encountered out of order.");
                 }
                 return new ParserToken(def, type, reference);
             case WORD:
@@ -122,11 +161,10 @@ public class Parser {
         Queue<String> wordList = new LinkedList<>();
         while(true) {
             token = skipComments(lexer.next_token());
-            if(!(Keyword.SEMICOLON).equals(Keyword.getByValue(token.value))){
-                wordList.add(token.value);
-            } else {
+            if((Keyword.SEMICOLON).equals(Keyword.getByValue(token.value))){
                 break;
             }
+            wordList.add(token.value);
         }
 
         // Poll the name of the word
@@ -139,10 +177,46 @@ public class Parser {
         return UserDictionary.getDefinition(name);
     }
 
+    private Definition parseCodeBlock(LexerToken lexerToken) throws IOException {
+        LexerToken token = lexerToken;
+        List<String> wordList = new LinkedList<>();
+        int lineNumber = lexerToken.lineNumber;
+        StringJoiner lineJoiner = new StringJoiner(" ");
+        while(true) {
+            token = skipAssemblyComments(lexer.next_token());
+            if((Keyword.ENDCODE).equals(Keyword.getByValue(token.value))){
+                break;
+            }
+            if(lineNumber < token.lineNumber){
+                lineNumber = token.lineNumber;
+                wordList.add(lineJoiner.toString());
+                lineJoiner = new StringJoiner(" ");
+            }
+
+            lineJoiner.add(token.value);
+        }
+
+        // Generate an anonymous definition for the code block
+        return UserDictionary.getAnonymousDefinition(lineJoiner.toString());
+    }
+
     private LexerToken skipComments(LexerToken token) {
         if((LexerToken.TokenType.BEGIN_COMMENT).equals(token.type)){
             while (!LexerToken.TokenType.END_COMMENT.equals(lexer.next_token().type));
             return lexer.next_token();
+        }
+        return token;
+    }
+
+
+    /**
+     * Skip comments inside assembly blocks
+     * @param token
+     * @return Next token after the commented text
+     */
+    private LexerToken skipAssemblyComments(LexerToken token) {
+        if(Keyword.SEMICOLON.equals(Keyword.getByValue(token.value))){
+            lexer.skipLine();
         }
         return token;
     }
