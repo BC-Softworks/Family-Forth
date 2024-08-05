@@ -23,7 +23,7 @@ import com.famiforth.parser.dictionary.UserDictionary;
 public class Parser {
 
     private final Lexer lexer;
-    private final Deque<Integer> cfStack;
+    private final Deque<String> cfStack;
 
     private int ifCounter;
     private int doCounter;
@@ -74,58 +74,61 @@ public class Parser {
                     case CODE:
                         type = DefinitionType.CODE;
                         def = parseCodeBlock(token);
+                        System.out.println(def);
                         break;
                     case IF:
                         type = DefinitionType.IF;
                         def = getDefinition(token);
-                        cfStack.add(ifCounter++);
-                        reference = Pair.of(Integer.toUnsignedString(cfStack.getLast()), null);
+                        cfStack.add("if_" + ifCounter++);
+                        reference = Pair.of(cfStack.getLast(), null);
                         break;
                     case ELSE:
                         type = DefinitionType.ELSE;
                         def = getDefinition(token);
-                        reference = Pair.of(Integer.toUnsignedString(cfStack.getLast()), null);
+                        String left = cfStack.pollLast();
+                        cfStack.add("else_" + ifCounter++);
+                        reference = Pair.of(left, cfStack.getLast());
                         break;
                     case THEN:
                         type = DefinitionType.THEN;
                         def = getDefinition(token);
-                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
+                        reference = Pair.of(cfStack.pollLast(), null);
                         break;
                     case DO:
                         type = DefinitionType.DO;
                         def = getDefinition(token);
-                        cfStack.add(doCounter++);
+                        cfStack.add("do_" + doCounter++);
                         break;
                     case LOOP:
                         type = DefinitionType.LOOP;
                         def = getDefinition(token);
-                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
+                        reference = Pair.of(cfStack.pollLast(), null);
                         break;
                     case PLUSLOOP:
                         type = DefinitionType.PLUSLOOP;
                         def = getDefinition(token);
-                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
+                        reference = Pair.of(cfStack.pollLast(), null);
                         break;
                     case LEAVE:
                         type = DefinitionType.LEAVE;
                         def = getDefinition(token);
-                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
+                        reference = Pair.of(cfStack.pollLast(), null);
                         break;
                     case BEGIN:
                         type = DefinitionType.BEGIN;
                         def = getDefinition(token);
-                        cfStack.add(beginCounter++);
+                        cfStack.add("begin_" + beginCounter++);
                         break;
                     case WHILE:
                         type = DefinitionType.WHILE;
                         def = getDefinition(token);
-                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
-                        cfStack.add(beginCounter++);
+                        reference = Pair.of(cfStack.pollLast(), null);
+                        cfStack.add("while_" + beginCounter++);
                         break;
                     case REPEAT:
                         type = DefinitionType.REPEAT;
                         def = getDefinition(token);
-                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
+                        reference = Pair.of(cfStack.pollLast(), null);
                         break;
                     default:
                         throw new SyntaxErrorException("Compilation time word encountered out of order.");
@@ -185,22 +188,22 @@ public class Parser {
         List<String> wordList = new LinkedList<>();
         int lineNumber = lexerToken.lineNumber;
         StringJoiner lineJoiner = new StringJoiner(" ");
-        while(true) {
-            token = skipAssemblyComments(lexer.next_token());
-            if((Keyword.ENDCODE).equals(Keyword.getByValue(token.value))){
-                break;
-            }
-            if(lineNumber < token.lineNumber){
+
+        token = skipAssemblyComments(lexer.next_token());
+        while(!(Keyword.ENDCODE).equals(Keyword.getByValue(token.value))) {
+            if(lineNumber != token.lineNumber){
                 lineNumber = token.lineNumber;
                 wordList.add(lineJoiner.toString());
                 lineJoiner = new StringJoiner(" ");
             }
 
             lineJoiner.add(token.value);
+            token = skipAssemblyComments(lexer.next_token());
         }
+        wordList.add(lineJoiner.toString());
 
         // Generate an anonymous definition for the code block
-        return UserDictionary.getAnonymousDefinition(lineJoiner.toString());
+        return UserDictionary.getAnonymousDefinition(wordList);
     }
 
     private LexerToken skipComments(LexerToken token) {

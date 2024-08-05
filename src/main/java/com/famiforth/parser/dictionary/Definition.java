@@ -31,14 +31,6 @@ public class Definition {
      * @param words
      * @param isMacro 
      */
-    protected Definition(String name, String label, boolean isMacro, List<String> words) {
-        this.isPrimitive = false;
-        this.isMacro = isMacro;
-        this.name = name;
-        this.label = label;
-        this.words = words;
-    }
-
     protected Definition(String name, boolean isMacro, List<String> words) {
         this.isPrimitive = false;
         this.isMacro = isMacro;

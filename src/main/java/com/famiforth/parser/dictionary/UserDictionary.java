@@ -124,11 +124,15 @@ public class UserDictionary {
     }
 
     /**
-     * @param word
+     * @param label
      * @return A one use definition
     */
     public static Definition getAnonymousDefinition(final String label){
         return new Definition("", label, true);
+    }
+
+    public static Definition getAnonymousDefinition(final List<String> wordList){
+        return new Definition("", true, wordList);
     }
 
     /**s

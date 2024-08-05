@@ -131,8 +131,8 @@ public class AssemblyGenerator extends AbstractGenerator {
     private List<String> generateElseStatement(ParserToken token) {
         List<String> lst = new LinkedList<>();
         lst.add("clc");
-        lst.add(String.format("bcc %s", token.reference.getLeft()));
-        lst.add(String.format("%s: %s", token.reference.getRight(), token.def.getLabel()));
+        lst.add(String.format("bcc %s", token.reference.getRight()));
+        lst.add(String.format("%s: %s", token.reference.getLeft(), token.def.getLabel()));
         return lst;
     }
 
