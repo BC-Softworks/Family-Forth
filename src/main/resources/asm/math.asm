@@ -17,7 +17,7 @@
 
 ; ( n1 n2 -- n3 )
 ; n3 = n2 + n1
-.proc ADDD
+.proc ADD
 		clc
 		.repeat 2   ; Decrementing between additions
 			lda $00,X ; allows a repeat to be used
@@ -45,28 +45,17 @@
 ; Add one (1) to n1 | u1 giving the sum n2 | u2.
 ; Tokenized 1+
 .proc ONEADD
-		clc
-		lda $00,X
-		adc #1
-		sta $00,X
-		lda $01,X ; Should handle the carry
-		adc #0
-		sta $01,X
-		rts
+		PUSH #1
+		jmp ADD
 .endproc
 
 ; ( n1 | u1 -- n2 | u2 )
 ; Sub one (1) to n1 | u1 giving the differene n2 | u2.
 ; Tokenized 1-
 .proc ONESUB
-		sec
-		lda $00,X
-		sbc #1
-		sta $00,X
-		lda $01,X ; Should handle the carry
-		sbc #0
-		sta $01,X
-		rts
+		PUSH #1
+		jsr SWAP
+		jmp SUBB
 .endproc
 
 
@@ -234,11 +223,8 @@ rot_r:	ror			 	; rotate partial product
 		lda $00,X ; Compare low bytes
 		cmp $02,X ; If high ytes equal
 		bpl @end  ; If n1 is less then n2 call drop
-		jsr NIP   ; Else call nip
-		rts
-@end: 	inx       ; Inline Drop
-		inx
-		rts
+		jsr SWAP  ; Else call swap then drop
+@end: 	jmp DROP
 .endproc
 
 ; ( n1 n2 -- n3 )
@@ -250,11 +236,8 @@ rot_r:	ror			 	; rotate partial product
 		lda $00,X ; Compare low bytes
 		cmp $02,X ; If high bytes are equal
 		bmi @end  ; If n1 is greater then n2 call drop
-		jsr NIP   ; Else call nip
-		rts
-@end: 	inx       ; Inline Drop
-		inx
-		rts
+		jsr SWAP
+@end: 	jmp DROP
 .endproc
 
 ; ( x1 -- x2 )

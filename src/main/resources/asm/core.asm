@@ -23,9 +23,7 @@ lowByteW2  = $02
 hiByteW2   = $03
 lowByteDSP = $04
 hiByteDSP  = $05
-lowByteCFP = $06
-hiByteCFP  = $07
-radix	   = $08
+radix  	   = $06
 
 ;Boolean constant
 false = 0
@@ -149,8 +147,7 @@ true  = 255
 ; Tokenized 2DUP
 .proc TWODUP
 		jsr OVER 
-		jsr OVER 
-		rts
+		jmp OVER
 .endproc
 
 ; ( x -- 0 | x x )
@@ -159,12 +156,12 @@ true  = 255
 .proc QDUP
 		lda $00,X
 		cmp #0
-		bne @end
+		bne @dup
 		lda $01,X
 		cmp #0
-		bne @end
-		jsr DUP
-@end:	rts
+		beq @dup
+		rts
+@dup:	jmp DUP
 .endproc
 
 
@@ -172,8 +169,7 @@ true  = 255
 ; Rotate the top three stack entries.
 ; Optimized by moving the stack pointer instead of the objects.
 .proc ROT
-		inx          ; Inline Drop
-		inx
+		jsr DROP
 		jsr SWAP     ; Doesn't affect x3
 		PUT
 		jmp SWAP
@@ -219,45 +215,36 @@ set: 	sta $00,X
 ; x3 is the bit-by-bit logical "and" of x1 with x2.
 .proc ANDD
 		lda $00,X
-		sta $00
+		and $02,X
+		sta $02,X
 		lda $01,X
-		jsr DROP
-		and $01,X
-		sta $01,X
-		lda $00
-		and $00,X
-		sta $00,X
-		rts
+		and $03,X
+		sta $03,X
+		jmp DROP
 .endproc
 
 ; ( x1 x2 -- x3 )
 ; x3 is the bit-by-bit logical "or" of x1 with x2.
 .proc OR
 		lda $00,X
-		sta lowByteW
+		ora $02,X
+		sta $02,X
 		lda $01,X
-		jsr DROP
-		ora $01,X
-		sta $01,X
-		lda lowByteW
-		ora $00,X
-		sta $00,X
-		rts
+		ora $03,X
+		sta $03,X
+		jmp DROP
 .endproc
 
 ; ( x1 x2 -- x3 )
 ; x3 is the bit-by-bit logical "xor" of x1 with x2.
 .proc XOR
 		lda $00,X
-		sta lowByteW
+		eor $02,X
+		sta $02,X
 		lda $01,X
-		jsr DROP
-		eor $01,X
-		sta $01,X
-		lda lowByteW
-		eor $00,X
-		sta $00,X
-		rts
+		eor $03,X
+		sta $03,X
+		jmp DROP
 .endproc
 
 ;; Bit Shifts
@@ -327,22 +314,22 @@ r_zero: lda #0
 		rts
 .endproc
 
-
-.macro CMP16
+; Helper proc
+.proc CMP16
 		lda $00,X
 		cmp $02,X
 		lda $01,X
 		sbc $03,X
 		bvc skip 	; N eor V
 		eor #$80
-skip:	nop			;
-.endmacro
+skip:	rts
+.endproc
 
 ; ( n1 n2 -- flag )
 ; flag is true if and only if n1 is less than n2. 
 ; Tokenized <
 .proc LESS
-		CMP16
+		jsr CMP16
 		bpl @pos 	; If N not set 
 		lda true
 		jmp @store
@@ -356,7 +343,7 @@ skip:	nop			;
 ; flag is true if and only if n1 is greater than n2. 
 ; Tokenized >
 .proc GREATER
-		CMP16
+		jsr CMP16
 		bmi @neg 	; N set
 		lda true
 		jmp @store
@@ -379,9 +366,7 @@ skip:	nop			;
 		sta $00,X
 		sta $01,X
 		rts
-branch: lda false  ; A bit was set to 1
-		sta $00,X
-		sta $01,X
+branch: PUSH false
 		rts
 .endproc
 
@@ -431,11 +416,9 @@ branch: lda false  ; A bit was set to 1
 		
 @true:	lda true		
 		
-@drop:  inx
-		inx		
-		sta $00,X	; Store true or false
-		sta $01,X	; to the TOS
-		rts
+@drop:  sta $02,X	; Store true or false
+		sta $03,X	; to the TOS
+		jmp DROP
 .endproc
 
 ; ( u1 u2 -- flag )
@@ -454,10 +437,9 @@ branch: lda false  ; A bit was set to 1
 @false:	lda false
 		beq @drop
 		
-@true:	lda true		
+@true:	lda true
 		
-@drop:  inx
-		inx		
+@drop:  jsr DROP
 		sta $00,X	; Store true or false
 		sta $01,X	; to the TOS
 		rts

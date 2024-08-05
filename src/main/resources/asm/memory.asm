@@ -3,9 +3,9 @@
 ;==========================================================;
 
 ; Defines the following words core words
-; @ C@ ! 2! 2@ ALIGN ALIGNED 
+; @ C@ ! C! 2! 2@ ALIGN ALIGNED 
 ; CELLS CELL+ R> 2R> >R 2>R R@ 
-; ALLOT HERE , MOVE
+; ALLOT HERE , C, MOVE
 
 .include "core.asm"
 
@@ -52,19 +52,11 @@
 ; Returns two full cells
 ; Fetch command '2@'
 .proc TWO_SYM_AT
-		jsr SYM_AT    ; Leaves addr in W
-		inx			; Inline PUT
-		inx
-		lda #2	    ; Add 2 to the address
-		clc
-		adc lowByteW
-		sta $00,X     ; Then call @ again
-		lda #0
-		adc hiByteW	; Add zero and use carry
-		sta $01,X     ; 
+		jsr DUP
+		jsr CELLPLUS
 		jsr SYM_AT
-		jsr SWAP		; Then swap
-		rts  
+		jsr SWAP
+		jmp SYM_AT
 .endproc
 
 ; ( -- )
@@ -74,9 +66,9 @@
 		lda lowByteDSP
 		and #%00000001
 		cmp #%00000001
-		beq @end
-		jsr ONESUB
-@end:	rts
+		bne @sub
+		rts
+@sub:	jmp ONESUB
 .endproc
 
 ;( addr -- a-addr )
@@ -84,24 +76,9 @@
 .proc ALIGNED
 		lda $00,X
 		and #%00000001
-		beq @addOne
-		clc
-		lda $00,X
-		adc #2
-		sta $00,X
-		lda $01,X
-		adc #0
-		sta $01,X
-		rts
-@addOne:  
-		clc
-		lda $00,X
-		adc #1
-		sta $00,X
-		lda $01,X
-		adc #0
-		sta $01,X
-		rts
+		beq @add
+		jsr ONEADD
+@add:	jmp ONEADD
 .endproc
 
 ; ( x a-addr -- )
@@ -119,6 +96,14 @@
 		lda $03,X		; Store the lowbyte at a-addr + 1
 		sta ($00),Y
 		jmp TWODROP		; Drop the address and x from the stack
+.endproc
+
+; ( char c-addr -- )
+; Store char at c-addr. 
+; When character size is smaller than cell size, 
+; only the number of low-order bits corresponding to character size are transferred. 
+.proc C_STORE
+	rts
 .endproc
 
 ; ( x1 x2 a-addr -- )
@@ -179,9 +164,9 @@ no_add: rts
 		SAVE_RETURN
 		PUT
 		pla
-		sta $00,X     ; Push lower byte
+		sta $01,X     ; Pull high byte
 		pla
-		sta $01,X	  ; Push higher byte
+		sta $00,X	  ; Pull low byte
 		LOAD_RETURN
 		rts
 .endproc
@@ -293,6 +278,17 @@ no_add: rts
 		lda $01,X   
 		sta (lowByteDSP),Y	; Store the highbyte
 		jmp DROP			; Drop x from the parameter stack
+.endproc
+
+; ( char -- )
+; Reserve space for one character in the data space and store char in the space.
+; If the data-space pointer is character aligned when C, begins execution, it will remain character aligned when C, finishes execution.
+; An ambiguous condition exists if the data-space pointer is not character-aligned prior to execution of C,. 
+.proc C_COMMA
+	jsr HERE
+	jsr C_STORE
+	PUSH #1
+	jmp ALLOT
 .endproc
 
 ; ( addr1 addr2 u -- )

@@ -38,10 +38,10 @@
 ; ( x -- )
 ; If all bits of x are zero, continue execution
 ; at the location specified by the resolution of orig. 
-.macro IF label
+.macro IF orig
 		lda $00,X
 		and $01,X
-		beq label
+		beq orig
 .endmacro
 
 ; ( C: orig1 -- orig2 )
@@ -51,7 +51,8 @@
 ; Resolve the forward reference orig1 using the location following the appended run-time semantics. 
 
 ; ( -- )
-; Continue execution at the location given by the resolution of orig2. 
+; Continue execution at the location given by the resolution of orig2.
+; In this implmentation it is the following block of code so a nop suffices
 .macro ELSE
 		nop
 .endmacro
@@ -111,14 +112,12 @@
 ; An ambiguous condition exists if they are unavailable.
 ; Continue execution immediately following the innermost syntactically enclosing DO...LOOP or DO...+LOOP. 
 .macro LEAVE addr
-	pla 		; Load each param and drop them on the floor
-	pla			; Six bytes, three cells
-	pla
-	pla
-	pla
-	pla
-	clc
-	bcc addr	; Branch to after LOOP or +LOOP
+		ldy #5
+@loop:	pla
+		dey			; Load loop-sys and drop on the floor
+		bne @loop	; Six bytes, three cells
+		clc
+		bcc addr	; Branch to after LOOP or +LOOP
 .endmacro
 
 ; ( C: do-sys -- )
@@ -163,25 +162,25 @@
 		nop
 .endmacro
 
-; ( C: dest -- orig dest ) <-- This implmentation uses return stack
+; ( C: dest -- orig dest )
 ; Put the location of a new unresolved forward reference orig onto the control flow stack, under the existing dest.
 ; Append the run-time semantics given below to the current definition.
 ; The semantics are incomplete until orig and dest are resolved (e.g., by REPEAT).
 ;
 ; ( x -- )
 ; If all bits of x are zero, continue execution at the location specified by the resolution of orig. 
-.macro WHILE label
+.macro WHILE orig
 		lda $00,X
 		and $01,X
-		beq label
+		beq orig
 .endmacro
 
-; ( C: orig dest -- ) <-- This implmentation uses return stack
+; ( C: orig dest -- )
 ; Append the run-time semantics given below to the current definition, resolving the backward reference dest. 
 ; Resolve the forward reference orig using the location following the appended run-time semantics.
 ;
 ; ( -- )
 ; Continue execution at the location given by dest. 
-.macro REPEAT
-		nop         ; Jumps to dest then jmp to orig on next loop
+.macro REPEAT dest
+		jsr dest	; Jumps to dest
 .endmacro
