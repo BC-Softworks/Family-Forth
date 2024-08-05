@@ -1,4 +1,5 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![Maven Build](https://github.com/BC-Softworks/Family-Forth/actions/workflows/maven.yml/badge.svg)
 
 # Family Forth Cross Compiler
 
