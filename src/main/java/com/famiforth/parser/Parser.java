@@ -79,11 +79,12 @@ public class Parser {
                         type = DefinitionType.IF;
                         def = getDefinition(token);
                         cfStack.add(ifCounter++);
+                        reference = Pair.of(Integer.toUnsignedString(cfStack.getLast()), null);
                         break;
                     case ELSE:
                         type = DefinitionType.ELSE;
                         def = getDefinition(token);
-                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
+                        reference = Pair.of(Integer.toUnsignedString(cfStack.getLast()), null);
                         break;
                     case THEN:
                         type = DefinitionType.THEN;

@@ -17,7 +17,7 @@ import com.famiforth.compiler.Compiler;
 
 public class FamilyForth {
     static final String DEFAULT_FILE_OUT = "build/out.asm";
-    static final String DEFAULT_DICTIONARY_LOCATION = "src/main/resources/base_dictionary.json";
+    static final String DEFAULT_DICTIONARY_LOCATION = "src/main/resources/json/core_dictionary.json";
 
     static String fileIn;
     static String fileOut = DEFAULT_FILE_OUT;
