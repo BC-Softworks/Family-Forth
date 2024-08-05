@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.StringJoiner;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.famiforth.exceptions.SyntaxErrorException;
 import com.famiforth.lexer.Keyword;
 import com.famiforth.lexer.Lexer;
@@ -63,7 +65,7 @@ public class Parser {
             case KEYWORD:
                 Definition def = null;
                 DefinitionType type = null;
-                Integer reference = null;
+                Pair<String, String> reference = null;
                 switch(Keyword.getByValue(token.value)) {
                     case COLON:
                         type = DefinitionType.COLON;
@@ -81,12 +83,12 @@ public class Parser {
                     case ELSE:
                         type = DefinitionType.ELSE;
                         def = getDefinition(token);
-                        reference = cfStack.pollLast();
+                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
                         break;
                     case THEN:
                         type = DefinitionType.THEN;
                         def = getDefinition(token);
-                        reference = cfStack.pollLast();
+                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
                         break;
                     case DO:
                         type = DefinitionType.DO;
@@ -96,17 +98,17 @@ public class Parser {
                     case LOOP:
                         type = DefinitionType.LOOP;
                         def = getDefinition(token);
-                        reference = cfStack.pollLast();
+                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
                         break;
                     case PLUSLOOP:
                         type = DefinitionType.PLUSLOOP;
                         def = getDefinition(token);
-                        reference = cfStack.pollLast();
+                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
                         break;
                     case LEAVE:
                         type = DefinitionType.LEAVE;
                         def = getDefinition(token);
-                        reference = cfStack.getLast();
+                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
                         break;
                     case BEGIN:
                         type = DefinitionType.BEGIN;
@@ -116,13 +118,13 @@ public class Parser {
                     case WHILE:
                         type = DefinitionType.WHILE;
                         def = getDefinition(token);
-                        reference = cfStack.getLast();
+                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
                         cfStack.add(beginCounter++);
                         break;
                     case REPEAT:
                         type = DefinitionType.REPEAT;
                         def = getDefinition(token);
-                        reference = cfStack.pollLast();
+                        reference = Pair.of(Integer.toUnsignedString(cfStack.pollLast()), null);
                         break;
                     default:
                         throw new SyntaxErrorException("Compilation time word encountered out of order.");
