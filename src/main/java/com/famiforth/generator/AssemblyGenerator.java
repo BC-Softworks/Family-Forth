@@ -3,6 +3,7 @@ package com.famiforth.generator;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class AssemblyGenerator extends AbstractGenerator {
     }
 
     @Override
-    public void generate(ParserToken token) throws IOException{
+    public List<String> generate(ParserToken token) throws IOException{
         List<String> lines = new LinkedList<>();
         switch(token.type){
             case COLON:
@@ -75,6 +76,8 @@ public class AssemblyGenerator extends AbstractGenerator {
         }
 
         writeLines(lines);
+
+        return lines;
     }
 
     /**

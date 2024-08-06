@@ -2,6 +2,7 @@ package com.famiforth.generator;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import com.famiforth.parser.ParserToken;
 
@@ -23,6 +24,6 @@ public abstract class AbstractGenerator {
 
     public abstract void writeFileHeader() throws IOException;
 
-    public abstract void generate(ParserToken token) throws IOException;
+    public abstract List<String> generate(ParserToken token) throws IOException;
 
 }

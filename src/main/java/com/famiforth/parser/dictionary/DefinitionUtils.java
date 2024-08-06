@@ -11,11 +11,14 @@ public class DefinitionUtils {
     
     /**
      * Capitalizes the word and then replaces the special charaters in the word.
+     * Also, in order to save space the label is trimmed to 8 characters max
+     * This can cause conflicts and should be noted in the documentation
      * @param word
      * @return a valid {@link Definition} name
      */
     public static String convertToVaildLabel(String word){
         validateName(word);
+        word = word.substring(0, Math.min(word.length(), 8));
         return replaceSpecialCharacters(word.toUpperCase());
     }
 

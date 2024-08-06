@@ -1,5 +1,8 @@
 package com.famiforth;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,32 +19,46 @@ import com.famiforth.parser.dictionary.UserDictionary;
 
 public class AssemblyGeneratorTest {
     
-    AbstractGenerator generator;
+    private AbstractGenerator generator;
+
+    private FileOutputStream fileOut;
 
     @Before
     public void setup() throws FileNotFoundException{
-        generator = new AssemblyGenerator(new FileOutputStream("build/generator_test.asm"));
+        fileOut = mock(FileOutputStream.class);
+        generator = new AssemblyGenerator(fileOut);
     }
+
+    @Test
+    public void writeFileHeaderTest() throws IOException{
+        setup();
+        generator.writeFileHeader();
+    }
+
 
     @Test
     public void generateIfStatementTest() throws IOException {
         setup();
-        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("IF"), DefinitionType.IF, Pair.of(null));
-        generator.generate(token);
+        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("IF"), DefinitionType.IF, Pair.of("0",""));
+        assertEquals("IF 0", generator.generate(token).get(0));
     }
 
     @Test
     public void generateElseStatementTest() throws IOException {
         setup();
-        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("ELSE"), DefinitionType.ELSE, Pair.of(null));
+        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("ELSE"), DefinitionType.ELSE, Pair.of("0","1"));
         generator.generate(token);
+        assertEquals("clc", generator.generate(token).get(0));
+        assertEquals("bcc 1", generator.generate(token).get(1));
+        assertEquals("0: ELSE", generator.generate(token).get(2));
     }
 
     @Test
     public void generateThenStatementTest() throws IOException {
         setup();
-        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("THEN"), DefinitionType.THEN, Pair.of(null));
+        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("THEN"), DefinitionType.THEN, Pair.of("0", ""));
         generator.generate(token);
+        assertEquals("0: THEN", generator.generate(token).get(0));
     }
 
 }

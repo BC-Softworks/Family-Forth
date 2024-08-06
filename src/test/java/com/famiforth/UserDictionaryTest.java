@@ -35,4 +35,12 @@ public class UserDictionaryTest {
         assertEquals("?DROP", def.getName());
         assertEquals("qDROP", def.getLabel());
     }
+
+    @Test
+    public void getIntegerDefinitionTest() throws IOException {
+        dictionary = UserDictionary.initalize(testFileName);
+        Definition def = UserDictionary.getDefinition("12345");
+        assertEquals("12345", def.getName());
+        assertEquals("PUSHCELL #39, #30", def.getLabel());
+    }
 }
