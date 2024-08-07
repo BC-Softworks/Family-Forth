@@ -7,11 +7,17 @@
 ; CELLS CELL+ R> 2R> >R 2>R R@ 
 ; ALLOT HERE , C, MOVE
 
-.include "core.asm"
-
 ; Include guard
 .ifndef MEMORY_GUARD
 	MEMORY_GUARD = 1
+.endif
+
+.ifndef MATH_GUARD
+	.include "math.asm"
+.endif
+
+.ifndef CORE_GUARD
+	.include "core.asm"
 .endif
 
 ; ( a-addr -- x ) 

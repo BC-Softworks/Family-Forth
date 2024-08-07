@@ -19,7 +19,7 @@
 ; n3 = n2 + n1
 .proc ADD
 		clc
-		.repeat 2   ; Decrementing between additions
+		.repeat 2	  ; Decrementing between additions
 			lda $00,X ; allows a repeat to be used
 			adc $02,X ; Doesn't work with SUB
 			sta $02,X
