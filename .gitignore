@@ -34,5 +34,5 @@ target/classes/asm/core.asm
 target/classes/asm/math.asm
 target/classes/asm/memory.asm
 
-# Ignore object files
-src/main/resources/asm/*.o
+# Ignore dist files
+dist/*

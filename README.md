@@ -3,7 +3,7 @@
 
 # Family Forth Cross Compiler
 
-Forth Cross Compiler targeting the Ricoh 2A03.
+Forth cross compiler targeting the Ricoh 2A03.
 
 Requires Maven and Java 11+ to build the compiler.
 
