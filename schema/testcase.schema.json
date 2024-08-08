@@ -1,0 +1,1186 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "type": "object",
+    "required": [
+        "target",
+        "testCases"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "target": {
+            "title": "Test target",
+            "description": "Test target specifies the address to be set in the PC register.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "testType": {
+                    "title": "Test end type",
+                    "type": "string",
+                    "enum": [
+                        "JSR",
+                        "NMI",
+                        "IRQ",
+                        "address"
+                    ]
+                },
+                "start": {
+                    "title": "Test start address",
+                    "$ref": "#/definitions/address"
+                },
+                "end": {
+                    "title": "Test end address",
+                    "$ref": "#/definitions/address"
+                }
+            },
+            "if": {
+                "properties": {
+                    "testType": {
+                        "not": {
+                            "pattern": "^address$"
+                        }
+                    }
+                }
+            },
+            "then": {
+                "if": {
+                    "properties": {
+                        "testType": {
+                            "not": {
+                                "pattern": "NMI|IRQ"
+                            }
+                        }
+                    }
+                },
+                "then": {
+                    "required": [
+                        "start"
+                    ],
+                    "properties": {
+                        "end": false
+                    }
+                },
+                "else": {
+                    "properties": {
+                        "start": false,
+                        "end": false
+                    }
+                }
+            },
+            "else": {
+                "required": [
+                    "start",
+                    "end"
+                ]
+            }
+        },
+        "definitions": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "primitives": {
+                    "title": "Primitives",
+                    "description": "The primitive definitions.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "value": {
+                            "type": "object",
+                            "minProperties": 1,
+                            "patternProperties": {
+                                "^.*$": {
+                                    "$ref": "#/definitions/value"
+                                }
+                            }
+                        }
+                    }
+                },
+                "templates": {
+                    "title": "Templates",
+                    "description": "The case templates.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "setup": {
+                            "type": "object",
+                            "minProperties": 1,
+                            "patternProperties": {
+                                "^.*$": {
+                                    "$ref": "#/definitions/case_setup"
+                                }
+                            }
+                        },
+                        "expected": {
+                            "type": "object",
+                            "minProperties": 1,
+                            "patternProperties": {
+                                "^.*$": {
+                                    "$ref": "#/definitions/case_expected"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "testCases": {
+            "title": "Test cases",
+            "description": "Test cases specify, for each test, the setup conditions and the expected conditions.",
+            "type": "object",
+            "minProperties": 1,
+            "$ref": "#/definitions/testCase"
+        },
+        "config": {
+            "$ref": "#/definitions/config"
+        }
+    },
+    "definitions": {
+        "testCase": {
+            "patternProperties": {
+                "/$": {
+                    "type": "object",
+                    "$ref": "#/definitions/testCase"
+                },
+                ".*": {
+                    "title": "Test ID",
+                    "description": "Test ID can be any string that uniquely identifies it in the file.",
+                    "type": "object",
+                    "required": [
+                        "setup",
+                        "expected"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "$comment": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "skip": {
+                            "type": "boolean"
+                        },
+                        "setup": {
+                            "$ref": "#/definitions/case_setup"
+                        },
+                        "expected": {
+                            "$ref": "#/definitions/case_expected"
+                        }
+                    }
+                }
+            }
+        },
+        "address": {
+            "type": "object",
+            "oneOf": [
+                {
+                    "required": [
+                        "address"
+                    ]
+                },
+                {
+                    "required": [
+                        "label"
+                    ]
+                }
+            ],
+            "properties": {
+                "address": {
+                    "title": "Address",
+                    "description": "Address is expressed as a hexadecimal address value.",
+                    "$ref": "#/definitions/number_16bit"
+                },
+                "label": {
+                    "title": "Label",
+                    "description": "Label specifies the symbol name written in the debug information file.",
+                    "type": "string"
+                },
+                "offset": {
+                    "title": "Offset",
+                    "description": "The offset specifies the position relative to the point of the address indicated by the Label.",
+                    "$ref": "#/definitions/number_8bit"
+                }
+            },
+            "dependencies": {
+                "address": {
+                    "properties": {
+                        "offset": false,
+                        "label": false
+                    }
+                },
+                "label": {
+                    "properties": {
+                        "address": false
+                    }
+                }
+            }
+        },
+        "number_8bit": {
+            "oneOf": [
+                {
+                    "type": "integer",
+                    "minimum": -128,
+                    "maximum": 255
+                },
+                {
+                    "type": "string",
+                    "pattern": "^\\$[0-9A-F]{1,2}$"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^%[01]{1,8}$"
+                }
+            ]
+        },
+        "number_16bit": {
+            "type": "string",
+            "pattern": "^\\$[0-9A-F]{1,4}$"
+        },
+        "reference": {
+            "type": "string",
+            "pattern": "^@"
+        },
+        "value": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/number_8bit"
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "value",
+                                "hibyte",
+                                "lobyte",
+                                "rts_hibyte",
+                                "rts_lobyte",
+                                "register_A",
+                                "register_X",
+                                "register_Y",
+                                "register_P"
+                            ]
+                        },
+                        "address": true,
+                        "label": true,
+                        "offset": true
+                    },
+                    "if": {
+                        "properties": {
+                            "type": {
+                                "not": {
+                                    "pattern": "^register_"
+                                }
+                            }
+                        }
+                    },
+                    "then": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/address"
+                            }
+                        ]
+                    },
+                    "else": {
+                        "properties": {
+                            "address": false,
+                            "label": false,
+                            "offset": false
+                        }
+                    }
+                },
+                {
+                    "$ref": "#/definitions/reference"
+                }
+            ]
+        },
+        "case_setup": {
+            "title": "Setup condition",
+            "description": "Setup condition specifies the initial settings of the registers and memory at the start of the test.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "template": {
+                    "title": "Use template",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/reference"
+                    }
+                },
+                "register": {
+                    "title": "Register",
+                    "$ref": "#/definitions/setup/register"
+                },
+                "memory": {
+                    "title": "Memory",
+                    "$ref": "#/definitions/setup/memory"
+                },
+                "stack": {
+                    "title": "Stack",
+                    "$ref": "#/definitions/setup/stack"
+                },
+                "interrupt": {
+                    "title": "Interrupt",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "entryPoint"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "NMI",
+                                    "IRQ"
+                                ]
+                            },
+                            "entryPoint": {
+                                "title": "Entry point address",
+                                "$ref": "#/definitions/address"
+                            }
+                        }
+                    }
+                },
+                "mockedProc": {
+                    "title": "Mocked proc",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "entryPoint"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                            "entryPoint": {
+                                "title": "Entry point address",
+                                "$ref": "#/definitions/address"
+                            },
+                            "action": {
+                                "type": "string",
+                                "enum": [
+                                    "rts",
+                                    "jmp"
+                                ]
+                            },
+                            "jmpDest": {
+                                "$ref": "#/definitions/address"
+                            },
+                            "setValue": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "template": {
+                                            "title": "Use template",
+                                            "type": "array",
+                                            "minItems": 1,
+                                            "items": {
+                                                "$ref": "#/definitions/reference"
+                                            }
+                                        },
+                                        "register": {
+                                            "$ref": "#/definitions/setup/register"
+                                        },
+                                        "memory": {
+                                            "title": "Memory",
+                                            "$ref": "#/definitions/setup/mockedMemory"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "case_expected": {
+            "title": "Expected condition",
+            "description": "Expected Condition specifies the result of the registers and memory at the end of the test.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "template": {
+                    "title": "Use template",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/reference"
+                    }
+                },
+                "register": {
+                    "title": "Register",
+                    "$ref": "#/definitions/expected/register"
+                },
+                "memory": {
+                    "title": "Memory",
+                    "$ref": "#/definitions/expected/memory"
+                },
+                "stack": {
+                    "title": "Stack",
+                    "$ref": "#/definitions/expected/stack"
+                },
+                "timeout": {
+                    "title": "Timeout",
+                    "description": "Timeout specifies whether or not the test will error on timeout.",
+                    "$ref": "#/definitions/expected/expressionBoolean"
+                }
+            }
+        },
+        "setup": {
+            "register": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                    "A": {
+                        "title": "Accumulator",
+                        "$ref": "#/definitions/setup/registerProperty"
+                    },
+                    "X": {
+                        "title": "Index register X",
+                        "$ref": "#/definitions/setup/registerProperty"
+                    },
+                    "Y": {
+                        "title": "Index register Y",
+                        "$ref": "#/definitions/setup/registerProperty"
+                    },
+                    "P": {
+                        "title": "Processor status register",
+                        "$ref": "#/definitions/setup/statusFlag"
+                    }
+                }
+            },
+            "registerProperty": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "value": {
+                        "$ref": "#/definitions/value"
+                    }
+                }
+            },
+            "statusFlag": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                    "Negative": {
+                        "title": "Negative Flag",
+                        "$ref": "#/definitions/setup/statusFlagProperty"
+                    },
+                    "Overflow": {
+                        "title": "Overflow",
+                        "$ref": "#/definitions/setup/statusFlagProperty"
+                    },
+                    "Break": {
+                        "title": "Break Command",
+                        "$ref": "#/definitions/setup/statusFlagProperty"
+                    },
+                    "Decimal": {
+                        "title": "Decimal Mode Flag",
+                        "$ref": "#/definitions/setup/statusFlagProperty"
+                    },
+                    "InterruptDisable": {
+                        "title": "Interrupt Disable",
+                        "$ref": "#/definitions/setup/statusFlagProperty"
+                    },
+                    "Zero": {
+                        "title": "Zero Flag",
+                        "$ref": "#/definitions/setup/statusFlagProperty"
+                    },
+                    "Carry": {
+                        "title": "Carry Flag",
+                        "$ref": "#/definitions/setup/statusFlagProperty"
+                    }
+                }
+            },
+            "statusFlagProperty": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "value": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "memory": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/address"
+                        }
+                    ],
+                    "anyOf": [
+                        {
+                            "required": [
+                                "value"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "sequence"
+                            ]
+                        }
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "address": true,
+                        "label": true,
+                        "offset": true,
+                        "value": {
+                            "$ref": "#/definitions/setup/memoryValue"
+                        },
+                        "sequence": {
+                            "$ref": "#/definitions/setup/memorySequence"
+                        },
+                        "permanent": {
+                            "title": "Permanent value",
+                            "description": "Permanent value specifies whether or not the last value in read sequence queue will be used permanently.",
+                            "type": "boolean"
+                        }
+                    },
+                    "dependencies": {
+                        "value": {
+                            "properties": {
+                                "sequence": false
+                            }
+                        },
+                        "sequence": {
+                            "properties": {
+                                "value": false
+                            }
+                        }
+                    }
+                }
+            },
+            "memoryValue": {
+                "title": "Memory value",
+                "description": "Memory value can be either the single value at the specified address or the values given in an array starting from the address.",
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/value"
+                    },
+                    {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "$ref": "#/definitions/value"
+                        }
+                    }
+                ]
+            },
+            "memorySequence": {
+                "title": "Memory sequence",
+                "description": "Memory sequence can be either the value array in the order of processing at the specified address, or the value arrays given in the two-dimensioned array starting from address.",
+                "type": "array",
+                "minItems": 1,
+                "oneOf": [
+                    {
+                        "items": {
+                            "$ref": "#/definitions/value"
+                        }
+                    },
+                    {
+                        "items": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "$ref": "#/definitions/value"
+                            }
+                        }
+                    }
+                ]
+            },
+            "mockedMemory": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/definitions/address"
+                    },
+                    {
+                        "required": [
+                            "value"
+                        ]
+                    }
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "address": true,
+                    "label": true,
+                    "offset": true,
+                    "value": {
+                        "$ref": "#/definitions/value"
+                    }
+                }
+            },
+            "stack": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "$ref": "#/definitions/value"
+                }
+            }
+        },
+        "expected": {
+            "register": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                    "A": {
+                        "title": "Accumulator",
+                        "$ref": "#/definitions/expected/registerProperty"
+                    },
+                    "X": {
+                        "title": "Index register X",
+                        "$ref": "#/definitions/expected/registerProperty"
+                    },
+                    "Y": {
+                        "title": "Index register Y",
+                        "$ref": "#/definitions/expected/registerProperty"
+                    },
+                    "P": {
+                        "title": "Processor status register",
+                        "$ref": "#/definitions/expected/statusFlag"
+                    }
+                }
+            },
+            "registerProperty": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "value": {
+                        "$ref": "#/definitions/expected/expressionValue"
+                    },
+                    "readCount": {
+                        "$ref": "#/definitions/expected/expressionCount"
+                    },
+                    "writeCount": {
+                        "$ref": "#/definitions/expected/expressionCount"
+                    }
+                }
+            },
+            "statusFlag": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                    "Negative": {
+                        "title": "Negative Flag",
+                        "$ref": "#/definitions/expected/statusFlagProperty"
+                    },
+                    "Overflow": {
+                        "title": "Overflow",
+                        "$ref": "#/definitions/expected/statusFlagProperty"
+                    },
+                    "Break": {
+                        "title": "Break Command",
+                        "$ref": "#/definitions/expected/statusFlagProperty"
+                    },
+                    "Decimal": {
+                        "title": "Decimal Mode Flag",
+                        "$ref": "#/definitions/expected/statusFlagProperty"
+                    },
+                    "InterruptDisable": {
+                        "title": "Interrupt Disable",
+                        "$ref": "#/definitions/expected/statusFlagProperty"
+                    },
+                    "Zero": {
+                        "title": "Zero Flag",
+                        "$ref": "#/definitions/expected/statusFlagProperty"
+                    },
+                    "Carry": {
+                        "title": "Carry Flag",
+                        "$ref": "#/definitions/expected/statusFlagProperty"
+                    }
+                }
+            },
+            "statusFlagProperty": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "value": {
+                        "$ref": "#/definitions/expected/expressionBoolean"
+                    },
+                    "readCount": {
+                        "$ref": "#/definitions/expected/expressionCount"
+                    },
+                    "writeCount": {
+                        "$ref": "#/definitions/expected/expressionCount"
+                    }
+                }
+            },
+            "memory": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/address"
+                        }
+                    ],
+                    "anyOf": [
+                        {
+                            "required": [
+                                "value"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "sequence"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "readCount"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "writeCount"
+                            ]
+                        }
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "address": true,
+                        "label": true,
+                        "offset": true,
+                        "value": {
+                            "$ref": "#/definitions/expected/memoryValue"
+                        },
+                        "sequence": {
+                            "$ref": "#/definitions/expected/memorySequence"
+                        },
+                        "readCount": {
+                            "$ref": "#/definitions/expected/memoryCount"
+                        },
+                        "writeCount": {
+                            "$ref": "#/definitions/expected/memoryCount"
+                        }
+                    },
+                    "dependencies": {
+                        "value": {
+                            "properties": {
+                                "sequence": false
+                            }
+                        },
+                        "sequence": {
+                            "properties": {
+                                "value": false
+                            }
+                        }
+                    }
+                }
+            },
+            "memoryValue": {
+                "title": "Memory value",
+                "description": "Memory value can be either the single value at the specified address or the values given in an array starting from the address.",
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/expected/expressionValue"
+                    },
+                    {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "$ref": "#/definitions/expected/expressionValue"
+                        }
+                    }
+                ]
+            },
+            "memorySequence": {
+                "title": "Memory sequence",
+                "description": "Memory sequence can be either the value array in the order of processing at the specified address, or the value arrays given in the two-dimensioned array starting from address.",
+                "type": "array",
+                "minItems": 1,
+                "oneOf": [
+                    {
+                        "items": {
+                            "$ref": "#/definitions/expected/expressionValue"
+                        }
+                    },
+                    {
+                        "items": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "$ref": "#/definitions/expected/expressionValue"
+                            }
+                        }
+                    }
+                ]
+            },
+            "memoryCount": {
+                "title": "Memory count",
+                "description": "Count specifies the number of times the instructions for the specified address are executed.",
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/expected/expressionCount"
+                    },
+                    {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "$ref": "#/definitions/expected/expressionCount"
+                        }
+                    }
+                ]
+            },
+            "stack": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "$ref": "#/definitions/expected/expressionValue"
+                }
+            },
+            "expressionValue": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                    "eq": {
+                        "title": "Equal to",
+                        "$ref": "#/definitions/value"
+                    },
+                    "ne": {
+                        "title": "Not equal to",
+                        "$ref": "#/definitions/value"
+                    },
+                    "gt": {
+                        "title": "Greater than",
+                        "$ref": "#/definitions/value"
+                    },
+                    "ge": {
+                        "title": "Greater than or equal to",
+                        "$ref": "#/definitions/value"
+                    },
+                    "lt": {
+                        "title": "Less than",
+                        "$ref": "#/definitions/value"
+                    },
+                    "le": {
+                        "title": "Less than or equal to",
+                        "$ref": "#/definitions/value"
+                    },
+                    "anyOf": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "$ref": "#/definitions/expected/expressionValue"
+                        }
+                    }
+                }
+            },
+            "expressionBoolean": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                    "eq": {
+                        "title": "Equal to",
+                        "type": "boolean"
+                    },
+                    "ne": {
+                        "title": "Not equal to",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "expressionCount": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                    "eq": {
+                        "title": "Equal to",
+                        "type": "number"
+                    },
+                    "ne": {
+                        "title": "Not equal to",
+                        "type": "number"
+                    },
+                    "gt": {
+                        "title": "Greater than",
+                        "type": "number"
+                    },
+                    "ge": {
+                        "title": "Greater than or equal to",
+                        "type": "number"
+                    },
+                    "lt": {
+                        "title": "Less than",
+                        "type": "number"
+                    },
+                    "le": {
+                        "title": "Less than or equal to",
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "config": {
+            "title": "Configuration",
+            "description": "Configuration specifies the customization parameters to be given to the testing tool.",
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+                "debugFile": {
+                    "title": "Debug file path",
+                    "description": "Debug file path specifies the path of the debug information file used for testing.",
+                    "type": "string"
+                },
+                "maxCycleCount": {
+                    "title": "Max cycle count",
+                    "description": "Max cycle count specifies the threshold before the test becomes an error.",
+                    "oneOf": [
+                        {
+                            "title": "Max cycle count (Number of execution instruction cycles)",
+                            "type": "number",
+                            "default": 10000,
+                            "minimum": 1
+                        },
+                        {
+                            "title": "Max cycle count (pre-defined cycle types)",
+                            "description": "- NES_NTSC_VSYNC : number of processor cycles per NES NTSC Vsync.\n- DISABLE : disable max cycle check",
+                            "type": "string",
+                            "enum": [
+                                "NES_NTSC_VSYNC",
+                                "DISABLE"
+                            ]
+                        }
+                    ]
+                },
+                "testMemoryAccess": {
+                    "title": "Test memory access",
+                    "description": "Test memory access specifies the behavior when an invalid memory access occurs.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "feature"
+                    ],
+                    "properties": {
+                        "feature": {
+                            "title": "Feature",
+                            "description": "Feature specifies which memory test features are enabled.",
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "WRITE_TO_READONLY_MEMORY",
+                                    "ACCESS_TO_OUT_OF_SEGMENT",
+                                    "READ_FROM_UNINITIALIZED_MEMORY",
+                                    "ACCESS_TO_UNAUTHORIZED_MEMORY"
+                                ]
+                            },
+                            "default": [
+                                "WRITE_TO_READONLY_MEMORY",
+                                "ACCESS_TO_OUT_OF_SEGMENT"
+                            ]
+                        },
+                        "ignoreList": {
+                            "title": "Ignore list",
+                            "description": "Ignore list specifies memory areas that are not controlled by invalid memory control.",
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "oneOf": [
+                                    {
+                                        "required": [
+                                            "start",
+                                            "size"
+                                        ]
+                                    },
+                                    {
+                                        "required": [
+                                            "name"
+                                        ]
+                                    },
+                                    {
+                                        "required": [
+                                            "detect"
+                                        ]
+                                    }
+                                ],
+                                "additionalProperties": false,
+                                "properties": {
+                                    "start": {
+                                        "title": "range start address",
+                                        "$ref": "#/definitions/address"
+                                    },
+                                    "size": {
+                                        "title": "range size",
+                                        "$ref": "#/definitions/number_16bit"
+                                    },
+                                    "name": {
+                                        "title": "segment name",
+                                        "type": "string"
+                                    },
+                                    "detect": {
+                                        "title": "detect platform",
+                                        "type": "boolean",
+                                        "default": true
+                                    }
+                                },
+                                "dependencies": {
+                                    "start": {
+                                        "properties": {
+                                            "name": false,
+                                            "detect": false
+                                        }
+                                    },
+                                    "size": {
+                                        "properties": {
+                                            "name": false,
+                                            "detect": false
+                                        }
+                                    },
+                                    "name": {
+                                        "properties": {
+                                            "start": false,
+                                            "size": false,
+                                            "detect": false
+                                        }
+                                    },
+                                    "detect": {
+                                        "properties": {
+                                            "start": false,
+                                            "size": false,
+                                            "name": false
+                                        }
+                                    }
+                                }
+                            },
+                            "default": [
+                                {
+                                    "start": {
+                                        "address": "$100"
+                                    },
+                                    "size": "$100"
+                                },
+                                {
+                                    "start": {
+                                        "address": "$2000"
+                                    },
+                                    "size": "$2020"
+                                },
+                                {
+                                    "detect": true
+                                }
+                            ]
+                        },
+                        "authorizedList": {
+                            "title": "Authorized list",
+                            "description": "Authorized list specifies memory area that are permitted by authorized memory control.",
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "oneOf": [
+                                    {
+                                        "required": [
+                                            "start",
+                                            "size"
+                                        ]
+                                    },
+                                    {
+                                        "required": [
+                                            "name"
+                                        ]
+                                    },
+                                    {
+                                        "required": [
+                                            "detect"
+                                        ]
+                                    }
+                                ],
+                                "additionalProperties": false,
+                                "properties": {
+                                    "start": {
+                                        "title": "range start address",
+                                        "$ref": "#/definitions/address"
+                                    },
+                                    "size": {
+                                        "title": "range size",
+                                        "$ref": "#/definitions/number_16bit"
+                                    },
+                                    "name": {
+                                        "title": "segment name",
+                                        "type": "string"
+                                    },
+                                    "detect": {
+                                        "title": "detect platform",
+                                        "type": "boolean",
+                                        "default": true
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "allOf": [
+                        {
+                            "if": {
+                                "properties": {
+                                    "feature": {
+                                        "not": {
+                                            "contains": {
+                                                "const": "ACCESS_TO_UNAUTHORIZED_MEMORY"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "then": {
+                                "properties": {
+                                    "authorizedList": false
+                                }
+                            },
+                            "else": {}
+                        },
+                        {
+                            "if": {
+                                "properties": {
+                                    "feature": {
+                                        "not": {
+                                            "contains": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "WRITE_TO_READONLY_MEMORY"
+                                                    },
+                                                    {
+                                                        "const": "ACCESS_TO_OUT_OF_SEGMENT"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "then": {
+                                "properties": {
+                                    "ignoreList": false
+                                }
+                            },
+                            "else": {}
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
