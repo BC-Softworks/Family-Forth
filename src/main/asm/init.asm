@@ -20,6 +20,9 @@
 	.include "core.asm"
 .endif
 
+
+.segment "CODE"
+
 .proc RESET
 		sei        ; ignore IRQs
 		cld        ; disable decimal mode

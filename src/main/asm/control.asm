@@ -23,6 +23,8 @@
 	.include "core.asm"
 .endif
 
+.segment "CODE"
+
 ; Stores the program counter in W2
 .proc GET_PC
 	SAVE_RETURN

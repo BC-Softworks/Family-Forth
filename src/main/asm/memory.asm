@@ -20,6 +20,9 @@
 	.include "core.asm"
 .endif
 
+
+.segment "CODE"
+
 ; ( a-addr -- x ) 
 ; Returns the full cell
 ; Fetch command '@'

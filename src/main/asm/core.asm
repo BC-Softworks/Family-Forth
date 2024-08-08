@@ -77,6 +77,8 @@ true  = 255
 .endmacro
 
 
+.segment "CODE"
+
 ; ( x -- )
 ; Drop x from the stack
 .proc DROP

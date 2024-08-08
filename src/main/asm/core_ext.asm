@@ -11,6 +11,8 @@
 	.include "core.asm"
 .endif
 
+.segment "CODE"
+
 ; ( x1 x2 -- x2 )
 ; Remove the second cell on the stack
 .proc NIP
