@@ -13,6 +13,8 @@
 	CORE_GUARD = 1
 .endif
 
+.segment "ZP"
+
 ;; Kernel "register" locations
 
 lowByteW   = $00

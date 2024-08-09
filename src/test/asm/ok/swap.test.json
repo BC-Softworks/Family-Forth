@@ -1,0 +1,66 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "start": {
+            "label": "SWAP"
+        }
+    },
+    "testCases": {
+        "SWAP": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FB"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FB",
+                        "value": 1
+                    },
+                    {
+                        "address": "$FC",
+                        "value": 2
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 3
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 4
+                    }
+                ]
+                
+            },
+            "expected": {
+                "memory": [
+                    {
+                        "address": "$FB",
+                        "value": {
+                            "eq": 3
+                        }
+                    },
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": 4
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": 1
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 2
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

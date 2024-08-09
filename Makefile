@@ -7,7 +7,7 @@ DIST_DIR			:=		dist
 TEST_DIR			:=		src/test/asm
 TEST_OK_DIR			:=		$(TEST_DIR)/ok
 TEST_FAIL_DIR		:=		$(TEST_DIR)/fail
-TEST_EXEC_DIR		:=		..
+TEST_EXEC_DIR		:=		../6502_tester
 COVERAGE_DIR		:=		coverage
 
 PROJECT				:=		familyforth
@@ -36,7 +36,7 @@ TEST_FAIL_FLAGS		:=		--quiet-summary --quiet-fail
 
 .PHONY : all build test prepare clean
 
-all : build test
+all : build
 
 build : $(TARGET)
 

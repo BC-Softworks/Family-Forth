@@ -1,0 +1,28 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "start": {
+            "label": "DROP"
+        }
+    },
+    "testCases": {
+        "DROP": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FD"
+                    }
+                }
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FF"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

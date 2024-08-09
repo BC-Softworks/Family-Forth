@@ -36,3 +36,4 @@ target/classes/asm/memory.asm
 
 # Ignore dist files
 dist/*
+coverage/lcov.info

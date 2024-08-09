@@ -20,6 +20,8 @@
 	.include "core.asm"
 .endif
 
+.segment "OAM"
+oam:		.res 256
 
 .segment "CODE"
 
@@ -74,4 +76,5 @@
 @vblankwait2:
     bit $2002
     bpl @vblankwait2
+	rts
 .endproc
