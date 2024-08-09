@@ -1,16 +1,18 @@
 {
     "$schema": "../../../../schema/testcase.schema.json",
     "target": {
+        "testType": "JSR",
         "start": {
             "label": "DROP"
         }
+        
     },
     "testCases": {
         "DROP": {
             "setup": {
                 "register": {
                     "X": {
-                        "value": "$FD"
+                        "value": "$FE"
                     }
                 }
             },
@@ -18,7 +20,7 @@
                 "register": {
                     "X": {
                         "value": { 
-                            "eq": "$FF"
+                            "eq": "$00"
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 {
     "$schema": "../../../../schema/testcase.schema.json",
     "target": {
+        "testType": "JSR",
         "start": {
             "label": "SWAP"
         }

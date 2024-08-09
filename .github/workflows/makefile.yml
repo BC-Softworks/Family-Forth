@@ -14,6 +14,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Run tests
+    - name: Install dependent commands
+      run: sudo apt-get install cc65
+
+    - name: Run build
       run: make
+      
+    - name: Run tests
+      run: make test
+
+    
 
