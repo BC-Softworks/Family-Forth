@@ -1,0 +1,30 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "TWODROP"
+        }
+        
+    },
+    "testCases": {
+        "DROP": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                }
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
