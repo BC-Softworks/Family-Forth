@@ -20,12 +20,29 @@
 	.include "core.asm"
 .endif
 
+.segment "HEADER"
+	.byte	'N', 'E', 'S', $1A
+	.byte	$02, $01, $00, $00
+	.byte	$00, $00, $00, $00
+	.byte	$00, $00, $00, $00
+
+.segment "VECTORS"
+	.word	nmi_vector
+	.word	reset_vector
+	.word	irq_vector
+
 .segment "OAM"
 oam:		.res 256
 
+
+.segment "CHARS"
+	.repeat 8
+		.byte $FF
+	.endrepeat
+
 .segment "CODE"
 
-.proc RESET
+.proc reset_vector
 		sei        ; ignore IRQs
 		cld        ; disable decimal mode
 		ldx #$40
@@ -77,4 +94,12 @@ oam:		.res 256
     bit $2002
     bpl @vblankwait2
 	rts
+.endproc
+
+.proc nmi_vector
+		nop
+.endproc
+
+.proc irq_vector
+		nop
 .endproc
