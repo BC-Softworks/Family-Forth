@@ -24,8 +24,8 @@ hiByteDSP  = $05
 radix  	   = $06
 
 ;Boolean constant
-false = 0
-true  = 255
+false = %00000000
+true  = %11111111
 
 ;; Global Macros
 
@@ -69,6 +69,17 @@ true  = 255
             .error "Syntax error"
         .endif
 		PUT
+		lda arg1
+		sta $00,X
+		lda arg2
+		sta $01,X
+		rts
+.endmacro
+
+.macro SETTOS arg1, arg2
+		.if (.blank(arg))
+            .error "Syntax error"
+        .endif
 		lda arg1
 		sta $00,X
 		lda arg2
@@ -196,15 +207,12 @@ true  = 255
 ; flag is true if and only if x is equal to zero.
 ; Tokenized 0=
 .proc ZEROEQUALS
-		lda false
-		cmp $00,X
-		bne @not_z
-		cmp $01,X
-		bne @not_z
-		lda true   ;true = #255
-@not_z: sta $00,X
-		sta $01,X
-		rts
+		lda $01,X
+		bne @f
+		lda $00,X
+		bne @f
+		SETTOS true, true
+@f: 	SETTOS false, false
 .endproc
 
 ; Synonym of 0=
@@ -267,6 +275,7 @@ set: 	sta $00,X
 ; ( x1 -- x2 )
 ; x2 is the result of shifting x1 one bit toward the most-significant bit, 
 ; filling the vacated least-significant bit with zero. 
+; Tokenized 2*
 .proc TWOSTAR
 		clc
 		asl $00,X
@@ -276,7 +285,8 @@ set: 	sta $00,X
 
 ; ( x1 -- x2 )
 ; x2 is the result of shifting x1 one bit toward the least-significant bit, 
-; leaving the most-significant bit unchanged. 
+; leaving the most-significant bit unchanged.
+; Tokenized 2/
 .proc TWOSLASH
 		clc
 		lda #%10000000 ; Store the 7th bit
