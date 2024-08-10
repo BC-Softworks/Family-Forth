@@ -3,7 +3,7 @@
 ;=======================================================;
 
 ; Defines the following words
-; DROP 2DROP DUP SWAP OVER 2DUP ?DUP ROT 0= 0< 0>
+; DROP 2DROP DUP SWAP OVER 2DUP 2OVER ?DUP ROT 0= 0< 0>
 ; AND OR XOR 2* 2/ LSHIFT RSHIFT < > = DEPTH BASE
 ; U> U<
 
@@ -148,6 +148,21 @@ true  = 255
 .proc TWODUP
 		jsr OVER 
 		jmp OVER
+.endproc
+
+
+; ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 )
+; Copy cell pair x1 x2 to the top of the stack. 
+.proc TWOOVER
+		ldy #2
+@loop:	PUT
+		lda $08,X
+		sta $00,X
+		lda $09,X
+		sta $01,X
+		dey
+		bne @loop
+		rts
 .endproc
 
 ; ( x -- 0 | x x )

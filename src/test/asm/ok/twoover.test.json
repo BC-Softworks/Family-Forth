@@ -1,0 +1,162 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "TWOOVER"
+        }
+    },
+    "testCases": {
+        "TWOOVER": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$F8"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$F8",
+                        "value": 0
+                    },
+                    {
+                        "address": "$F9",
+                        "value": 1
+                    },
+                    {
+                        "address": "$FA",
+                        "value": 2
+                    },
+                    {
+                        "address": "$FB",
+                        "value": 3
+                    },
+                    {
+                        "address": "$FC",
+                        "value": 4
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 5
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 6
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 7
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$F4"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$F4",
+                        "value": {
+                            "eq": 4
+                        }
+                    },
+                    {
+                        "address": "$F5",
+                        "value": {
+                            "eq": 5
+                        }
+                    },
+                    {
+                        "address": "$F6",
+                        "value": {
+                            "eq": 6
+                        }
+                    },
+                    {
+                        "address": "$F7",
+                        "value": {
+                            "eq": 7
+                        }
+                    },
+                    {
+                        "address": "$F8",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$F9",
+                        "value": {
+                            "eq": 1
+                        }
+                    },
+                    {
+                        "address": "$FA",
+                        "value": {
+                            "eq": 2
+                        }
+                    },
+                    {
+                        "address": "$FB",
+                        "value": {
+                            "eq": 3
+                        }
+                    },
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": 4
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": 5
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 6
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 7
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$800"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2020"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}
