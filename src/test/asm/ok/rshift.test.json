@@ -1,0 +1,79 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "RSHIFT"
+        }
+    },
+    "testCases": {
+        "4 1 RSHIFT": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": "$01"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$04"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$00"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$02"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$800"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2020"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}
