@@ -4,7 +4,7 @@
 
 ; Defines the following words
 ; DROP 2DROP DUP SWAP OVER 2DUP 2OVER ?DUP ROT 0= 0< 0>
-; AND OR XOR 2* 2/ LSHIFT RSHIFT < > = DEPTH BASE
+; AND OR XOR 2* 2/ < > = LSHIFT RSHIFT DEPTH BASE
 ; U> U<
 
 
@@ -303,48 +303,6 @@ true  = %11111111
 		rts
 .endproc
 
-
-; ( x1 u -- x2 )
-; Perform a logical left shift of u bit-places on x1, giving x2.
-; Put zeroes into the least significant bits vacated by the shift.
-; If u is greater or equal to cell size return 0.
-.proc LSHIFT
-		ldy $00,X       ; Load low bit of u
-		cmp #%00010000  
-		bmi r_zero
-		jsr DROP
-		lda $00,X
-@loop:	asl A
-		sta $00, X
-		; TODO: Finish
-		dey
-		bne @loop
-		rts
-r_zero: lda #0
-		sta $00
-		rts
-.endproc
-
-; ( x1 u -- x2 )
-; Perform a logical right shift of u bit-places on x1, giving x2. 
-; Put zeroes into the most significant bits vacated by the shift.
-.proc RSHIFT
-		ldy $00,X       ; Load low bit of u
-		cmp #%00010000  
-		bmi r_zero
-		jsr DROP
-		lda $00,X
-@loop:	lsr A
-		sta $00, X
-		; TODO: Finish
-		dey
-		bne @loop
-		rts
-r_zero: lda #0
-		sta $00
-		rts
-.endproc
-
 ; Helper proc
 .proc CMP16
 		lda $00,X
@@ -392,6 +350,47 @@ skip:	rts
 .proc EQUAL
 		jsr XOR    		; Flips bits to all zeros if equal
 		jmp ZEROEQUALS	; Check if flag is zero
+.endproc
+
+; ( x1 u -- x2 )
+; Perform a logical left shift of u bit-places on x1, giving x2.
+; Put zeroes into the least significant bits vacated by the shift.
+; If u is greater or equal to cell size return 0.
+.proc LSHIFT
+		ldy $00,X       ; Load low bit of u
+		cmp #%00010000  
+		bmi r_zero
+		jsr DROP
+		lda $00,X
+@loop:	asl A
+		sta $00, X
+		; TODO: Finish
+		dey
+		bne @loop
+		rts
+r_zero: lda #0
+		sta $00
+		rts
+.endproc
+
+; ( x1 u -- x2 )
+; Perform a logical right shift of u bit-places on x1, giving x2. 
+; Put zeroes into the most significant bits vacated by the shift.
+.proc RSHIFT
+		ldy $00,X       ; Load low bit of u
+		cmp #%00010000  
+		bmi r_zero
+		jsr DROP
+		lda $00,X
+@loop:	lsr A
+		sta $00, X
+		; TODO: Finish
+		dey
+		bne @loop
+		rts
+r_zero: lda #0
+		sta $00
+		rts
 .endproc
 
 ; ( -- +n )

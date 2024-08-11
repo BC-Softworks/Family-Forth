@@ -32,14 +32,14 @@
 
 ; ( n1 n2 -- n3 )
 ; n3 = n2 - n1
-.proc SUBB
-		lda $01,X
-		sec
-		sbc $03,X
-		sta $03,X  ; Store high byte
+.proc SUB
+		sec			; Set carry bit
 		lda $00,X
 		sbc $02,X
-		sta $02,X  ; Store low byte
+		sta $02,X	; Store high byte
+		lda $01,X
+		sbc $03,X
+		sta $03,X	; Store low byte
 		jmp DROP
 .endproc
 
@@ -57,7 +57,7 @@
 .proc ONESUB
 		PUSH #1
 		jsr SWAP
-		jmp SUBB
+		jmp SUB
 .endproc
 
 
