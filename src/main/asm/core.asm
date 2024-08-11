@@ -207,12 +207,11 @@ true  = %11111111
 ; flag is true if and only if x is equal to zero.
 ; Tokenized 0=
 .proc ZEROEQUALS
-		lda $01,X
-		bne @f
 		lda $00,X
-		bne @f
-		SETTOS true, true
-@f: 	SETTOS false, false
+		ora $01,X
+		beq @t
+		SETTOS false, false
+@t: 	SETTOS true, true
 .endproc
 
 ; Synonym of 0=
@@ -382,19 +381,9 @@ skip:	rts
 ; flag is true if and only if n1 is equal to n2. 
 ; Tokenized =
 .proc EQUAL
-		jsr XOR    ; Flips bits to all zeros if equal
-		lda $00,X
-		bne branch
-		lda $01,X
-		bne branch ; If false 
-		lda true
-		sta $00,X
-		sta $01,X
-		rts
-branch: PUSH false
-		rts
+		jsr XOR    		; Flips bits to all zeros if equal
+		jmp ZEROEQUALS	; Check if flag is zero
 .endproc
-
 
 ; ( -- +n )
 ; +n is the number of single-cell values contained in 
