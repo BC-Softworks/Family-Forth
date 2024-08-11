@@ -57,11 +57,10 @@ true  = %11111111
             .error "Syntax error"
         .endif
 		PUT
-		lda arg1
-		sta $00,X
 		lda #0
 		sta $01,X
-		rts
+		lda arg1
+		sta $00,X
 .endmacro
 
 .macro PUSHCELL arg1, arg2
@@ -73,7 +72,6 @@ true  = %11111111
 		sta $00,X
 		lda arg2
 		sta $01,X
-		rts
 .endmacro
 
 .segment "CODE"
