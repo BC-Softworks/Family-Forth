@@ -70,26 +70,6 @@
 		rts
 .endproc
 
-
-; 8x8 signed multiplication
-.proc MUL8
-		lda $00,X
-		ldy $02,X
-		lsr a  			; prime the carry bit for the loop
-		sta lowByteW
-		sty hiByteW
-		lda #0
-		ldy #8
-loop:   bcc noadd 		; At the start of the loop, one bit of prodlo has already been
-		clc				; shifted out into the carry.
-		adc hiByteW
-noadd:  ror a
-		ror lowByteW  	; pull another bit out for the next iteration
-		dey         	; inc/dec don't modify carry; only shifts and adds do
-		bne loop
-		rts
-.endproc
-
 ; ( n1 n2 -- d )
 ; n3 = n2 * n1
 ; Tokenized M*
@@ -135,9 +115,6 @@ rot_r:	ror			 	; rotate partial product
 ; ( n1 n2 -- n3 )
 ; n3 = n2 * n1
 .proc MULT
-		lda $01,X
-		ora $03,X 	; If the highbyte's or is zero 
-		beq MUL8	; then use 8x8 multiplication
 		jsr M_STAR
 		jsr SWAP
 		jmp DROP

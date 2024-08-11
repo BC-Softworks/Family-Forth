@@ -1,0 +1,98 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "M_STAR"
+        }
+    },
+    "testCases": {
+        "127 * 15": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$0F"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 0
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": "$F1"
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": "$0E"
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 0
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$800"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2020"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}
