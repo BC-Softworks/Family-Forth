@@ -201,9 +201,9 @@ rot_r:	ror			 	; rotate partial product
 		bne @end  ; If unequal skip checking low byte
 		lda $00,X ; Compare low bytes
 		cmp $02,X ; If high ytes equal
-		bpl @end  ; If n1 is less then n2 call drop
+@end:	bpl	@drop ; If n1 is less then n2 call drop
 		jsr SWAP  ; Else call swap then drop
-@end: 	jmp DROP
+@drop: 	jmp DROP
 .endproc
 
 ; ( n1 n2 -- n3 )
@@ -214,9 +214,9 @@ rot_r:	ror			 	; rotate partial product
 		bne @end  ; If unequal skip checking low byte
 		lda $00,X ; Compare low bytes
 		cmp $02,X ; If high bytes are equal
-		bmi @end  ; If n1 is greater then n2 call drop
+@end:	bmi @drop  ; If n1 is greater then n2 call drop
 		jsr SWAP
-@end: 	jmp DROP
+@drop: 	jmp DROP
 .endproc
 
 ; ( x1 -- x2 )
