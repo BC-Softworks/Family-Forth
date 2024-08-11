@@ -169,13 +169,10 @@ true  = %11111111
 ; Tokenized ?DUP
 .proc QDUP
 		lda $00,X
-		cmp #0
-		bne @dup
-		lda $01,X
-		cmp #0
-		beq @dup
-		rts
-@dup:	jmp DUP
+		and $01,X
+		beq @skip
+		jmp DUP
+@skip:	rts
 .endproc
 
 

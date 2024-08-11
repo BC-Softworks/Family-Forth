@@ -3,60 +3,88 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "DUP"
+            "label": "ROT"
         }
-        
     },
     "testCases": {
-        "DUP": {
+        "ROT": {
             "setup": {
                 "register": {
                     "X": {
-                        "value": "$FE"
+                        "value": "$FA"
                     }
                 },
                 "memory": [
                     {
+                        "address": "$FA",
+                        "value": 1
+                    },
+                    {
+                        "address": "$FB",
+                        "value": 2
+                    },
+                    {
+                        "address": "$FC",
+                        "value": 3
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 4
+                    },
+                    {
                         "address": "$FE",
-                        "value": 42
+                        "value": 5
                     },
                     {
                         "address": "$FF",
-                        "value": 0
+                        "value": 6
                     }
                 ]
+                
             },
             "expected": {
                 "register": {
                     "X": {
                         "value": { 
-                            "eq": "$FC"
+                            "eq": "$FA"
                         }
                     }
                 },
                 "memory": [
                     {
+                        "address": "$FA",
+                        "value": {
+                            "eq": 5
+                        }
+                    },
+                    {
+                        "address": "$FB",
+                        "value": {
+                            "eq": 6
+                        }
+                    },
+                    {
                         "address": "$FC",
                         "value": {
-                            "eq": 42
+                            "eq": 1
                         }
                     },
                     {
                         "address": "$FD",
                         "value": {
-                            "eq": 0
+                            "eq": 2
                         }
                     },
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": 42
+                            "eq": 3
                         }
                     },
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": 0
+                            "eq": 4
                         }
                     }
                 ]

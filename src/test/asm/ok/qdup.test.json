@@ -3,12 +3,74 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "DUP"
+            "label": "QDUP"
         }
         
     },
     "testCases": {
-        "DUP": {
+        "0 ?DUP": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FE"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": 255
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 255
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 0
+                    }
+                ]
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FE"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": 255
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": 255
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 0
+                        }
+                    }
+                ]
+            }
+        },
+        "1 ?DUP": {
             "setup": {
                 "register": {
                     "X": {
@@ -18,11 +80,11 @@
                 "memory": [
                     {
                         "address": "$FE",
-                        "value": 42
+                        "value": 1
                     },
                     {
                         "address": "$FF",
-                        "value": 0
+                        "value": 1
                     }
                 ]
             },
@@ -38,25 +100,25 @@
                     {
                         "address": "$FC",
                         "value": {
-                            "eq": 42
+                            "eq": 1
                         }
                     },
                     {
                         "address": "$FD",
                         "value": {
-                            "eq": 0
+                            "eq": 1
                         }
                     },
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": 42
+                            "eq": 1
                         }
                     },
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": 0
+                            "eq": 1
                         }
                     }
                 ]
