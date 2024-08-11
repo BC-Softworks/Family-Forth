@@ -76,18 +76,6 @@ true  = %11111111
 		rts
 .endmacro
 
-.macro SETTOS arg1, arg2
-		.if (.blank(arg))
-            .error "Syntax error"
-        .endif
-		lda arg1
-		sta $00,X
-		lda arg2
-		sta $01,X
-		rts
-.endmacro
-
-
 .segment "CODE"
 
 ; ( x -- )
@@ -209,9 +197,15 @@ true  = %11111111
 .proc ZEROEQUALS
 		lda $00,X
 		ora $01,X
-		beq @t
-		SETTOS false, false
-@t: 	SETTOS true, true
+		beq @true
+		lda #false
+		sta $00,X
+		sta $01,X
+		rts
+@true: 	lda #true
+		sta $00,X
+		sta $01,X
+		rts
 .endproc
 
 ; Synonym of 0=
@@ -220,15 +214,31 @@ true  = %11111111
 .endproc
 
 ; ( n -- flag )
-; flag is true if and only if n is less then zero.
+; flag is true if and only if n is less than zero.
 ; Tokenized 0<
 .proc ZEROLESS
 		lda $01,X
-		bmi neg
-		lda false
-		jmp set
-neg: 	lda true
-set: 	sta $00,X
+		bmi @neg
+		lda #false
+		jmp @set
+@neg: 	lda #true
+@set: 	sta $00,X
+		sta $01,X
+		rts
+.endproc
+
+; ( n -- flag )
+; flag is true if and only if n is greater than zero.
+; Tokenized 0>
+.proc ZEROGREAT
+		lda $01,X
+		bmi @neg
+		eor $00,X
+		beq @neg
+		lda #true
+		jmp @set
+@neg: 	lda #false
+@set: 	sta $00,X
 		sta $01,X
 		rts
 .endproc
@@ -355,10 +365,11 @@ skip:	rts
 .proc LESS
 		jsr CMP16
 		bpl @pos 	; If N not set 
-		lda true
+		lda #true
 		jmp @store
-@pos: 	lda false  	; A bit was set to 1
-@store:	sta $00,X
+@pos: 	lda #false  ; A bit was set to 1
+@store:	jsr DROP
+		sta $00,X
 		sta $01,X
 		rts
 .endproc
@@ -369,10 +380,11 @@ skip:	rts
 .proc GREATER
 		jsr CMP16
 		bmi @neg 	; N set
-		lda true
+		lda #true
 		jmp @store
-@neg: 	lda false  	; A bit was set to 1
-@store:	sta $00,X
+@neg: 	lda #false  ; A bit was set to 1
+@store:	jsr DROP
+		sta $00,X
 		sta $01,X
 		rts
 .endproc
