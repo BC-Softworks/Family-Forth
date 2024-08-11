@@ -74,6 +74,14 @@ true  = %11111111
 		sta $01,X
 .endmacro
 
+; Helper proc
+; Set Top of Stack to value in A
+.proc SETTOS
+	sta $00,X
+	sta $01,X
+	rts
+.endproc
+
 .segment "CODE"
 
 ; ( x -- )
@@ -194,13 +202,9 @@ true  = %11111111
 		ora $01,X
 		beq @true
 		lda #false
-		sta $00,X
-		sta $01,X
-		rts
+		jmp SETTOS
 @true: 	lda #true
-		sta $00,X
-		sta $01,X
-		rts
+		jmp SETTOS
 .endproc
 
 ; Synonym of 0=
@@ -231,11 +235,9 @@ true  = %11111111
 		eor $00,X
 		beq @neg
 		lda #true
-		jmp @set
+		jmp SETTOS
 @neg: 	lda #false
-@set: 	sta $00,X
-		sta $01,X
-		rts
+	 	jmp SETTOS
 .endproc
 
 ; ( x1 x2 -- x3 )
@@ -283,7 +285,7 @@ true  = %11111111
 .proc TWOSTAR
 		clc
 		asl $00,X
-		asl $01,X
+		rol $01,X
 		rts
 .endproc
 
@@ -322,9 +324,7 @@ skip:	rts
 		jmp @store
 @pos: 	lda #false  ; A bit was set to 1
 @store:	jsr DROP
-		sta $00,X
-		sta $01,X
-		rts
+		jmp SETTOS
 .endproc
 
 ; ( n1 n2 -- flag )
@@ -337,9 +337,7 @@ skip:	rts
 		jmp @store
 @neg: 	lda #false  ; A bit was set to 1
 @store:	jsr DROP
-		sta $00,X
-		sta $01,X
-		rts
+		jmp SETTOS
 .endproc
 
 ; ( n1 n2 -- flag )
@@ -355,39 +353,40 @@ skip:	rts
 ; Put zeroes into the least significant bits vacated by the shift.
 ; If u is greater or equal to cell size return 0.
 .proc LSHIFT
-		ldy $00,X       ; Load low bit of u
-		cmp #%00010000  
-		bmi r_zero
-		jsr DROP
-		lda $00,X
-@loop:	asl A
-		sta $00, X
-		; TODO: Finish
+		lda $01,X	; Check if the number is greater then 16
+		bne @over
+		lda $00,X	; Check if the number is greater then 16
+		and %11110000
+		beq @start
+@over:	jsr DROP
+		lda #false
+		jmp SETTOS
+@start: ldy $00,X
+		jsr DROP	; Drop u
+@loop:	jsr TWOSTAR
 		dey
 		bne @loop
-		rts
-r_zero: lda #0
-		sta $00
 		rts
 .endproc
 
 ; ( x1 u -- x2 )
 ; Perform a logical right shift of u bit-places on x1, giving x2. 
 ; Put zeroes into the most significant bits vacated by the shift.
+; If u is greater or equal to cell size return 0.
 .proc RSHIFT
-		ldy $00,X       ; Load low bit of u
-		cmp #%00010000  
-		bmi r_zero
-		jsr DROP
-		lda $00,X
-@loop:	lsr A
-		sta $00, X
-		; TODO: Finish
+		lda $01,X	; Check if the number is greater then 16
+		bne @over
+		lda $00,X	; Check if the number is greater then 16
+		and %11110000
+		beq @start
+@over:	jsr DROP
+		lda #false
+		jmp SETTOS
+@start: ldy $00,X
+		jsr DROP	; Drop u
+@loop:	jsr TWOSLASH
 		dey
 		bne @loop
-		rts
-r_zero: lda #0
-		sta $00
 		rts
 .endproc
 
@@ -460,8 +459,6 @@ r_zero: lda #0
 @true:	lda true
 		
 @drop:  jsr DROP
-		sta $00,X	; Store true or false
-		sta $01,X	; to the TOS
-		rts
+		jmp SETTOS
 .endproc
 

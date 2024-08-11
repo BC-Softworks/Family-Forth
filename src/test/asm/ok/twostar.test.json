@@ -7,7 +7,7 @@
         }
     },
     "testCases": {
-        "TWOSTAR": {
+        "4 TWOSTAR": {
             "setup": {
                 "register": {
                     "X": {
@@ -38,6 +38,42 @@
                         "address": "$FF",
                         "value": {
                             "eq": 0
+                        }
+                    }
+                ]
+            }
+        },
+        "127 TWOSTAR": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FE"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$00"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$FE"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": "$01"
                         }
                     }
                 ]
