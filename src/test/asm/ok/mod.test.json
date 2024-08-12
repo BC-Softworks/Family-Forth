@@ -3,11 +3,11 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "SUB"
+            "label": "MOD"
         }
     },
     "testCases": {
-        "1 - 1": {
+        "6 / 3": {
             "setup": {
                 "register": {
                     "X": {
@@ -17,7 +17,7 @@
                 "memory": [
                     {
                         "address": "$FC",
-                        "value": 1
+                        "value": 3
                     },
                     {
                         "address": "$FD",
@@ -25,7 +25,7 @@
                     },
                     {
                         "address": "$FE",
-                        "value": 1
+                        "value": 6
                     },
                     {
                         "address": "$FF",
@@ -58,7 +58,7 @@
                 ]
             }
         },
-        "1 - 0": {
+        "8 / 8": {
             "setup": {
                 "register": {
                     "X": {
@@ -68,7 +68,7 @@
                 "memory": [
                     {
                         "address": "$FC",
-                        "value": 0
+                        "value": 8
                     },
                     {
                         "address": "$FD",
@@ -76,7 +76,7 @@
                     },
                     {
                         "address": "$FE",
-                        "value": 1
+                        "value": 8
                     },
                     {
                         "address": "$FF",
@@ -97,7 +97,7 @@
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": 1
+                            "eq": 0
                         }
                     },
                     {
@@ -109,7 +109,7 @@
                 ]
             }
         },
-        "-1 - - 1": {
+        "7 / 8": {
             "setup": {
                 "register": {
                     "X": {
@@ -119,19 +119,19 @@
                 "memory": [
                     {
                         "address": "$FC",
-                        "value": 255
+                        "value": 8
                     },
                     {
                         "address": "$FD",
-                        "value": 255
+                        "value": 0
                     },
                     {
                         "address": "$FE",
-                        "value": 255
+                        "value": 7
                     },
                     {
                         "address": "$FF",
-                        "value": 255
+                        "value": 0
                     }
                 ]
                 
@@ -148,13 +148,13 @@
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": 254
+                            "eq": 7
                         }
                     },
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": 255
+                            "eq": 0
                         }
                     }
                 ]

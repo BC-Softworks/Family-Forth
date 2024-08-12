@@ -27,10 +27,7 @@
 ; Returns the full cell
 ; Fetch command '@'
 .proc SYM_AT
-		lda $00,X
-		sta lowByteW
-		lda $01,X
-		sta hiByteW
+		jsr SAVETOS
 		ldy #0
 		lda ($01),Y
 		sta $00,X
@@ -46,10 +43,7 @@
 ; the unused high-order bits are all zeroes. 
 ; Fetch command 'C@'
 .proc C_SYM_AT
-		lda $00,X
-		sta lowByteW
-		lda $01,X
-		sta hiByteW
+		jsr SAVETOS
 		ldy #0
 		lda ($01),Y
 		sta $00,X

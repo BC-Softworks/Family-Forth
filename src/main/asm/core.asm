@@ -74,7 +74,17 @@ true  = %11111111
 		sta $01,X
 .endmacro
 
-; Helper proc
+; Helper procs
+
+.proc SAVETOS
+	lda $00,X
+	sta lowByteW
+	lda $01,X
+	sta hiByteW
+	rts
+.endproc
+
+
 ; Set Top of Stack to value in A
 .proc SETTOS
 	sta $00,X
@@ -305,13 +315,13 @@ true  = %11111111
 
 ; Helper proc
 .proc CMP16
-		lda $00,X
-		cmp $02,X
-		lda $01,X
-		sbc $03,X
-		bvc skip 	; N eor V
+		lda $02,X
+		cmp $00,X
+		lda $03,X
+		sbc $01,X
+		bvc @skip 	; N eor V
 		eor #$80
-skip:	rts
+@skip:	rts
 .endproc
 
 ; ( n1 n2 -- flag )

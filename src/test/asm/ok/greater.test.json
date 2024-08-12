@@ -7,7 +7,7 @@
         }
     },
     "testCases": {
-        "2 < 1": {
+        "1 > 2": {
             "setup": {
                 "register": {
                     "X": {
@@ -46,19 +46,19 @@
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": "$FF"
+                            "eq": 0
                         }
                     },
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": "$FF"
+                            "eq": 0
                         }
                     }
                 ]
             }
         },
-        "0 < 1": {
+        "1 > 0": {
             "setup": {
                 "register": {
                     "X": {
@@ -97,13 +97,13 @@
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": 0
+                            "eq": "$FF"
                         }
                     },
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": 0
+                            "eq": "$FF"
                         }
                     }
                 ]

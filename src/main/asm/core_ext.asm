@@ -31,33 +31,19 @@
 		jmp OVER
 .endproc
 
-; ( n -- flag )
-; flag is true if and only if n is greater then zero.
-; Tokenized 0>
-.proc ZEROGREATER
-		lda $01,X
-		bpl @neg
-		lda false
-		jmp @set
-@neg: 	lda true
-@set: 	sta $00,X
-		sta $01,X
-		rts
-.endproc
-
 ; ( -- true )
 ; Return a true flag, a single-cell value with all bits set. 
 .proc TRUE
-		PUSHCELL true, true
-		rts
+		lda #true
+		jmp SAVETOS
 .endproc
 
 ; ( -- false )
 ; Return a false flag, a single-cell value with no bits set.
 ; Same as pushing 0 onto the stack
 .proc FALSE
-		PUSH false
-		rts
+		lda #false
+		jmp SAVETOS
 .endproc
 
 ; ( xu...x1 x0 u -- xu...x1 x0 xu )

@@ -147,7 +147,7 @@
                     "start": {
                         "address": "$0"
                     },
-                    "size": "$800"
+                    "size": "$100"
                 },
                 {
                     "start": {

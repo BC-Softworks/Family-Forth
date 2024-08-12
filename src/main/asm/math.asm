@@ -34,11 +34,11 @@
 ; n3 = n2 - n1
 .proc SUB
 		sec			; Set carry bit
-		lda $00,X
-		sbc $02,X
+		lda $02,X
+		sbc $00,X
 		sta $02,X	; Store high byte
-		lda $01,X
-		sbc $03,X
+		lda $03,X
+		sbc $01,X
 		sta $03,X	; Store low byte
 		jmp DROP
 .endproc
@@ -56,7 +56,7 @@
 ; Tokenized 1-
 .proc ONESUB
 		PUSH #1
-		jsr SWAP
+		jsr SWAP ; TODO: FIX
 		jmp SUB
 .endproc
 
@@ -120,42 +120,37 @@ rot_r:	ror			 	; rotate partial product
 		jmp DROP
 .endproc
 
-
-;   R(0) := N(i)          -- Set the least-significant bit of R equal to bit i of the numerator
-;   if R ≥ D then
-;     R := R − D
-;     Q(i) := 1
-;   end
-
-; ( n1 n2 -- n4 n3 )
+; ( n1 n2 -- n3 n4 )
 ; n3rn4 = n2 / n1
 ; Tokenized /MOD
-.proc MODDIV
-		lda $00,X		; Move the top of stack into W and W2
-		sta lowByteW
-		lda $01,X
-		sta hiByteW
-		lda $01,X
-		sta lowByteW2
-		lda $02,X
-		sta hiByteW2
-		lda #0			; Clear the top of the stack
-		sta $00,X
-		sta $01,X
-		sta $02,X
-		sta $03,X
-		ldy #15			; Set to cell size minus 1
-@loop:	jsr LSHIFT		; Left-shift remainder by 1 bit
-		
-						; Set the least-significant bit of R 
-						; equal to bit i of the numerator
+.proc DIVMOD
+		ldy #0			; Clear W register
+		sty lowByteW	; Used to store quotient
+		sty hiByteW
+@loop:	jsr TWODUP		; If R < D fall through
+		jsr LESS		; Check if lesser	
+		lda $00,X		; Load low byte of flag
+		bne @end		; Break if true
+		jsr DROP		; Drop flag
+		jsr SUB			; R = R - D
+		PUT 			; Restore stack pointer
 
-						; If the reamainder is greater
-						; then the denominator
-						; Subtract the reamainder by the denominator
-						; set Quotinet bit i to one
-		dey
-		bpl @loop
+		clc				
+		lda lowByteW	; Increment W
+		adc #1
+		sta lowByteW
+		lda hiByteW
+		adc #0
+		sta hiByteW		; Check if high byte is greater then zero
+		bpl @loop		; will be for small value
+		lda lowByteW	; but necessary if over 255
+		bne @loop
+
+@end:	jsr DROP		; Drop flag
+		lda lowByteW	; Set TOS to contents of W
+		sta $00,X
+		lda hiByteW
+		sta $01,X
 		rts
 .endproc
 
@@ -163,7 +158,7 @@ rot_r:	ror			 	; rotate partial product
 ; ( n1 n2 -- n3 )
 ; n3 = n2 / n1
 .proc DIV
-		jsr MODDIV
+		jsr DIVMOD
 		jsr SWAP	; Swap Q and R
 		jmp DROP	; Drop the remainder
 .endproc
@@ -171,7 +166,7 @@ rot_r:	ror			 	; rotate partial product
 ; ( n1 n2 -- n3 )
 ; Divide n1 by n2, giving the single-cell remainder n3.
 .proc MOD
-		jsr MODDIV
+		jsr DIVMOD
 		jmp DROP	; Drop the quotient
 .endproc
 
@@ -190,7 +185,7 @@ rot_r:	ror			 	; rotate partial product
 ; Tokenized */MOD
 .proc MULDIVMOD
 		jsr M_STAR
-		jmp MODDIV
+		jmp DIVMOD
 .endproc
 
 ; ( n1 n2 -- n3 )

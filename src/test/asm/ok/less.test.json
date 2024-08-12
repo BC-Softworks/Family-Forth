@@ -17,7 +17,7 @@
                 "memory": [
                     {
                         "address": "$FC",
-                        "value": 2
+                        "value": 1
                     },
                     {
                         "address": "$FD",
@@ -25,7 +25,7 @@
                     },
                     {
                         "address": "$FE",
-                        "value": 1
+                        "value": 2
                     },
                     {
                         "address": "$FF",
@@ -68,7 +68,7 @@
                 "memory": [
                     {
                         "address": "$FC",
-                        "value": 0
+                        "value": 1
                     },
                     {
                         "address": "$FD",
@@ -76,7 +76,7 @@
                     },
                     {
                         "address": "$FE",
-                        "value": 1
+                        "value": 0
                     },
                     {
                         "address": "$FF",
