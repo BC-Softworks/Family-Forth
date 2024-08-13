@@ -148,13 +148,13 @@
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": 254
+                            "eq": 0
                         }
                     },
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": 255
+                            "eq": 0
                         }
                     }
                 ]

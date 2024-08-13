@@ -56,7 +56,6 @@
 ; Tokenized 1-
 .proc ONESUB
 		PUSH #1
-		jsr SWAP ; TODO: FIX
 		jmp SUB
 .endproc
 
