@@ -1,0 +1,224 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "UNSIGNEDMULT"
+        }
+    },
+    "testCases": {
+        "1 * 6": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": 1
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 6
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 0
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": 6
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 0
+                        }
+                    }
+                ]
+            }
+        },
+        "8 * 8": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": "$0F"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$0F"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 0
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": "$E1"
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 0
+                        }
+                    }
+                ]
+            }
+        },
+        "65535 * 2": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 2
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 0
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": "$FE"
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": "$FF"
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$01"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 0
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$800"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2020"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}

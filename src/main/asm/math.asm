@@ -250,8 +250,38 @@ rot_r:	ror			 	; rotate partial product
 ; ( u1 u2 -- ud )
 ; Multiply u1 by u2, giving the unsigned double-cell p ud.
 ; All values and arithmetic are unsigned. 
+; Tokenized UM*
+;
+; From The Merlin 128 Macro Assembler disk, via 'The Fridge': http://www.ffd2.com/fridge/math/mult-div.s
+; updated to use the data stack
 .proc UNSIGNEDMULT
+		PUT				; Increase stack pointer
+		lda #0
+		sta $00,X		; Clear the lowByte of TOS
+		sta $01,X		; Clear the highByte of TOS
+		ldy #17
+		clc
 		
+@loop:	ror $01,X		; ext+1
+		ror
+		ror $03,X		; acc+1
+		ror $02,X		; acc
+		bcc @mul
+
+		clc
+		adc $04,X		; aux
+		pha
+		lda $05,X		; aux+1
+		adc $01,X		; ext+1
+		sta $01,X		; ext+1
+		pla
+@mul:	dey
+		bne @loop		; When breaks ( u1 u2 -- u1 ud )
+
+		sta $00,X		; Store low byte
+		jsr ROT			; Swap result and u1
+		jsr DROP
+		jmp SWAP
 .endproc
 
 ; ( ud u1 -- u2 u3 )
