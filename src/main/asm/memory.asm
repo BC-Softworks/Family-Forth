@@ -26,13 +26,13 @@
 ; ( a-addr -- x ) 
 ; Returns the full cell
 ; Fetch command '@'
-.proc SYM_AT
+.proc FETCH
 		jsr SAVETOS
 		ldy #0
-		lda ($01),Y
+		lda ($00),Y
 		sta $00,X
 		ldy #1
-		lda ($01),Y
+		lda ($00),Y
 		sta $01,X
 		rts  
 .endproc
@@ -42,7 +42,7 @@
 ; When the cell size is greater than character size, 
 ; the unused high-order bits are all zeroes. 
 ; Fetch command 'C@'
-.proc C_SYM_AT
+.proc C_FETCH
 		jsr SAVETOS
 		ldy #0
 		lda ($01),Y
@@ -54,12 +54,12 @@
 ; ( a-addr -- x1 x2 ) 
 ; Returns two full cells
 ; Fetch command '2@'
-.proc TWO_SYM_AT
+.proc TWO_FETCH
 		jsr DUP
 		jsr CELLPLUS
-		jsr SYM_AT
+		jsr FETCH
 		jsr SWAP
-		jmp SYM_AT
+		jmp FETCH
 .endproc
 
 ; ( -- )
