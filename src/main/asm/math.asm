@@ -253,11 +253,9 @@ rot_r:	ror			 	; rotate partial product
 ; Tokenized UM*
 ;
 ; From The Merlin 128 Macro Assembler disk, via 'The Fridge': http://www.ffd2.com/fridge/math/mult-div.s
-; updated to use the data stack
 .proc UNSIGNEDMULT
 		PUT				; Increase stack pointer
 		lda #0
-		sta $00,X		; Clear the lowByte of TOS
 		sta $01,X		; Clear the highByte of TOS
 		ldy #17
 		clc
@@ -289,7 +287,35 @@ rot_r:	ror			 	; rotate partial product
 ; All values and arithmetic are unsigned. 
 ; An ambiguous condition exists if u1 is zero or if the quotient lies outside the range of a single-cell unsigned integer.
 ; Tokenized UM/MOD
+;
+; From The Merlin 128 Macro Assembler disk, via 'The Fridge': http://www.ffd2.com/fridge/math/mult-div.s
 .proc UNSIGNEDDIVMOD
+		PUT				; Increase stack pointer
+		lda #0
+		sta $01,X		; Clear the highByte of TOS
+		ldy #16
 
+@loop:  asl $04,X
+		rol $05,X
+		rol
+		rol $01,X
+		pha
+		cmp $02,X
+		lda $01,X
+		sbc $03,X
+		bcc @div
+		sta $01,X
+		pla
+		sbc $02,X
+		pha
+		inc $04,X
+@div:	pla
+		dey
+		bne @loop
+
+		sta $00,X		; Store low byte
+		jsr SWAP		; Swap result and u1
+		jsr DROP		; Drop u1
+		jmp SWAP		; Swap remainder and quotient
 .endproc
 
