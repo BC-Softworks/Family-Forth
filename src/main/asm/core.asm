@@ -3,9 +3,9 @@
 ;=======================================================;
 
 ; Defines the following words
-; DROP 2DROP DUP SWAP OVER 2DUP 2OVER ?DUP ROT 0= 0< 0>
-; AND OR XOR 2* 2/ < > = LSHIFT RSHIFT DEPTH BASE
-; U> U<
+; DROP 2DROP DUP SWAP OVER 2DUP 2OVER ?DUP ROT 2SWAP 
+; 0= 0< 0> AND OR XOR 2* 2/ < > = LSHIFT RSHIFT 
+; DEPTH BASE U> U<
 
 
 ; Include guard
@@ -196,10 +196,20 @@ true  = %11111111
 ; Rotate the top three stack entries.
 ; Optimized by moving the stack pointer instead of the objects.
 .proc ROT
+		jsr DROP	; ( x1 x2 x3 -- x1 x2	)
+		jsr SWAP	; ( x1 x2 	 -- x2 x1	)
+		PUT			; ( x1 x2 	 -- x2 x1 x3)
+		jmp SWAP	; ( x1 x2 	 -- x2 x3 x1)
+.endproc
+
+;( x1 x2 x3 x4 -- x3 x4 x1 x2 )
+; Exchange the top two cell pairs. 
+.proc TWOSWAP
+		jsr ROT		; ( x1 x2 x3 x4 -- x1 x3 x4 x2 )
 		jsr DROP
-		jsr SWAP     ; Doesn't affect x3
+		jsr ROT
 		PUT
-		jmp SWAP
+		rts
 .endproc
 
 ;; Logical operations

@@ -3,41 +3,49 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "ROT"
+            "label": "TWOSWAP"
         }
     },
     "testCases": {
-        "ROT": {
+        "TWOSWAP": {
             "setup": {
                 "register": {
                     "X": {
-                        "value": "$FA"
+                        "value": "$F8"
                     }
                 },
                 "memory": [
                     {
-                        "address": "$FA",
-                        "value": 3
-                    },
-                    {
-                        "address": "$FB",
+                        "address": "$F8",
                         "value": 4
                     },
                     {
-                        "address": "$FC",
-                        "value": 5
+                        "address": "$F9",
+                        "value": 3
                     },
                     {
-                        "address": "$FD",
-                        "value": 6
+                        "address": "$FA",
+                        "value": 2
                     },
                     {
-                        "address": "$FE",
+                        "address": "$FB",
                         "value": 1
                     },
                     {
+                        "address": "$FC",
+                        "value": 8
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 7
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 6
+                    },
+                    {
                         "address": "$FF",
-                        "value": 2
+                        "value": 5
                     }
                 ]
                 
@@ -46,45 +54,57 @@
                 "register": {
                     "X": {
                         "value": { 
-                            "eq": "$FA"
+                            "eq": "$F8"
                         }
                     }
                 },
                 "memory": [
                     {
+                        "address": "$F8",
+                        "value": { 
+                            "eq": 8
+                        }
+                    },
+                    {
+                        "address": "$F9",
+                        "value": { 
+                            "eq": 7
+                        }
+                    },
+                    {
                         "address": "$FA",
-                        "value": {
-                            "eq": 1
+                        "value": { 
+                            "eq": 6
                         }
                     },
                     {
                         "address": "$FB",
-                        "value": {
-                            "eq": 2
-                        }
-                    },
-                    {
-                        "address": "$FC",
-                        "value": {
-                            "eq": 3
-                        }
-                    },
-                    {
-                        "address": "$FD",
-                        "value": {
-                            "eq": 4
-                        }
-                    },
-                    {
-                        "address": "$FE",
-                        "value": {
+                        "value": { 
                             "eq": 5
                         }
                     },
                     {
+                        "address": "$FC",
+                        "value": { 
+                            "eq": 4
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": { 
+                            "eq": 3
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": { 
+                            "eq": 2
+                        }
+                    },
+                    {
                         "address": "$FF",
-                        "value": {
-                            "eq": 6
+                        "value": { 
+                            "eq": 1
                         }
                     }
                 ]
