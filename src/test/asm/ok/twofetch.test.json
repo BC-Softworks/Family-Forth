@@ -3,11 +3,11 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "FETCH"
+            "label": "TWO_FETCH"
         }
     },
     "testCases": {
-        "@": {
+        "$0600 2@": {
             "setup": {
                 "register": {
                     "X": {
@@ -17,20 +17,29 @@
                 "memory": [
                     {
                         "address": "$FE",
-                        "value": "$02"
+                        "value": "$00"
                     },
                     {
                         "address": "$FF",
                         "value": "$06"
                     },
                     {
-                        "address": "$0602",
+                        "address": "$0600",
                         "value": "$02"
                     },
                     {
+                        "address": "$0601",
+                        "value": "$03"
+                    },
+                    {
+                        "address": "$0602",
+                        "value": "$00"
+                    },
+                    {
                         "address": "$0603",
-                        "value": "$0F"
+                        "value": "$01"
                     }
+
                 ]
                 
             },
@@ -38,11 +47,23 @@
                 "register": {
                     "X": {
                         "value": { 
-                            "eq": "$FE"
+                            "eq": "$FC"
                         }
                     }
                 },
                 "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": "$01"
+                        }
+                    },
                     {
                         "address": "$FE",
                         "value": {
@@ -52,7 +73,7 @@
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": "$0F"
+                            "eq": "$03"
                         }
                     }
                 ]

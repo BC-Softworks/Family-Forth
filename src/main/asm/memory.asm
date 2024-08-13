@@ -55,11 +55,12 @@
 ; Returns two full cells
 ; Fetch command '2@'
 .proc TWO_FETCH
-		jsr DUP
-		jsr CELLPLUS
-		jsr FETCH
-		jsr SWAP
-		jmp FETCH
+		jsr DUP		; ( a-addr -- a-addr a-addr ) 
+		jsr FETCH	; ( a-addr a-addr -- a-addr x1 ) 
+		jsr SWAP	; ( a-addr x1 -- x1 a-addr )
+		PUSH #2		; ( x1 a-addr -- x1 a-addr 2 )
+		jsr ADD		; ( x1 a-addr 2 -- x1 b-addr )
+		jmp FETCH	; ( x1 b-addr -- x1 x2 ) 
 .endproc
 
 ; ( -- )
