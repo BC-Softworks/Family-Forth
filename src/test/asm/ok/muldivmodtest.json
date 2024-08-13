@@ -1,0 +1,248 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "MULDIVMOD"
+        }
+    },
+    "testCases": {
+        "15 * 2 / 3": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FA"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FA",
+                        "value": "$02"
+                    },
+                    {
+                        "address": "$FB",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FC",
+                        "value": "$02"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$00"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$FF"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    }
+                ]
+            }
+        },
+        "255 * 2 / 2": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FA"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FA",
+                        "value": "$02"
+                    },
+                    {
+                        "address": "$FB",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FC",
+                        "value": "$02"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$00"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$FF"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    }
+                ]
+            }
+        },
+                "255 * 2 / 2": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FA"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FA",
+                        "value": "$02"
+                    },
+                    {
+                        "address": "$FB",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FC",
+                        "value": "$02"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$00"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$FF"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$800"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2020"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}

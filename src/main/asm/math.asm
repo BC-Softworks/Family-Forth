@@ -183,8 +183,16 @@ rot_r:	ror			 	; rotate partial product
 ; Divide d by n3 producing the single-cell remainder n4 and the single-cell quotient n5.
 ; Tokenized */MOD
 .proc MULDIVMOD
-		jsr M_STAR
-		jmp DIVMOD
+		jsr DROP	; Move pointer to multiply x1 and x2
+		jsr M_STAR	; (n1 n2 n3 -- d1 n3)
+		PUT
+
+		jsr DIVMOD	; TODO: Replace with 32 x 16 division
+		lda $00,X
+		sta $04,X
+		lda $01,X
+		sta $05,X
+		jmp DROP
 .endproc
 
 ; ( n1 n2 -- n3 )
