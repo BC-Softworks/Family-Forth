@@ -45,7 +45,7 @@
 .proc C_FETCH
 		jsr SAVETOS
 		ldy #0
-		lda ($01),Y
+		lda ($00),Y
 		sta $00,X
 		sty $01,X
 		rts  
