@@ -69,10 +69,11 @@
 .proc ALIGN
 		lda lowByteDSP
 		and #%00000001
-		cmp #%00000001
-		bne @sub
-		rts
-@sub:	jmp ONESUB
+		beq @end
+		sec
+		sbc #1
+		sta lowByteDSP
+@end:	rts
 .endproc
 
 ;( addr -- a-addr )
@@ -160,7 +161,7 @@ no_add: rts
 		lda $00,X
 		adc #2
 		sta $00,X
-		lda $01,X ; Should handle the carry
+		lda $01,X
 		adc #0
 		sta $01,X
 		rts

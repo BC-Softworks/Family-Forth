@@ -5,7 +5,11 @@
 ;; Core Word Extensions
 
 ; Defines the following words core extension words
-; NIP TUCK TRUE FALSE PICK <> 0<>
+; NIP TUCK TRUE FALSE PICK <> 0<> 2>R 2R> 2R@
+
+.ifndef MEMORY_GUARD
+	.include "memory.asm"
+.endif
 
 .ifndef CORE_GUARD
 	.include "core.asm"
@@ -99,4 +103,31 @@
 @store: sta $00,X
 		sta $01,X
 		rts
+.endproc
+
+; ( x1 x2 -- ) ( R: -- x1 x2 )
+; Transfer cell pair x1 x2 to the return stack.
+.proc TWOTOR
+	jsr SWAP
+	jsr TOR
+	jmp TOR
+.endproc
+
+; ( -- x1 x2 ) ( R: x1 x2 -- )
+; Transfer cell pair x1 x2 from the return stack.
+.proc TWORFROM
+	jsr RFROM
+	jsr RFROM
+	jmp SWAP
+.endproc
+
+; ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 )
+; Copy cell pair x1 x2 from the return stack
+.proc TWORFETCH
+	jsr RFROM
+	jsr RFROM
+	jmp TWODUP
+	jsr TOR
+	jsr TOR
+	jmp SWAP
 .endproc
