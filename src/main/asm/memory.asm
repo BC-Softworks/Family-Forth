@@ -89,36 +89,42 @@
 ; Store the cell x1 at a-addr,
 ; Tokenized "!"
 .proc STORE
-		lda $00,X
-		sta lowByteW	; Store the low byte of the address
-		lda $01,X
-		sta hiByteW		; Store the high byte of the address
+		jsr SAVETOS
+		jsr DROP		; Drop the address from the stack
 		ldy #0			; Set offset to zero
-		lda $02,X
+		lda $00,X
 		sta ($00),Y		; Store the lowbyte at a-addr
-		iny
-		lda $03,X		; Store the lowbyte at a-addr + 1
+		ldy #1
+		lda $01,X		; Store the highbyte at a-addr + 1
 		sta ($00),Y
-		jmp TWODROP		; Drop the address and x from the stack
+		jmp DROP		; Drop x from the stack
 .endproc
 
 ; ( char c-addr -- )
 ; Store char at c-addr. 
 ; When character size is smaller than cell size, 
 ; only the number of low-order bits corresponding to character size are transferred. 
-.proc C_STORE
-	rts
+; Tokenized "C!"
+.proc CSTORE
+	jsr SAVETOS
+	jsr DROP		; Drop the address from the stack
+	ldy #0			; Set offset to zero
+	lda $00,X
+	sta ($00),Y		; Store the lowbyte at a-addr
+	jmp DROP		; Drop x from the stack
 .endproc
 
 ; ( x1 x2 a-addr -- )
 ; Store the cell pair x1 x2 at a-addr, with x2 at a-addr and x1 at the
 ; next consecutive cell. "2!"
 .proc TWOSTORE
-		jsr DUP
-		jsr ROT
-		jsr SWAP
-		jsr STORE
-		jsr CELLPLUS
+		jsr DUP		; ( x1 x2 a-addr -- x1 x2 a-addr a-addr )
+		jsr DROP
+		jsr SWAP	; ( x1 x2 a-addr a-addr -- x1 a-addr x2 a-addr )
+		PUT
+		jsr STORE	; ( x1 a-addr x2 a-addr -- x1 a-addr)
+		PUSH #2
+		jsr ADD
 		jmp STORE
 .endproc
 
@@ -290,7 +296,7 @@ no_add: rts
 ; An ambiguous condition exists if the data-space pointer is not character-aligned prior to execution of C,. 
 .proc C_COMMA
 	jsr HERE
-	jsr C_STORE
+	jsr CSTORE
 	PUSH #1
 	jmp ALLOT
 .endproc
