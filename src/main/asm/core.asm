@@ -402,16 +402,16 @@ true  = %11111111
 ; Put zeroes into the most significant bits vacated by the shift.
 ; If u is greater or equal to cell size return 0.
 .proc RSHIFT
-		lda $01,X	; Check if the number is greater then 16
+		lda $01,X		; Check if the number is greater then 16
 		bne @over
-		lda $00,X	; Check if the number is greater then 16
+		lda $00,X		; Check if the number is greater then 16
 		and %11110000
 		beq @start
 @over:	jsr DROP
 		lda #false
 		jmp SETTOS
 @start: ldy $00,X
-		jsr DROP	; Drop u
+		jsr DROP		; Drop u
 @loop:	jsr TWOSLASH
 		dey
 		bne @loop
@@ -422,17 +422,18 @@ true  = %11111111
 ; +n is the number of single-cell values contained in 
 ; the data stack before +n was placed on the stack
 .proc DEPTH
-		stx lowByteW	; Store addr before dex
-		dex				; Add an empty highbyte
-		lda #0		
-		sta $00,X
-		dex
-		sec				; Clear sub flag
-		lda #255
-		sbc lowByteW
-		sta $00,X
-		jsr RSHIFT
+		txa				; Transfer stack pointer to A
+		bne	@put		; If empty return zero
+		PUSH #0
 		rts
+
+@put:	PUT
+		eor #$FF		; Inverse pointer
+		adc #1
+		sta $00,X
+		lda #0			; Clear A
+		sta $01,X		
+		jmp TWOSLASH
 .endproc
 
 ; ( -- a-addr )

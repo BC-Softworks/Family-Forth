@@ -1,0 +1,67 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "DEPTH"
+        }
+    },
+    "testCases": {
+        "DEPTH": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FA"
+                    }
+                }
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": {
+                            "eq": "$F8"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$F8",
+                        "value": {
+                            "eq": 3
+                        }
+                    },
+                    {
+                        "address": "$F9",
+                        "value": {
+                            "eq": 0
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$800"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2020"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}
