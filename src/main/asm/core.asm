@@ -76,11 +76,19 @@ true  = %11111111
 
 ; Helper procs
 
-.proc SAVETOS
+.proc LDW
 	lda $00,X
 	sta lowByteW
 	lda $01,X
 	sta hiByteW
+	rts
+.endproc
+
+.proc LDW2
+	lda $00,X
+	sta lowByteW2
+	lda $01,X
+	sta hiByteW2
 	rts
 .endproc
 

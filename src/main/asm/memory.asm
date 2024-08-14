@@ -27,7 +27,7 @@
 ; Returns the full cell
 ; Fetch command '@'
 .proc FETCH
-		jsr SAVETOS
+		jsr LDW
 		ldy #0
 		lda ($00),Y
 		sta $00,X
@@ -43,7 +43,7 @@
 ; the unused high-order bits are all zeroes. 
 ; Fetch command 'C@'
 .proc CFETCH
-		jsr SAVETOS
+		jsr LDW
 		ldy #0
 		lda ($00),Y
 		sta $00,X
@@ -90,7 +90,7 @@
 ; Store the cell x1 at a-addr,
 ; Tokenized "!"
 .proc STORE
-		jsr SAVETOS
+		jsr LDW
 		jsr DROP		; Drop the address from the stack
 		ldy #0			; Set offset to zero
 		lda $00,X
@@ -107,7 +107,7 @@
 ; only the number of low-order bits corresponding to character size are transferred. 
 ; Tokenized "C!"
 .proc CSTORE
-	jsr SAVETOS
+	jsr LDW
 	jsr DROP		; Drop the address from the stack
 	ldy #0			; Set offset to zero
 	lda $00,X
@@ -257,27 +257,25 @@
 ; at addr2 contain exactly what the u consecutive address units at addr1 contained before the move. 
 .proc MOVE
 		lda $00,X
-		and $01,X		; Compare low and high bytes
-		beq @end		; Skip if u = 0
-@loop:	ldy $04,X		; Load addr1 into Y
-		lda ($00),Y
-		ldy $02,X		; Load addr2 into Y
-		sta ($00),Y
-		jsr ONESUB		; Subtract one from u
-		inx				; Add one to addr1 and addr2
-		inx
-		jsr ONEADD		
-		inx
-		inx
-		jsr ONEADD		; Add one to addr1 and addr2
-		txa				; Reset stack pointer
-		sec
-		sbc #4
-		tax
-		lda $01,X		; Check if u = 0
-		bne @loop
-		lda $00,X
-		bne @loop
-@end:	jsr TWODROP		; Drop addr1, addr2, and u
+		ora $01,X		; Compare low and high bytes
+		bne @rot		; Skip if u = 0
+		jsr TWODROP		; Drop addr1, addr2, and u
 		jmp DROP
+
+@rot:	jsr ROT			; Rotate u to the bottom 
+		jsr LDW2		; Copy addr2 to W2
+		jsr DROP		; Drop addr2
+		jsr LDW			; Copy addr1 to W
+		jsr DROP		; Drop addr1
+
+		ldy #0			; Init Y
+@loop:	
+		lda ($00),Y
+		sta ($02),Y
+		iny				; Increment Y
+		jsr ONESUB		; Subtract one from u
+		lda $00,X
+		ora $01,X		; Compare low and high bytes
+		bne @loop		; Break if zero
+		jmp DROP		; Drop u
 .endproc

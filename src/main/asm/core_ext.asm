@@ -63,7 +63,7 @@
 ; Return a true flag, a single-cell value with all bits set. 
 .proc TRUE
 		lda #true
-		jmp SAVETOS
+		jmp LDW
 .endproc
 
 ; ( -- false )
@@ -71,7 +71,7 @@
 ; Same as pushing 0 onto the stack
 .proc FALSE
 		lda #false
-		jmp SAVETOS
+		jmp LDW
 .endproc
 
 ; ( x1 x2 -- flag )
