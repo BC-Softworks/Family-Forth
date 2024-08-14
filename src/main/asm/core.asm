@@ -4,8 +4,8 @@
 
 ; Defines the following words
 ; DROP 2DROP DUP SWAP OVER 2DUP 2OVER ?DUP ROT 2SWAP 
-; 0= 0< 0> AND OR XOR 2* 2/ < > = LSHIFT RSHIFT 
-; DEPTH BASE U> U<
+; 0= 0< AND OR XOR 2* 2/ < > = LSHIFT RSHIFT 
+; DEPTH BASE U<
 
 
 ; Include guard
@@ -254,20 +254,6 @@ true  = %11111111
 		rts
 .endproc
 
-; ( n -- flag )
-; flag is true if and only if n is greater than zero.
-; Tokenized 0>
-.proc ZEROGREAT
-		lda $01,X
-		bmi @neg
-		eor $00,X
-		beq @neg
-		lda #true
-		jmp SETTOS
-@neg: 	lda #false
-	 	jmp SETTOS
-.endproc
-
 ; ( x1 x2 -- x3 )
 ; x3 is the bit-by-bit logical "and" of x1 with x2.
 .proc ANDD
@@ -447,47 +433,20 @@ true  = %11111111
 .endproc
 
 ; ( u1 u2 -- flag )
-; flag is true if and only if u1 is greater than u2. 
-; U>
-.proc UGREATER
-		lda $01,X
-		cmp $03,X
-		bpl @true	; High byte greater
-		bmi @false	; High byte lesser
-		
-		lda $00,X	; Lowbyte check
-		cmp $02,X
-		bpl @true	; Low byte greater
-		
-@false:	lda false
-		beq @drop
-		
-@true:	lda true		
-		
-@drop:  sta $02,X	; Store true or false
-		sta $03,X	; to the TOS
-		jmp DROP
-.endproc
-
-; ( u1 u2 -- flag )
 ; flag is true if and only if u1 is less than u2. 
-; U<
+; <U
 .proc ULESS
-		lda $01,X
-		cmp $03,X
-		bmi @true	; High byte lesser
-		bpl @false	; High byte greater
-		
-		lda $00,X	; Lowbyte check
-		cmp $02,X
-		bmi @true	; Low byte lesser
-		
-@false:	lda false
-		beq @drop
-		
-@true:	lda true
-		
-@drop:  jsr DROP
+		lda $03,X
+		cmp $01,X
+		bcc @true
+		bne @false
+		lda $02,X
+		cmp $00,X
+		bcc @true
+@false:	lda #false
+		beq @end
+@true:	lda #true
+@end:	jsr DROP
 		jmp SETTOS
 .endproc
 

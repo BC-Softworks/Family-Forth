@@ -6,7 +6,7 @@
 
 ; Defines the following words core extension words
 ; NIP TUCK PICK
-; TRUE FALSE <> 0<> 
+; TRUE FALSE <> 0<> 0> U>
 ; 2>R 2R> 2R@
 
 .ifndef MEMORY_GUARD
@@ -74,6 +74,7 @@
 		jmp LDW
 .endproc
 
+
 ; ( x1 x2 -- flag )
 ; flag is true if and only if x1 is not bit-for-bit the same as x2.
 ; Tokenized <>
@@ -105,6 +106,35 @@
 @store: sta $00,X
 		sta $01,X
 		rts
+.endproc
+
+; ( n -- flag )
+; flag is true if and only if n is greater than zero.
+; Tokenized 0>
+.proc ZEROGREAT
+		lda $01,X
+		bmi @neg
+		eor $00,X
+		beq @neg
+		lda #true
+		jmp SETTOS
+@neg: 	lda #false
+	 	jmp SETTOS
+.endproc
+
+; ( u1 u2 -- flag )
+; flag is true if and only if u1 is greater than u2. 
+; Tokenized U>
+.proc UGREATER
+		lda $03,X
+		cmp $01,X
+		bcc @true
+		bne @false
+		lda $02,X
+		cmp $00,X
+		bcc @true
+@false:	jmp FALSE
+@true:	jmp TRUE
 .endproc
 
 ; ( x1 x2 -- ) ( R: -- x1 x2 )
