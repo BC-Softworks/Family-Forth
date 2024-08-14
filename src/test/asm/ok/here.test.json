@@ -1,0 +1,78 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "HERE"
+        }
+    },
+    "testCases": {
+        "HERE": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$00"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$04",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$05",
+                        "value": "$02"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FE"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": { 
+                            "eq": "$02"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$300"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$200"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}
