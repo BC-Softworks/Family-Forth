@@ -1,0 +1,97 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "ALIGN"
+        }
+    },
+    "testCases": {
+        "ALIGN $0201": {
+            "setup": {
+                "memory": [
+                    {
+                        "address": "$04",
+                        "value": "$01"
+                    },
+                    {
+                        "address": "$05",
+                        "value": "$02"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "memory": [
+                    {
+                        "address": "$04",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$05",
+                        "value": {
+                            "eq": "$02"
+                        }
+                    }
+                ]
+            }
+        },
+        "ALIGN $0202": {
+            "setup": {
+                "memory": [
+                    {
+                        "address": "$04",
+                        "value": "$02"
+                    },
+                    {
+                        "address": "$05",
+                        "value": "$02"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "memory": [
+                    {
+                        "address": "$04",
+                        "value": {
+                            "eq": "$02"
+                        }
+                    },
+                    {
+                        "address": "$05",
+                        "value": {
+                            "eq": "$02"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$300"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$200"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}

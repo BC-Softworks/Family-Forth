@@ -7,6 +7,57 @@
         }
     },
     "testCases": {
+        "1 ALLOT": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FE"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$04",
+                        "value": "$02"
+                    },
+                    {
+                        "address": "$05",
+                        "value": "$02"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$01"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$00"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$04",
+                        "value": {
+                            "eq": "$01"
+                        }
+                    },
+                    {
+                        "address": "$05",
+                        "value": {
+                            "eq": "$02"
+                        }
+                    }
+                ]
+            }
+        },
         "2 ALLOT": {
             "setup": {
                 "register": {
@@ -17,7 +68,7 @@
                 "memory": [
                     {
                         "address": "$04",
-                        "value": "$00"
+                        "value": "$02"
                     },
                     {
                         "address": "$05",
@@ -46,7 +97,7 @@
                     {
                         "address": "$04",
                         "value": {
-                            "eq": "$02"
+                            "eq": "$00"
                         }
                     },
                     {
@@ -68,7 +119,7 @@
                 "memory": [
                     {
                         "address": "$04",
-                        "value": "$02"
+                        "value": "$00"
                     },
                     {
                         "address": "$05",
@@ -97,7 +148,7 @@
                     {
                         "address": "$04",
                         "value": {
-                            "eq": "$00"
+                            "eq": "$02"
                         }
                     },
                     {

@@ -159,6 +159,57 @@
                     }
                 ]
             }
+        },
+        "256 - 1": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": "$01"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$01"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FE"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$FF"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    }
+                ]
+            }
         }
     },
     "config": {

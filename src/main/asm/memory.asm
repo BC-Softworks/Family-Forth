@@ -4,7 +4,7 @@
 
 ; Defines the following words core words
 ; @ C@ ! C! ALIGN ALIGNED 
-; CELLS CELL+ R> >R R@ 
+; CELL+ CELLS R> >R R@ 
 ; ALLOT HERE , C, MOVE
 
 ; Include guard
@@ -64,15 +64,13 @@
 .endproc
 
 ; ( -- )
-; If the data-space pointer is not aligned, 
-; reserve enough space to align it.
+; If the data-space pointer is not aligned, reserve enough space to align it.
 .proc ALIGN
 		lda lowByteDSP
-		and #%00000001
+		and #$01
 		beq @end
-		sec
-		sbc #1
-		sta lowByteDSP
+		PUSH #1
+		jmp ALLOT
 @end:	rts
 .endproc
 
@@ -80,10 +78,12 @@
 ; a-addr is the first aligned address greater than or equal to addr. 
 .proc ALIGNED
 		lda $00,X
-		and #%00000001
-		beq @add
-		jsr ONEADD
-@add:	jmp ONEADD
+		and #1
+		beq @push
+		PUSH #1
+		bne @add	; Always branches
+@push:	PUSH #2
+@add:	jmp ADD
 .endproc
 
 ; ( x a-addr -- )
@@ -129,24 +129,19 @@
 		jmp STORE
 .endproc
 
-; ( n1 -- n2 )
-; n2 is the size in address units of n1 cells. 
-.proc CELLS
-		jmp LSHIFT
-.endproc
 
 ; ( a-addr1 -- a-addr2 )
 ; Add the size in address units of a cell to a-addr1, giving a-addr2.
 ; Tokenized CELL+
 .proc CELLPLUS
-		clc
-		lda $00,X
-		adc #2
-		sta $00,X
-		lda $01,X
-		adc #0
-		sta $01,X
-		rts
+		PUSH #2
+		jmp ADD
+.endproc
+
+; ( n1 -- n2 )
+; n2 is the size in address units of n1 cells. 
+.proc CELLS
+		jmp LSHIFT
 .endproc
 
 ; ( -- n)
@@ -207,20 +202,19 @@
 ; If the data-space pointer is character aligned and n is a multiple of the size of a character when ALLOT begins execution, 
 ; it will remain character aligned when ALLOT finishes execution. 
 .proc ALLOT
-		lda $01,X		; Check if high byte is zeroed
-		bne @add
-		lda $00,X		; Check if low byte is zeroed
-		bne @add
-		jmp @drop		; Both bytes zero
-	
-@add:	clc				; Clear carry flag
 		lda $00,X
-		adc lowByteDSP
+		ora $01,X
+		bne @sub		; Only zero is both bytes are zero
+		jmp DROP		; Both bytes zero
+	
+@sub:	sec
+		lda lowByteDSP
+		sbc $00,X
 		sta lowByteDSP
-		lda $01,X 
-		adc hiByteDSP
+		lda hiByteDSP
+		sbc $01,X
 		sta hiByteDSP
-@drop:  jmp DROP
+		jmp DROP
 .endproc
 
 ; ( -- addr )
