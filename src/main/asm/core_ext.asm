@@ -5,7 +5,9 @@
 ;; Core Word Extensions
 
 ; Defines the following words core extension words
-; NIP TUCK TRUE FALSE PICK <> 0<> 2>R 2R> 2R@
+; NIP TUCK PICK
+; TRUE FALSE <> 0<> 
+; 2>R 2R> 2R@
 
 .ifndef MEMORY_GUARD
 	.include "memory.asm"
@@ -35,21 +37,6 @@
 		jmp OVER
 .endproc
 
-; ( -- true )
-; Return a true flag, a single-cell value with all bits set. 
-.proc TRUE
-		lda #true
-		jmp SAVETOS
-.endproc
-
-; ( -- false )
-; Return a false flag, a single-cell value with no bits set.
-; Same as pushing 0 onto the stack
-.proc FALSE
-		lda #false
-		jmp SAVETOS
-.endproc
-
 ; ( xu...x1 x0 u -- xu...x1 x0 xu )
 ; Remove u. Copy the xu to the top of the stack. 
 ; An ambiguous condition exists if there are less 
@@ -70,6 +57,21 @@
 		lda ($00),Y ; Load xu's high byte indirectly
 		sta $01,X
 		rts        	; Don't need to drop anything
+.endproc
+
+; ( -- true )
+; Return a true flag, a single-cell value with all bits set. 
+.proc TRUE
+		lda #true
+		jmp SAVETOS
+.endproc
+
+; ( -- false )
+; Return a false flag, a single-cell value with no bits set.
+; Same as pushing 0 onto the stack
+.proc FALSE
+		lda #false
+		jmp SAVETOS
 .endproc
 
 ; ( x1 x2 -- flag )

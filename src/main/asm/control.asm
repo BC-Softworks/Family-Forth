@@ -92,13 +92,17 @@
 		pla           	; Repeat for the high byte
 		sta hiByteW
 		jsr RFROM		; Load the tol addr to the data stack
-		jsr TWORFROM	; Load the limit and counter
+		jsr RFROM		; Load the limit
+		jsr RFROM		; Load the counter
+		jsr SWAP
 		jsr TWODUP		; Duplicate the limit and counter
 		jsr EQUAL		; Check if equal
 		bne @end		; Numbers are equal end loop
 		jsr DROP		; Drop the flag
 		jsr ONEADD		; Add one to the counter
-		jsr TWOTOR		; push the limit and counter back onto the return stack
+		jsr SWAP
+		jsr TOR			; Push the limit back onto the return stack
+		jmp TOR			; Push the counter back onto the return stack
 		lda hiByteW		; Load the highByte of the addr in the W register
 		pla           	; Push the highByte of the start of the loop
 		lda lowByteW  	; Load the lowbyte of the addr in the W register
@@ -138,13 +142,17 @@
 		pla				; Repeat for the high byte
 		sta hiByteW
 		jsr RFROM		; Load the tol addr to the data stack
-		jsr TWORFROM	; Load the limit and counter
+		jsr RFROM		; Load the limit
+		jsr RFROM		; Load the counter
+		jsr SWAP
 		jsr ONEADD		; Add one to the counter
 		jsr TWODUP		; Duplicate the limit and counter
 		jsr EQUAL		; Check if equal
 		bne @end		; Numbers are equal end loop
 		jsr DROP		; Drop the flag
-		jsr TWOTOR		; push the limit and counter back onto the return stack
+		jsr SWAP
+		jsr TOR			; Push the limit back onto the return stack
+		jmp TOR			; Push the counter back onto the return stack
 		lda hiByteW		; Load the highByte of the addr in the W register
 		pla           	; Push the highByte of the start of the loop
 		lda lowByteW  	; Load the lowbyte of the addr in the W register

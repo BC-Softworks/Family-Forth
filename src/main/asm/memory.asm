@@ -3,8 +3,8 @@
 ;==========================================================;
 
 ; Defines the following words core words
-; @ C@ ! C! 2! 2@ ALIGN ALIGNED 
-; CELLS CELL+ R> 2R> >R 2>R R@ 
+; @ C@ ! C! ALIGN ALIGNED 
+; CELLS CELL+ R> >R R@ 
 ; ALLOT HERE , C, MOVE
 
 ; Include guard
@@ -42,7 +42,7 @@
 ; When the cell size is greater than character size, 
 ; the unused high-order bits are all zeroes. 
 ; Fetch command 'C@'
-.proc C_FETCH
+.proc CFETCH
 		jsr SAVETOS
 		ldy #0
 		lda ($00),Y
@@ -54,7 +54,7 @@
 ; ( a-addr -- x1 x2 ) 
 ; Returns two full cells
 ; Fetch command '2@'
-.proc TWO_FETCH
+.proc TWOFETCH
 		jsr DUP		; ( a-addr -- a-addr a-addr ) 
 		jsr FETCH	; ( a-addr a-addr -- a-addr x1 ) 
 		jsr SWAP	; ( a-addr x1 -- x1 a-addr )
@@ -129,24 +129,6 @@
 		jmp STORE
 .endproc
 
-; ( addr -- d)
-; Leave on the stack the contents of the four consecutive  bytes
-; beginning at addr, as for a double number. '2@'
-.proc TWOFETCH
-		ldy $00,X     ; Load the low byte of the address into Y
-		lda $01,X     ; Load the high byte of the address into A
-		sta hiByteW2  ; Store the high byte in W2
-		
-loop:	lda ($00),Y   ; Load and store the low byte from the first byte
-		sta $00,X     ; pointed to by the address
-		clc
-		tya		      ; Increment the address and repeat 3x
-		adc #1
-		tay
-		bne loop
-no_add: rts
-.endproc
-
 ; ( n1 -- n2 )
 ; n2 is the size in address units of n1 cells. 
 .proc CELLS
@@ -182,14 +164,6 @@ no_add: rts
 		rts
 .endproc
 
-; ( -- x1 x2 ) ( R: x1 x2 -- )
-; Transfer cell pair x1 x2 from the return stack.
-.proc TWORFROM
-		jsr RFROM
-		jsr RFROM
-		jmp SWAP
-.endproc
-
 ; ( x -- ) ( R: -- x )
 ; Move x to the return stack.
 ; Tokenized >R
@@ -202,16 +176,6 @@ no_add: rts
 		pha
 		LOAD_RETURN
 		jmp DROP
-.endproc
-
-; ( x1 x2 -- ) ( R: -- x1 x2 )
-; Transfer cell pair x1 x2 to the return stack. 
-; Semantically equivalent to SWAP >R >R. 
-; Tokenized 2>R
-.proc TWOTOR
-		jsr SWAP
-		jsr TOR
-		jmp TOR
 .endproc
 
 ; ( -- n)
@@ -275,31 +239,21 @@ no_add: rts
 ; Reserve one cell of data space and store x in the cell. 
 ; Tokenized ,
 .proc COMMA
-		dex					; Inline Put
-		lda #0
-		sta $00,X			; Push 2 onto the stack
-		dex
-		lda #2
-		sta $00,X
-		jsr ALLOT			; Allot one cell
-		ldy #0
-		lda $00,X   
-		sta (lowByteDSP),Y	; Store the lowByte
-		iny
-		lda $01,X   
-		sta (lowByteDSP),Y	; Store the highbyte
-		jmp DROP			; Drop x from the parameter stack
+		PUSH #2
+		jsr ALLOT
+		jsr HERE
+		jmp STORE
 .endproc
 
 ; ( char -- )
 ; Reserve space for one character in the data space and store char in the space.
 ; If the data-space pointer is character aligned when C, begins execution, it will remain character aligned when C, finishes execution.
 ; An ambiguous condition exists if the data-space pointer is not character-aligned prior to execution of C,. 
-.proc C_COMMA
-	jsr HERE
-	jsr CSTORE
-	PUSH #1
-	jmp ALLOT
+.proc CCOMMA
+		PUSH #1
+		jsr ALLOT
+		jsr HERE
+		jmp CSTORE
 .endproc
 
 ; ( addr1 addr2 u -- )

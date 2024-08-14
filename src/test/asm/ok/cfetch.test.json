@@ -3,7 +3,7 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "C_FETCH"
+            "label": "CFETCH"
         }
     },
     "testCases": {

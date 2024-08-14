@@ -3,7 +3,7 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "TWO_FETCH"
+            "label": "TWOFETCH"
         }
     },
     "testCases": {
