@@ -262,18 +262,19 @@
 		jsr TWODROP		; Drop addr1, addr2, and u
 		jmp DROP
 
-@rot:	jsr ROT			; Rotate u to the bottom 
+@rot:	jsr SWAP		; Swap u and addr2
 		jsr LDW2		; Copy addr2 to W2
 		jsr DROP		; Drop addr2
+		jsr SWAP		; Swap u and addr1
 		jsr LDW			; Copy addr1 to W
 		jsr DROP		; Drop addr1
 
 		ldy #0			; Init Y
 @loop:	
-		lda ($00),Y
-		sta ($02),Y
+		lda ($00),Y		; Load byte from addr1 + y
+		sta ($02),Y		; Store byte at addr2 + y
 		iny				; Increment Y
-		jsr ONESUB		; Subtract one from u
+		jsr ONESUB		; Subtract one from u ; TODO: Use unsigned sub
 		lda $00,X
 		ora $01,X		; Compare low and high bytes
 		bne @loop		; Break if zero

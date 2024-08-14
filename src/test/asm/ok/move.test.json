@@ -24,6 +24,10 @@
                         "value": "$00"
                     },
                     {
+                        "address": "$FC",
+                        "value": "$00"
+                    },
+                    {
                         "address": "$FD",
                         "value": "$03"
                     },
