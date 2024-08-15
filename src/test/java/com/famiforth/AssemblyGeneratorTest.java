@@ -61,4 +61,11 @@ public class AssemblyGeneratorTest {
         assertEquals("0: THEN", generator.generate(token).get(0));
     }
 
+    @Test
+    public void generateRecurseStatementTest() throws IOException {
+        setup();
+        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("RECURSE"), DefinitionType.RECURSE, Pair.of("", ""), "NAME");
+        generator.generate(token);
+        assertEquals("RECURSE NAME", generator.generate(token).get(0));
+    }
 }

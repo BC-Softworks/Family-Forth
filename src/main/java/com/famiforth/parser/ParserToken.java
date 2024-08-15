@@ -9,15 +9,25 @@ public class ParserToken {
     public final Definition def;
     public final DefinitionType type;
     public final Pair<String, String> reference;
+    public final String name;
+
+
+    public ParserToken(Definition def, DefinitionType type, Pair<String, String> reference, String name) {
+        this.def = def;
+        this.type = type;
+        this.reference = reference;
+        this.name = name;
+    }
 
     public ParserToken(Definition def, DefinitionType type, Pair<String, String> reference) {
         this.def = def;
         this.type = type;
         this.reference = reference;
+        this.name = null;
     }
 
     public ParserToken(Definition def, DefinitionType type) {
-        this(def, type, null);
+        this(def, type, null, null);
     }
 
     public boolean isMacro(){
@@ -37,6 +47,7 @@ public class ParserToken {
         BEGIN,
         WHILE,
         REPEAT,
+        RECURSE,
         INTEGER,
         WORD
     }

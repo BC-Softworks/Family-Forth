@@ -25,6 +25,8 @@ public class Parser {
     private final Lexer lexer;
     private final Deque<String> cfStack;
 
+
+    private String wordName;
     private int ifCounter;
     private int doCounter;
     private int beginCounter;
@@ -130,10 +132,15 @@ public class Parser {
                         def = getDefinition(token);
                         reference = Pair.of(cfStack.pollLast(), null);
                         break;
+                    case RECURSE:
+                        type = DefinitionType.RECURSE;
+                        def = getDefinition(token);
+                        reference = Pair.of(cfStack.pollLast(), null);
+                        break;
                     default:
                         throw new SyntaxErrorException("Compilation time word encountered out of order.");
                 }
-                return new ParserToken(def, type, reference);
+                return new ParserToken(def, type, reference, wordName);
             case WORD:
                 return new ParserToken(getDefinition(token), DefinitionType.WORD);
             case INTEGER:
@@ -174,13 +181,13 @@ public class Parser {
         }
 
         // Poll the name of the word
-        String name = wordList.poll();
+        wordName = wordList.poll();
 
         // Add the word to the dictionary
-        UserDictionary.addUserDefinedWord(name, false, List.copyOf(wordList));
+        UserDictionary.addUserDefinedWord(wordName, false, List.copyOf(wordList));
 
         // Return newly created Definition
-        return UserDictionary.getDefinition(name);
+        return UserDictionary.getDefinition(wordName);
     }
 
     private Definition parseCodeBlock(LexerToken lexerToken) throws IOException {

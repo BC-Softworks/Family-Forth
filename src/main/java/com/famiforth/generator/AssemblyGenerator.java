@@ -61,6 +61,9 @@ public class AssemblyGenerator extends AbstractGenerator {
             case WHILE:
                 lines = generateWhileStatement(token);
                 break;
+            case RECURSE:
+                lines = generateRecurseStatement(token);
+                break;
             case INTEGER:
                 lines = List.of(token.def.getLabel());
             // Control word macros that do not need a label / take arguments
@@ -155,6 +158,10 @@ public class AssemblyGenerator extends AbstractGenerator {
 
     private List<String> generateWhileStatement(ParserToken token) {
         return List.of(String.format("%s %s", token.reference.getLeft(), token.def.getLabel()));
+    }
+
+    private List<String> generateRecurseStatement(ParserToken token) {
+        return List.of(String.format("%s %s", token.def.getLabel(), token.name));
     }
 
 }

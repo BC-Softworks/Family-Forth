@@ -163,5 +163,10 @@
         "name": "WHILE",
         "label": "WHILE #%s, #%s",
         "isMacro": true
+    },
+    {
+        "name": "RECURSE",
+        "label": "RECURSE %s",
+        "isMacro": true
     }
 ]

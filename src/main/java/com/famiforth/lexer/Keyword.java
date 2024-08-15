@@ -20,7 +20,9 @@ public enum Keyword{
     LEAVE("LEAVE"),
     BEGIN("BEGIN"),
     WHILE("WHILE"),
-    REPEAT("REPEAT");
+    REPEAT("REPEAT"),
+    RECURSE("RECURSE");
+
 
     public final String value;
 

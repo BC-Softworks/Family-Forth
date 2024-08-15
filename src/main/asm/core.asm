@@ -95,7 +95,6 @@ true  = %11111111
 	rts
 .endproc
 
-
 ; Set Top of Stack to value in A
 .proc SETTOS
 	sta $00,X
