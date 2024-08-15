@@ -298,12 +298,12 @@
 .proc FILL
 		lda $02,X
 		ora $03,X		; Compare low and high bytes
-		bne @W			; Skip if u = 0
-		jsr TWODROP		; Drop addr1, addr2, and u
-		jmp DROP
+		bne start		; Skip if u = 0
+		jsr DROP		; Drop addr1, addr2, and u
+		jmp TWODROP
 
-@W:		lda $00,X		; Load char into W2
-		sta lowByteW2
+start:	lda $00,X		; Load char into W2
+		sta $02
 		jsr DROP		; Drop char
 		jsr SWAP		; Swap c-addr and u 
 		jsr LDW			; Copy c-addr to W
@@ -311,7 +311,7 @@
 		
 		ldy #0			; Init Y
 @loop:
-		lda lowByteW2	; Load byte from addr1 + y
+		lda $02			; Load byte from addr1 + y
 		sta ($00),Y		; Store byte at addr2 + y
 		iny				; Increment Y
 		jsr ONESUB		; Subtract one from u

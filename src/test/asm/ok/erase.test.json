@@ -3,15 +3,106 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "FILL"
+            "label": "ERASE"
         }
     },
     "testCases": {
-        "$0300 4 56 FILL": {
+        "$0300 4 ERASE": {
             "setup": {
                 "register": {
                     "X": {
-                        "value": "$FA"
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": "$04"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$03"
+                    },
+                    {
+                        "address": "$0300",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$0301",
+                        "value": "$56"
+                    },
+                    {
+                        "address": "$0302",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$0303",
+                        "value": "$56"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FA",
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FB",
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$0300",
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$0301",
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$0302",
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$0303",
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    }
+                ]
+            }
+        },
+        "$0300 0 ERASE": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
                     }
                 },
                 "memory": [
@@ -25,7 +116,7 @@
                     },
                     {
                         "address": "$FC",
-                        "value": "$04"
+                        "value": "$00"
                     },
                     {
                         "address": "$FD",
@@ -49,120 +140,7 @@
                             "eq": "$00"
                         }
                     }
-                },
-                "memory": [
-                    {
-                        "address": "$0300",
-                        "value": { 
-                            "eq": "$56"
-                        }
-                    },
-                    {
-                        "address": "$0301",
-                        "value": { 
-                            "eq": "$56"
-                        }
-                    },
-                    {
-                        "address": "$0302",
-                        "value": { 
-                            "eq": "$56"
-                        }
-                    },
-                    {
-                        "address": "$0303",
-                        "value": { 
-                            "eq": "$56"
-                        }
-                    }
-                ]
-            }
-        },
-        "$0400 4 0 FILL": {
-            "setup": {
-                "register": {
-                    "X": {
-                        "value": "$FA"
-                    }
-                },
-                "memory": [
-                    {
-                        "address": "$FA",
-                        "value": "$00"
-                    },
-                    {
-                        "address": "$FB",
-                        "value": "$00"
-                    },
-                    {
-                        "address": "$FC",
-                        "value": "$04"
-                    },
-                    {
-                        "address": "$FD",
-                        "value": "$00"
-                    },
-                    {
-                        "address": "$FE",
-                        "value": "$00"
-                    },
-                    {
-                        "address": "$FF",
-                        "value": "$04"
-                    },
-                    {
-                        "address": "$400",
-                        "value": "$04"
-                    },
-                    {
-                        "address": "$401",
-                        "value": "$04"
-                    },
-                    {
-                        "address": "$402",
-                        "value": "$04"
-                    },
-                    {
-                        "address": "$403",
-                        "value": "$04"
-                    }
-                ]
-                
-            },
-            "expected": {
-                "register": {
-                    "X": {
-                        "value": { 
-                            "eq": "$00"
-                        }
-                    }
-                },
-                "memory": [
-                    {
-                        "address": "$0400",
-                        "value": { 
-                            "eq": "$00"
-                        }
-                    },
-                    {
-                        "address": "$0401",
-                        "value": { 
-                            "eq": "$00"
-                        }
-                    },
-                    {
-                        "address": "$0402",
-                        "value": { 
-                            "eq": "$00"
-                        }
-                    },
-                    {
-                        "address": "$0403",
-                        "value": { 
-                            "eq": "$00"
-                        }
-                    }
-                ]
+                }
             }
         }
     },

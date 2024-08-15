@@ -106,10 +106,13 @@ true  = %11111111
 
 ; ( x -- )
 ; Drop x from the stack
+; Underflow prevention
 .proc DROP
+		cpx #0
+		beq @end
 		inx
 		inx
-		rts
+@end:	rts
 .endproc
 
 ; ( x1 x2 -- )

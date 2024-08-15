@@ -62,16 +62,18 @@
 ; ( -- true )
 ; Return a true flag, a single-cell value with all bits set. 
 .proc TRUE
+		PUT
 		lda #true
-		jmp LDW
+		jmp SETTOS
 .endproc
 
 ; ( -- false )
 ; Return a false flag, a single-cell value with no bits set.
 ; Same as pushing 0 onto the stack
 .proc FALSE
+		PUT
 		lda #false
-		jmp LDW
+		jmp SETTOS
 .endproc
 
 
@@ -95,14 +97,14 @@
 ; flag is true if and only if x is not equal to zero. 
 ; Tokenized 0<>
 .proc ZERONOTEQUALS
-		lda false
+		lda #false
 		cmp $00,X
 		bne @not_z
 		cmp $01,X
 		bne @not_z
-		lda false
+		lda #false
 		jmp @store
-@not_z:	lda true
+@not_z:	lda #true
 @store: sta $00,X
 		sta $01,X
 		rts
@@ -156,4 +158,15 @@
 	jsr TOR
 	jsr TOR
 	jmp SWAP
+.endproc
+
+; ( addr u -- )
+; If u is greater than zero, clear all bits
+; in each of u consecutive address units of memory beginning at addr. 
+.proc ERASE
+	PUT
+	ldy #0
+	sty $00,X
+	sty $01,X
+	jmp FILL
 .endproc
