@@ -125,16 +125,10 @@
 ; ( u1 u2 -- flag )
 ; flag is true if and only if u1 is greater than u2. 
 ; Tokenized U>
-.proc UGREATER
-		lda $03,X
-		cmp $01,X
-		bcc @true
-		bne @false
-		lda $02,X
-		cmp $00,X
-		bcc @true
-@false:	jmp FALSE
-@true:	jmp TRUE
+.proc UGREAT
+		jsr ADD
+		jsr TWOSLASH
+		jmp ZEROGREAT
 .endproc
 
 ; ( x1 x2 -- ) ( R: -- x1 x2 )

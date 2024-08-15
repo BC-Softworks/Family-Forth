@@ -22,6 +22,7 @@ hiByteW2   = $03
 lowByteDSP = $04
 hiByteDSP  = $05
 radix  	   = $06
+mode  	   = $07
 
 ;Boolean constant
 false = %00000000
@@ -73,6 +74,8 @@ true  = %11111111
 		lda arg2
 		sta $01,X
 .endmacro
+
+.segment "CODE"
 
 ; Helper procs
 
@@ -412,7 +415,6 @@ true  = %11111111
 		bne	@put		; If empty return zero
 		PUSH #0
 		rts
-
 @put:	PUT
 		eor #$FF		; Inverse pointer
 		adc #1

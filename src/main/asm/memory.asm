@@ -3,7 +3,7 @@
 ;==========================================================;
 
 ; Defines the following words core words
-; @ C@ ! C! ALIGN ALIGNED 
+; @ C@ ! +! C! ALIGN ALIGNED 
 ; CELL+ CELLS R> >R R@ 
 ; ALLOT HERE , C, MOVE
 
@@ -99,6 +99,18 @@
 		lda $01,X		; Store the highbyte at a-addr + 1
 		sta ($00),Y
 		jmp DROP		; Drop x from the stack
+.endproc
+
+; ( x a-addr -- )
+; Add x to the single-cell number at a-addr. 
+; Tokenized "+!"
+.proc PLUSSTORE
+		jsr SWAP	; ( x a-addr		-- a-addr x )
+		jsr OVER	; ( a-addr x		-- a-addr x a-addr	)
+		jsr FETCH	; ( a-addr x a-addr	-- a-addr x1 x2	)
+		jsr ADD		; ( a-addr x1 x2  	-- a-addr x3	)
+		jsr SWAP	; ( a-addr x3		-- x3 a-addr 	)
+		jmp STORE	; ( x3 a-addr		--	)
 .endproc
 
 ; ( char c-addr -- )

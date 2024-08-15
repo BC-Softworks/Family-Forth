@@ -3,11 +3,11 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "ULESS"
+            "label": "UGREAT"
         }
     },
     "testCases": {
-        "2 < 1": {
+        "2 > 1": {
             "setup": {
                 "register": {
                     "X": {
@@ -46,6 +46,57 @@
                     {
                         "address": "$FE",
                         "value": {
+                            "eq": "$FF"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": "$FF"
+                        }
+                    }
+                ]
+            }
+        },
+        "0 > 0": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 0
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FE"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": {
                             "eq": 0
                         }
                     },
@@ -58,7 +109,7 @@
                 ]
             }
         },
-        "0 < 1": {
+        "0 > 1": {
             "setup": {
                 "register": {
                     "X": {
@@ -97,19 +148,19 @@
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": "$FF"
+                            "eq": 0
                         }
                     },
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": "$FF"
+                            "eq": 0
                         }
                     }
                 ]
             }
         },
-        "0 < 256": {
+        "0 > 256": {
             "setup": {
                 "register": {
                     "X": {
@@ -148,13 +199,13 @@
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": "$FF"
+                            "eq": 0
                         }
                     },
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": "$FF"
+                            "eq": 0
                         }
                     }
                 ]
