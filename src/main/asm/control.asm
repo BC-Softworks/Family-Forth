@@ -194,3 +194,45 @@
 .macro REPEAT dest
 		jsr dest	; Jumps to dest
 .endmacro
+
+; Helper for I and J
+; Roughly halves bytes used
+.proc LPARM
+		ldy lowByteW2	; Pull loop parameters
+@pull:	dex
+		pla
+		sta $00,X
+		dey
+		bne @pull		; Break when Y is zero
+		jsr LDW			; Store counter in W
+		ldy lowByteW2	; Push loop parameters back onto the stack
+@push:	pla
+		sta $00,X
+		inx
+		dey
+		bne @push		; Break when Y is zero
+		PUT				; Copy W to TOS
+		lda	lowByteW
+		sta $00,X
+		lda	hiByteW
+		sta $01,X
+		rts
+.endproc
+
+; ( -- n | u ) ( R: loop-sys -- loop-sys )
+; n | u is a copy of the current (innermost) loop index. 
+; An ambiguous condition exists if the loop control parameters are unavailable. 
+.macro I
+		lda #8
+		sta lowByteW2
+		jsr LPARM
+.endmacro
+
+; ( -- n | u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
+; n | u is a copy of the next-outer loop index.
+; An ambiguous condition exists if the loop control parameters of the next-outer loop, loop-sys1, are unavailable.
+.macro J
+		lda #14
+		sta lowByteW2
+		jsr LPARM
+.endmacro

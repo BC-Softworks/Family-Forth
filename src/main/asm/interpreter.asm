@@ -3,7 +3,7 @@
 ;=======================================================;
 
 ; Defines the following words
-; [ ]
+; [ ] BASE
 
 ; Include guard
 .ifndef SHELL_GUARD
@@ -33,3 +33,22 @@
     sta mode
     rts
 .endproc
+
+
+; ( -- a-addr )
+; a-addr is the address of a cell containing the current number-conversion radix {{2...36}}. 
+.proc BASE
+	lda radix
+	sta $00,x
+	lda #0
+	sta $01,X
+	rts
+.endproc
+
+; ( -- )
+; Set the numeric conversion radix to ten (decimal).
+.macro DECIMAL
+	lda #10
+	sta radix
+	rts
+.endmacro

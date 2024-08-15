@@ -4,8 +4,7 @@
 
 ; Defines the following words
 ; DROP 2DROP DUP SWAP OVER 2DUP 2OVER ?DUP ROT 2SWAP 
-; 0= 0< AND OR XOR 2* 2/ < > = LSHIFT RSHIFT 
-; DEPTH BASE U<
+; 0= 0< AND OR XOR 2* 2/ < > = U< LSHIFT RSHIFT DEPTH 
 
 
 ; Include guard
@@ -367,6 +366,24 @@ true  = %11111111
 		jmp ZEROEQUALS	; Check if flag is zero
 .endproc
 
+; ( u1 u2 -- flag )
+; flag is true if and only if u1 is less than u2. 
+; <U
+.proc ULESS
+		lda $03,X
+		cmp $01,X
+		bcc @true
+		bne @false
+		lda $02,X
+		cmp $00,X
+		bcc @true
+@false:	lda #false
+		beq @end
+@true:	lda #true
+@end:	jsr DROP
+		jmp SETTOS
+.endproc
+
 ; ( x1 u -- x2 )
 ; Perform a logical left shift of u bit-places on x1, giving x2.
 ; Put zeroes into the least significant bits vacated by the shift.
@@ -424,33 +441,5 @@ true  = %11111111
 		lda #0			; Clear A
 		sta $01,X		
 		jmp TWOSLASH
-.endproc
-
-; ( -- a-addr )
-; a-addr is the address of a cell containing the current number-conversion radix {{2...36}}. 
-.proc BASE
-	lda radix
-	sta $00,x
-	lda #0
-	sta $01,X
-	rts
-.endproc
-
-; ( u1 u2 -- flag )
-; flag is true if and only if u1 is less than u2. 
-; <U
-.proc ULESS
-		lda $03,X
-		cmp $01,X
-		bcc @true
-		bne @false
-		lda $02,X
-		cmp $00,X
-		bcc @true
-@false:	lda #false
-		beq @end
-@true:	lda #true
-@end:	jsr DROP
-		jmp SETTOS
 .endproc
 
