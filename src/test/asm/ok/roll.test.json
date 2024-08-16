@@ -1,0 +1,217 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "ROLL"
+        }
+    },
+    "testCases": {
+        "0 ROLL": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$F8"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$F8",
+                        "value": 0
+                    },
+                    {
+                        "address": "$F9",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FA",
+                        "value": 1
+                    },
+                    {
+                        "address": "$FB",
+                        "value": 2
+                    },
+                    {
+                        "address": "$FC",
+                        "value": 3
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 4
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 5
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 6
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$F8"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FA",
+                        "value": {
+                            "eq": 3
+                        }
+                    },
+                    {
+                        "address": "$FB",
+                        "value": {
+                            "eq": 4
+                        }
+                    },
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": 1
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": 2
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 5
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 6
+                        }
+                    }
+                ]
+            }
+        },
+        "1 ROLL": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$F8"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$F8",
+                        "value": 1
+                    },
+                    {
+                        "address": "$F9",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FA",
+                        "value": 1
+                    },
+                    {
+                        "address": "$FB",
+                        "value": 2
+                    },
+                    {
+                        "address": "$FC",
+                        "value": 3
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 4
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 5
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 6
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$F8"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FA",
+                        "value": {
+                            "eq": 5
+                        }
+                    },
+                    {
+                        "address": "$FB",
+                        "value": {
+                            "eq": 6
+                        }
+                    },
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": 1
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": 2
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 3
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 4
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$800"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2020"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}

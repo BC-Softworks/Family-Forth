@@ -5,7 +5,7 @@
 ;; Core Word Extensions
 
 ; Defines the following words core extension words
-; NIP TUCK PICK
+; NIP TUCK PICK ROLL ERASE PAD
 ; TRUE FALSE <> 0<> 0> U>
 ; 2>R 2R> 2R@
 
@@ -57,6 +57,47 @@
 		lda ($00),Y ; Load xu's high byte indirectly
 		sta $01,X
 		rts        	; Don't need to drop anything
+.endproc
+
+; ( xu xu-1 ... x0 u -- xu-1 ... x0 xu )
+; Remove u. Rotate u+1 items on the top of the stack.
+; An ambiguous condition exists if there are less than u+2 items on the stack before ROLL is executed. 
+.proc ROLL
+		clc
+		lda $00,X
+		tay 		; Load u into y
+		iny
+		tya
+		sta $00,X
+		txa			; Transfer pointer to A
+		adc $00,X	; Move index to location of xu in the stack
+		adc $00,X	; Add twice since cells are two bytes
+		tax			; Overwrite pointer
+		dey			; Predecrement y
+@loop:	
+		jsr SWAP	; Swap xn and xn+1
+		PUT
+		dey
+		bpl @loop 
+		rts
+.endproc
+
+; ( addr u -- )
+; If u is greater than zero, clear all bits
+; in each of u consecutive address units of memory beginning at addr. 
+.proc ERASE
+		PUT
+		ldy #0
+		sty $00,X
+		sty $01,X
+		jmp FILL
+.endproc
+
+; ( -- c-addr )
+; c-addr is the address of a transient region that can be used to hold data for intermediate processing. 
+.proc PAD
+		PUSH #$40
+		rts
 .endproc
 
 ; ( -- true )
@@ -151,13 +192,3 @@
 	jmp SWAP
 .endproc
 
-; ( addr u -- )
-; If u is greater than zero, clear all bits
-; in each of u consecutive address units of memory beginning at addr. 
-.proc ERASE
-	PUT
-	ldy #0
-	sty $00,X
-	sty $01,X
-	jmp FILL
-.endproc
