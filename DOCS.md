@@ -2,16 +2,16 @@
 
 ## RAM Map
 
-| Addresses   | Size        | What can go there                                                                     |
-| ----------- | ----------- | ------------------------------------------------------------------------------------- |
-| $0000-$0007 |	8 bytes 	| Kernel Registers                                                                      |
-| $0008-$00FD |	240 bytes 	| Parameter Stack                                                                       |
-| $00FE-$00FF |	2 bytes 	| Parameter Stack underflow buffer                                                      |
-| $0100-$019F |	160 bytes   | Data to be copied to nametable during next vertical blank (see The frame and NMIs)    |
-| $01A0-$01FF |	96 bytes    | Return Stack                                                                          |
-| $0200-$02FF |	256 bytes   | Data to be copied to OAM during next vertical blank                                   |
-| $0300-$03FF |	256 bytes   | Variables used by sound player, and possibly other variables                          |
-| $0400-$07FD |	1024 bytes  | User Data Space                                                                       |
+| Addresses   | Size        | What can go there                                                    |
+| ----------- | ----------- | -------------------------------------------------------------------- |
+| $0000-$0009 |	8 bytes 	| Kernel Registers                                                     |
+| $000A-$00FF |	240 bytes 	| Parameter Stack                                                      |
+| $0100-$019F |	160 bytes   | Data to be copied to nametable during next vertical blank            |
+| $01A0-$01FF |	96 bytes    | Return Stack                                                         |
+| $0200-$02FF |	256 bytes   | Data to be copied to OAM during next vertical blank                  |
+| $0300-$037F |	128 bytes 	| Input buffer                                                         |
+| $0380-$03FF |	128 bytes   | Variables used by sound player                                       |
+| $0400-$07FD |	1024 bytes  | User Data Space                                                      |
 
 ## Kernel Configuration
 * W   = Working register one
@@ -27,7 +27,8 @@
 | W    |  Zpage         | $00 - $01 |                |
 | W2   |  Zpage         | $02 - $03 |                |
 | DP   |  Zpage         | $04 - $05 | $0400 to $07FF |
-| TBD  |  Zpage         | $06 - $07 |                |
+| BASE |  Zpage         |    $06    |    #2 - #70    |
+| MODE |  Zpage         |    $07    |                |
 | PSP  |  X Register    |           | $08   to $FD   |
 | RSP  |  Stack Pointer |           | $01A0 to $01FD |
 
