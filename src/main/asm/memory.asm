@@ -164,9 +164,9 @@
 		SAVE_RETURN
 		PUT
 		pla
-		sta $00,X     ; Pull high byte
+		sta $00,X     ; Pull low byte
 		pla
-		sta $01,X	  ; Pull low byte
+		sta $01,X	  ; Pull high byte
 		LOAD_RETURN
 		rts
 .endproc
@@ -318,4 +318,25 @@ start:	lda $00,X		; Load char into W2
 		ora $01,X		; Compare low and high bytes
 		bne @loop		; Break if zero
 		jmp DROP		; Drop u
+.endproc
+
+; ( c-addr1 -- c-addr2 u )
+; Return the character string specification for the counted string stored at c-addr1.
+; c-addr2 is the address of the first character after c-addr1.
+; u is the contents of the character at c-addr1, which is the length in characters of the string at c-addr2.
+; TODO: Finish
+.proc COUNT
+		jsr LDW		; Store c-addr1 in W
+		ldy #$FF	; Set y to -1
+
+@loop:	iny
+		jsr ONEADD	; Increment c-addr1
+		lda ($00),Y	; Load current address
+		bne @loop	;
+		PUT
+		tya			; Set top of stack to Y
+		sta $00,X
+		lda #0
+		sta $01,X	; TODO: Decide if 256+ strings are acceptable
+		rts
 .endproc
