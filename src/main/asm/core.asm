@@ -4,7 +4,8 @@
 
 ; Defines the following words
 ; DROP 2DROP DUP SWAP OVER 2DUP 2OVER ?DUP ROT 2SWAP 
-; 0= 0< AND OR XOR 2* 2/ < > = U< LSHIFT RSHIFT DEPTH 
+; 0= 0< AND OR XOR 2* 2/ < > = U< 
+; LSHIFT RSHIFT DEPTH S>D
 
 
 ; Include guard
@@ -444,5 +445,18 @@ true  = %11111111
 		lda #0			; Clear A
 		sta $01,X		
 		jmp TWOSLASH
+.endproc
+
+; ( n -- d )
+; Convert the number n to the double-cell number d with the same numerical value. 
+.proc STOD
+		lda $00,x
+		bmi @neg	; Push $FFFF if negative
+		lda #false
+		beq @set
+@neg:	lda #true
+@set:	PUT
+		jsr SETTOS
+		jmp SWAP
 .endproc
 
