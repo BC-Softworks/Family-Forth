@@ -80,34 +80,25 @@
 ; ( x1 x2 -- flag )
 ; flag is true if and only if x1 is not bit-for-bit the same as x2.
 ; Tokenized <>
-.proc NOTEQUALs
+.proc NOTEQUALS
 		lda $00,X
 		cmp $02,X
-		bne @false
+		bne @true
 		lda $01,X
 		cmp $03,X
-		bne @false
-		jsr TWODROP ; Drop x1 and x2
-		jmp TRUE	; x1 == x2
-@false:	jsr TWODROP
-		jmp FALSE
+		bne @true
+		jsr TWODROP 	; Drop x2
+		jmp FALSE		; x1 == x2
+@true:	jsr TWODROP
+		jmp TRUE
 .endproc
 
 ; ( x -- flag )
 ; flag is true if and only if x is not equal to zero. 
 ; Tokenized 0<>
 .proc ZERONOTEQUALS
-		lda #false
-		cmp $00,X
-		bne @not_z
-		cmp $01,X
-		bne @not_z
-		lda #false
-		jmp @store
-@not_z:	lda #true
-@store: sta $00,X
-		sta $01,X
-		rts
+		PUSH #0
+		jmp NOTEQUALS
 .endproc
 
 ; ( n -- flag )
