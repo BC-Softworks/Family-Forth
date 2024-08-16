@@ -6,8 +6,8 @@
 
 ; Defines the following words core extension words
 ; NIP TUCK PICK ROLL ERASE PAD
-; TRUE FALSE <> 0<> 0> U>
-; 2>R 2R> 2R@
+; TRUE FALSE <> 0<> 0 > U>
+; 2>R 2R> 2R@ UNUSED
 
 .ifndef MEMORY_GUARD
 	.include "memory.asm"
@@ -192,3 +192,11 @@
 	jmp SWAP
 .endproc
 
+; ( -- u )
+; u is the amount of space remaining in the region addressed by HERE, in address units. 
+.proc UNUSED
+	jsr HERE
+	PUSHCELL #$00, #$04
+	jsr SUB
+	jmp TWOSLASH
+.endproc

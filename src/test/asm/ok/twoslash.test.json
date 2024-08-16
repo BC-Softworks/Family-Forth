@@ -7,7 +7,79 @@
         }
     },
     "testCases": {
-        "TWOSTAR": {
+        "256 TWOSLASH": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FE"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$01"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$80"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    }
+                ]
+            }
+        },
+        "9 TWOSLASH": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FE"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": 9
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 0
+                    }
+                ]
+                
+            },
+            "expected": {
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 4
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 0
+                        }
+                    }
+                ]
+            }
+        },
+        "4 TWOSLASH": {
             "setup": {
                 "register": {
                     "X": {

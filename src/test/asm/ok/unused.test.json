@@ -1,0 +1,84 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "UNUSED"
+        }
+    },
+    "testCases": {
+        "UNUSED": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$00"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$04",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$05",
+                        "value": "$07"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FE"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": { 
+                            "eq": "$80"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": { 
+                            "eq": "$01"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$200"
+                },
+                {
+                    "start": {
+                        "address": "$600"
+                    },
+                    "size": "$100"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$200"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}

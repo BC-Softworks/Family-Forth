@@ -5,7 +5,7 @@
 ; Defines the following words
 ; DROP 2DROP DUP SWAP OVER 2DUP 2OVER ?DUP ROT 2SWAP 
 ; 0= 0< AND OR XOR 2* 2/ < > = U< 
-; LSHIFT RSHIFT DEPTH S>D
+; LSHIFT RSHIFT DEPTH S>D EMIT
 
 
 ; Include guard
@@ -317,11 +317,12 @@ true  = %11111111
 ; Tokenized 2/
 .proc TWOSLASH
 		clc
-		lda #%10000000 ; Store the 7th bit
+		lda #$80		; Store the 7th bit
 		and $01,X
 		lsr $01,X
-		lsr $00,X
-		ora $01,X      ; Restore the 7th bit
+		ror $00,X
+		ora $01,X		; Restore the 7th bit
+		sta $01,X
 		rts
 .endproc
 
@@ -422,6 +423,7 @@ true  = %11111111
 @over:	jsr DROP
 		lda #false
 		jmp SETTOS
+
 @start: ldy $00,X
 		jsr DROP		; Drop u
 @loop:	jsr TWOSLASH
@@ -460,3 +462,16 @@ true  = %11111111
 		jmp SWAP
 .endproc
 
+; ( x -- )
+; If x is a graphic character in the implementation-defined character set, display x. 
+; The effect of EMIT for all other values of x is implementation-defined.
+;
+; When passed a character whose character-defining bits have a value between hex 20 and 7E inclusive,
+; the corresponding standard character, specified by 3.1.2.1 Graphic characters, is displayed.
+; Because different output devices can respond differently to control characters,
+; programs that use control characters to perform specific functions have an environmental dependency.
+; Each EMIT deals with only one character.
+.proc EMIT
+	
+	rts
+.endproc
