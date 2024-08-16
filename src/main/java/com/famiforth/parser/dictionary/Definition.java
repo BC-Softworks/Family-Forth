@@ -10,6 +10,52 @@ import java.util.stream.Collectors;
  */
 public class Definition {
 
+    private boolean isMacro;
+
+    private boolean isPrimitive;
+
+    private boolean isImmediate;
+
+    private String name;
+    
+    private String label;
+
+    private List<String> words;
+
+    @Override
+    public String toString() {
+        return String.format("Definition [%s: %s]", name, words);
+    }
+    
+    public boolean isMacro() {
+        return isMacro;
+    }
+
+    public void setIsImmediate() {
+        this.isImmediate = true;
+    }
+
+    public boolean isImmediate() {
+        return isImmediate;
+    }
+
+    public boolean isPrimitive() {
+        return isPrimitive;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public String getLabel() {
+        return label;
+    }
+
+    public List<String> getWords() {
+        assert words != null;
+        return List.copyOf(words);
+    }
+
     /**
      * Create a low level word defined as a sequence of assembly code
      * @param name
@@ -18,6 +64,7 @@ public class Definition {
      */
     protected Definition(String name, String label, boolean isMacro) {
         this.isPrimitive = true;
+        this.isImmediate = false;
         this.isMacro = isMacro;
         this.name = name;
         this.label = label;
@@ -33,6 +80,7 @@ public class Definition {
      */
     protected Definition(String name, boolean isMacro, List<String> words) {
         this.isPrimitive = false;
+        this.isImmediate = false;
         this.isMacro = isMacro;
         this.name = name;
         this.label = DefinitionUtils.convertToVaildLabel(name);
@@ -66,39 +114,6 @@ public class Definition {
         definition.isMacro = Boolean.parseBoolean(map.get("isMacro").toString());
         definition.words = List.of();
         return definition;
-    }
-
-    private boolean isMacro;
-
-    private boolean isPrimitive;
-
-    private String name;
-    
-    private String label;
-
-    private List<String> words;
-
-    @Override
-    public String toString() {
-        return String.format("Definition [%s: %s]", name, words);
-    }
-    
-    public boolean isMacro() {
-        return isMacro;
-    }
-
-    public boolean isPrimitive() {
-        return isPrimitive;
-    }
-    public String getName() {
-        return name;
-    }
-    public String getLabel() {
-        return label;
-    }
-    public List<String> getWords() {
-        assert words != null;
-        return List.copyOf(words);
     }
     
     /**

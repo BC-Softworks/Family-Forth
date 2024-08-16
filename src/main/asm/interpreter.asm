@@ -4,6 +4,7 @@
 
 ; Defines the following words
 ; : ; [ ] STATE QUIT ABORT
+; IMMEDIATE POSTPONE
 ; BASE BIN DECIMEL HEX
 
 ; Include guard

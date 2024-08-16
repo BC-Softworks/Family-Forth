@@ -65,6 +65,17 @@ public class UserDictionary {
     }
 
     /**
+     * Sets a word's isImmediate flag to true
+     * @param name
+     */
+    public static void modifyUserDefinedWord(String name) {
+        Definition def = getDefinition(name);
+        def.setIsImmediate();
+        addWord(def);
+    }
+
+
+    /**
      * Fetches the Definition of the word from the dictionary 
      * and checks if it is a macro
      * @param word
@@ -171,7 +182,18 @@ public class UserDictionary {
         populateDictionary(List.of(jsonFilePath));
     }
 
+    /**
+     * Adds a word to the Dictionary.
+     * @param def
+     * 
+     * @throws NullPointerException if attempting to add an anonymous definition
+     * @throws IllegalArgumentException if attempting to override a primitive definition
+     */
     private static void addWord(final Definition def) {
+        if(def.getName() == null || def.getName().isEmpty()){
+            throw new NullPointerException(String.format("Error: Anonymous definitions can not be added to the dictionary"));
+        }
+
         final Definition existingDefinition = dictionary.get(def.getName());
         if (existingDefinition != null && existingDefinition.isPrimitive()) {
             throw new IllegalArgumentException(String.format("Error: Can not override primitives"));

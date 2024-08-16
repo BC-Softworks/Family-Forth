@@ -64,6 +64,7 @@ public class Parser {
                 while (!LexerToken.TokenType.END_COMMENT.equals(lexer.next_token().type));
                 return null;
             // TokensTypes that return a ParserToken
+            // Except IMMEDIATE
             case KEYWORD:
                 Definition def = null;
                 DefinitionType type = null;
@@ -73,6 +74,12 @@ public class Parser {
                         type = DefinitionType.COLON;
                         def = parseColonStatement(token);
                         break;
+                    case IMMEDIATE:
+                        // Get definition of last word.
+                        // Set it to be an immediate word.
+                        // Update the dictionary
+                        UserDictionary.modifyUserDefinedWord(wordName);
+                        return null;
                     case CODE:
                         type = DefinitionType.CODE;
                         def = parseCodeBlock(token);

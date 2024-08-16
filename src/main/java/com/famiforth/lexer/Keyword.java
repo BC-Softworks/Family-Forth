@@ -9,6 +9,7 @@ import java.util.Arrays;
 public enum Keyword{
     COLON(":"),
     SEMICOLON(";"),
+    IMMEDIATE("IMMEDIATE"),
     CODE("CODE"),
     ENDCODE("ENDCODE"),
     IF("IF"),
