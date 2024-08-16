@@ -192,12 +192,11 @@
 		SAVE_RETURN
 		PUT
 		pla
-		sta $00,X     ; Push lower byte
-		sta lowByteW  ; Store lower byte
+		sta $00,X		; Push lower byte
 		pla
-		sta $01,X	  ; Push higher byte
+		sta $01,X		; Push higher byte
 		pha
-		lda lowByteW  ; Load lowbyte to push back onto the stack
+		lda $00,X		; Load lowbyte to push back onto the stack
 		pha
 		LOAD_RETURN
 		rts

@@ -3,49 +3,49 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "RFROM"
+            "label": "CELLS"
         }
     },
     "testCases": {
-        "R>": {
+        "4 4 LSHIFT": {
             "setup": {
                 "register": {
                     "X": {
-                        "value": "$00"
+                        "value": "$FC"
                     }
                 },
                 "memory": [
                     {
-                        "address": "$01FE",
-                        "value": "$34"
-                        
+                        "address": "$FC",
+                        "value": "$04"
                     },
                     {
-                        "address": "$01FF",
-                        "value": "$12"
+                        "address": "$FD",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": "$04"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$00"
                     }
                 ]
                 
             },
             "expected": {
-                "register": {
-                    "X": {
-                        "value": { 
-                            "eq": "$FE"
-                        }
-                    }
-                },
                 "memory": [
                     {
                         "address": "$FE",
-                        "value": { 
-                            "eq": "$34"
+                        "value": {
+                            "eq": "$40"
                         }
                     },
                     {
                         "address": "$FF",
-                        "value": { 
-                            "eq": "$12"
+                        "value": {
+                            "eq": "$00"
                         }
                     }
                 ]
@@ -62,13 +62,13 @@
                     "start": {
                         "address": "$0"
                     },
-                    "size": "$200"
+                    "size": "$800"
                 },
                 {
                     "start": {
                         "address": "$2000"
                     },
-                    "size": "$2000"
+                    "size": "$2020"
                 },
                 {
                     "detect": true

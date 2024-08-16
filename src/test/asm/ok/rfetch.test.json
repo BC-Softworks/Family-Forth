@@ -3,11 +3,11 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "RFROM"
+            "label": "RFETCH"
         }
     },
     "testCases": {
-        "R>": {
+        "R@": {
             "setup": {
                 "register": {
                     "X": {
@@ -44,6 +44,19 @@
                     },
                     {
                         "address": "$FF",
+                        "value": { 
+                            "eq": "$12"
+                        }
+                    },
+                    {
+                        "address": "$01FE",
+                        "value": { 
+                            "eq": "$34"
+                        }
+                        
+                    },
+                    {
+                        "address": "$01FF",
                         "value": { 
                             "eq": "$12"
                         }
