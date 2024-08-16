@@ -23,6 +23,9 @@ hiByteDSP  = $05
 radix  	   = $06
 mode  	   = $07
 
+; Input buffer
+heap = $0100
+
 ;Boolean constant
 false = %00000000
 true  = %11111111

@@ -164,9 +164,9 @@
 		SAVE_RETURN
 		PUT
 		pla
-		sta $01,X     ; Pull high byte
+		sta $00,X     ; Pull high byte
 		pla
-		sta $00,X	  ; Pull low byte
+		sta $01,X	  ; Pull low byte
 		LOAD_RETURN
 		rts
 .endproc
@@ -177,9 +177,9 @@
 ; IMPORTANT: Doesn't use W
 .proc TOR
 		SAVE_RETURN
-		sta $01,X     ; Push higher byte
+		lda $01,X     ; Push higher byte
 		pha
-		sta $00,X	  ; Push lower byte
+		lda $00,X	  ; Push lower byte
 		pha
 		LOAD_RETURN
 		jmp DROP

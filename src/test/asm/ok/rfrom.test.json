@@ -1,0 +1,79 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "RFROM"
+        }
+    },
+    "testCases": {
+        ">R": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$00"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$01FE",
+                        "value": "$34"
+                        
+                    },
+                    {
+                        "address": "$01FF",
+                        "value": "$12"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FE"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": { 
+                            "eq": "$34"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": { 
+                            "eq": "$12"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$200"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2000"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,87 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "TOR"
+        }
+    },
+    "testCases": {
+        ">R": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FE"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": "$12"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$34"
+                    },
+                    {
+                        "address": "$01FE",
+                        "value": "$12"
+                        
+                    },
+                    {
+                        "address": "$01FF",
+                        "value": "$34"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$01FC",
+                        "value": { 
+                            "eq": "$12"
+                        }
+                    },
+                    {
+                        "address": "$01FD",
+                        "value": { 
+                            "eq": "$34"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$200"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2000"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}
