@@ -327,12 +327,13 @@ start:	lda $00,X		; Load char into W2
 ; TODO: Finish
 .proc COUNT
 		jsr LDW		; Store c-addr1 in W
-		ldy #$FF	; Set y to -1
+		ldy #$00	; Set y to 0
 
 @loop:	iny
 		jsr ONEADD	; Increment c-addr1
 		lda ($00),Y	; Load current address
-		bne @loop	;
+		bne @loop	; Loop if char is not zero
+
 		PUT
 		tya			; Set top of stack to Y
 		sta $00,X

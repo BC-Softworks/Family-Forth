@@ -1,0 +1,110 @@
+{
+    "$schema": "../../../../schema/testcase.schema.json",
+    "target": {
+        "testType": "JSR",
+        "start": {
+            "label": "COUNT"
+        }
+    },
+    "testCases": {
+        "COUNT": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FE"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$04"
+                    },
+                    {
+                        "address": "$0400",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$0401",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$0402",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$0403",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$0404",
+                        "value": "$00"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": { 
+                            "eq": "$04"
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": { 
+                            "eq": "$00"
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": { 
+                            "eq": "$04"
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": { 
+                            "eq": "$04"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$600"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2000"
+                },
+                {
+                    "detect": true
+                }
+            ]
+        }
+    }
+}
