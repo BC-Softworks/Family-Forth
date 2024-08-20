@@ -40,6 +40,7 @@ public class ParserToken {
         CODE,
         MACRO,
         CONSTANT,
+        CONST,
         IF,
         ELSE,
         THEN,

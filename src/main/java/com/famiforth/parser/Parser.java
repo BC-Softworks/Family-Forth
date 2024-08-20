@@ -91,6 +91,11 @@ public class Parser {
                         def = parseCodeBlock(token, true);
                         System.out.println(def);
                         break;
+                    case CONST:
+                        type = DefinitionType.CONST;
+                        def = parseConstBlock(token);
+                        System.out.println(def);
+                        break;
                     case IF:
                         type = DefinitionType.IF;
                         def = getDefinition(token);
@@ -208,6 +213,18 @@ public class Parser {
         return UserDictionary.getDefinition(wordName);
     }
 
+    @SuppressWarnings("unchecked")
+    /**
+     * Parse inline assembly.  Used to initalize constants
+     * @param lexerToken
+     * @param isMacro
+     * @return Anonymous definition
+     */
+    private Definition parseConstBlock(LexerToken lexerToken) {
+        List<String> wordList = (List<String>) parseBlock(lexerToken, Keyword.ENDCONST);
+        return UserDictionary.getAnonymousDefinition(wordList);
+    }
+
     /**
      * Parse a proc or macro block
      * @param lexerToken
@@ -215,24 +232,7 @@ public class Parser {
      * @return New word's definition
      */
     private Definition parseCodeBlock(LexerToken lexerToken, boolean isMacro) {
-        LexerToken token = lexerToken;
-        Queue<String> wordList = new LinkedList<>();
-        int lineNumber = lexerToken.lineNumber;
-        StringJoiner lineJoiner = new StringJoiner(" ");
-
-        token = skipAssemblyComments(lexer.next_token());
-        while(!(Keyword.ENDCODE).equals(Keyword.getByValue(token.value))) {
-            if(lineNumber != token.lineNumber){
-                lineNumber = token.lineNumber;
-                wordList.add(lineJoiner.toString());
-                lineJoiner = new StringJoiner(" ");
-            }
-
-            lineJoiner.add(token.value);
-            token = skipAssemblyComments(lexer.next_token());
-        }
-
-        wordList.add(lineJoiner.toString());
+        Queue<String> wordList = parseBlock(lexerToken, isMacro ? Keyword.ENDMACRO : Keyword.ENDCODE);
 
         // Poll the name of the assembly defined word
         String wordName = wordList.poll();
@@ -264,5 +264,28 @@ public class Parser {
             lexer.skipLine();
         }
         return token;
+    }
+
+
+    private Queue<String> parseBlock(LexerToken lexerToken, Keyword terminator){
+        LexerToken token = lexerToken;
+        Queue<String> wordList = new LinkedList<>();
+        int lineNumber = lexerToken.lineNumber;
+        StringJoiner lineJoiner = new StringJoiner(" ");
+
+        token = skipAssemblyComments(lexer.next_token());
+        while(!terminator.equals(Keyword.getByValue(token.value))) {
+            if(lineNumber != token.lineNumber){
+                lineNumber = token.lineNumber;
+                wordList.add(lineJoiner.toString());
+                lineJoiner = new StringJoiner(" ");
+            }
+
+            lineJoiner.add(token.value);
+            token = skipAssemblyComments(lexer.next_token());
+        }
+
+        wordList.add(lineJoiner.toString());
+        return wordList;
     }
 }

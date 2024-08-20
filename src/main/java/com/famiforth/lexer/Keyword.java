@@ -10,6 +10,8 @@ public enum Keyword{
     COLON(":"),
     SEMICOLON(";"),
     IMMEDIATE("IMMEDIATE"),
+    CONST("CONST"),
+    ENDCONST("ENDCONST"),
     CODE("CODE"),
     ENDCODE("ENDCODE"),
     MACRO("MACRO"),
