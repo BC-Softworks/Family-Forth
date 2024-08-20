@@ -38,6 +38,8 @@ public class ParserToken {
         COLON,
         IMMEDIATE,
         CODE,
+        MACRO,
+        CONSTANT,
         IF,
         ELSE,
         THEN,

@@ -34,7 +34,7 @@ public class UserDictionary {
     public static UserDictionary initalize(final String fileName) {
         if (instance == null) {
             try {
-                instance = new UserDictionary(fileName);
+                instance =  fileName == null ? new UserDictionary() : new UserDictionary(fileName);
             } catch (final IOException e) {
                 System.err.println(e);
                 throw new RuntimeException(e);
@@ -42,6 +42,10 @@ public class UserDictionary {
             initalized = true;
         }
         return instance;
+    }
+
+    public static UserDictionary initalize() {
+        return initalize(null);
     }
 
     /**
@@ -146,29 +150,6 @@ public class UserDictionary {
         return new Definition("", true, wordList);
     }
 
-    /**s
-     * Populate the current dictionary instance with the
-     * contents of the provided JSON files. If a word is encountered twice,
-     * a warning will be logged and the first definitions will be perserved.
-     * 
-     * @param jsonFilePaths
-     * @throws IOException
-     */
-    private static void populateDictionary(final Collection<String> jsonFilePaths) throws IOException {
-        File file;
-        for (final String fileName : jsonFilePaths) {
-            file = new File(fileName);
-            final Path filePath = Paths.get(file.toURI());
-            try {
-                final JSONArray jsonArr = new JSONArray(Files.readAllLines(filePath).stream().collect(Collectors.joining()));
-                Definition.fromJSONList(jsonArr.toList()).forEach(UserDictionary::addWord);
-            } catch (final IOException error) {
-                System.err.println("Failed to open: " + fileName);
-                throw error;
-            }
-        }
-    }
-
     /**
      * Throws an IllegalStateException if the Dictionary has not be initialized
      */
@@ -178,10 +159,6 @@ public class UserDictionary {
         }
     }
     
-    private static void populateDictionary(final String jsonFilePath) throws IOException {
-        populateDictionary(List.of(jsonFilePath));
-    }
-
     /**
      * Adds a word to the Dictionary.
      * @param def
@@ -204,10 +181,38 @@ public class UserDictionary {
 
     // Prevent the creation of an empty dictionary
     private UserDictionary() {
+        dictionary = new Hashtable<String, Definition>();
     }
 
     private UserDictionary(final String fileName) throws IOException {
         dictionary = new Hashtable<String, Definition>();
         populateDictionary(fileName);
+    }
+
+    private static void populateDictionary(final String jsonFilePath) throws IOException {
+        populateDictionary(List.of(jsonFilePath));
+    }
+
+    /**
+     * Populate the current dictionary instance with the
+     * contents of the provided JSON files. If a word is encountered twice,
+     * a warning will be logged and the first definitions will be perserved.
+     * 
+     * @param jsonFilePaths
+     * @throws IOException
+     */
+    private static void populateDictionary(final Collection<String> jsonFilePaths) throws IOException {
+        File file;
+        for (final String fileName : jsonFilePaths) {
+            file = new File(fileName);
+            final Path filePath = Paths.get(file.toURI());
+            try {
+                final JSONArray jsonArr = new JSONArray(Files.readAllLines(filePath).stream().collect(Collectors.joining()));
+                Definition.fromJSONList(jsonArr.toList()).forEach(UserDictionary::addWord);
+            } catch (final IOException error) {
+                System.err.println("Failed to open: " + fileName);
+                throw error;
+            }
+        }
     }
 }

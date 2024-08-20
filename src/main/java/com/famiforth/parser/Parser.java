@@ -15,6 +15,7 @@ import com.famiforth.lexer.Lexer;
 import com.famiforth.lexer.LexerToken;
 import com.famiforth.parser.ParserToken.DefinitionType;
 import com.famiforth.parser.dictionary.Definition;
+import com.famiforth.parser.dictionary.DefinitionUtils;
 import com.famiforth.parser.dictionary.UserDictionary;
 
 /** FamilyForth Parser
@@ -82,7 +83,12 @@ public class Parser {
                         return null;
                     case CODE:
                         type = DefinitionType.CODE;
-                        def = parseCodeBlock(token);
+                        def = parseCodeBlock(token, false);
+                        System.out.println(def);
+                        break;
+                    case MACRO:
+                        type = DefinitionType.MACRO;
+                        def = parseCodeBlock(token, true);
                         System.out.println(def);
                         break;
                     case IF:
@@ -176,7 +182,12 @@ public class Parser {
         return def;
     }
 
-    private Definition parseColonStatement(LexerToken lexerToken) throws IOException {
+    /**
+     * Parse a definition and add it to the UserDictionary
+     * @param lexerToken
+     * @return
+     */
+    private Definition parseColonStatement(LexerToken lexerToken) {
         LexerToken token = lexerToken;
         Queue<String> wordList = new LinkedList<>();
         while(true) {
@@ -197,9 +208,15 @@ public class Parser {
         return UserDictionary.getDefinition(wordName);
     }
 
-    private Definition parseCodeBlock(LexerToken lexerToken) throws IOException {
+    /**
+     * Parse a proc or macro block
+     * @param lexerToken
+     * @param isMacro
+     * @return New word's definition
+     */
+    private Definition parseCodeBlock(LexerToken lexerToken, boolean isMacro) {
         LexerToken token = lexerToken;
-        List<String> wordList = new LinkedList<>();
+        Queue<String> wordList = new LinkedList<>();
         int lineNumber = lexerToken.lineNumber;
         StringJoiner lineJoiner = new StringJoiner(" ");
 
@@ -214,10 +231,17 @@ public class Parser {
             lineJoiner.add(token.value);
             token = skipAssemblyComments(lexer.next_token());
         }
+
         wordList.add(lineJoiner.toString());
 
-        // Generate an anonymous definition for the code block
-        return UserDictionary.getAnonymousDefinition(wordList);
+        // Poll the name of the assembly defined word
+        String wordName = wordList.poll();
+
+        // Generate a definition for the code block
+        UserDictionary.addUserDefinedWord(wordName, isMacro, List.copyOf(wordList));
+        
+        // Return newly created Definition
+        return UserDictionary.getDefinition(wordName);
     }
 
     private LexerToken skipComments(LexerToken token) {
@@ -235,7 +259,8 @@ public class Parser {
      * @return Next token after the commented text
      */
     private LexerToken skipAssemblyComments(LexerToken token) {
-        if(Keyword.SEMICOLON.equals(Keyword.getByValue(token.value))){
+        if(Keyword.SEMICOLON.equals(Keyword.getByValue(token.value)) || 
+            LexerToken.TokenType.SKIP_LINE.equals(token.type)){
             lexer.skipLine();
         }
         return token;

@@ -1,12 +1,11 @@
-# Makefile for Familyforth's assembly code
-# Requires ca65 to build and 6502_tester to test
-SRC_DIR				:=		src/main/asm
+# Makefile for FamilyForth's generated assembly code
+# Requires ca65 and ld65 to build and 6502_tester to test
+SRC_DIR				:=		build/asm
 CONFIG_DIR			:=		cfg
-BUILD_DIR			:=		build
+BUILD_DIR			:=		build/objects
 DIST_DIR			:=		dist
 TEST_DIR			:=		src/test/asm
 TEST_OK_DIR			:=		$(TEST_DIR)/ok
-# TEST_FAIL_DIR		:=		$(TEST_DIR)/fail
 TEST_EXEC_DIR		:=		../6502_tester
 COVERAGE_DIR		:=		coverage
 
@@ -18,8 +17,7 @@ OBJECTS				:=		$(SOURCES:$(SRC_DIR)/%.asm=$(BUILD_DIR)/%.o)
 NES_CFG				:=		$(CONFIG_DIR)/nes.cfg
 
 TEST_OK				:=		$(shell find $(TEST_OK_DIR) -type f -name '*.test.json' | sort)
-# TEST_FAIL			:=		$(shell find $(TEST_FAIL_DIR) -type f -name '*.test.json' | sort)
-TEST_IDS			:=		$(TEST_OK:%.test.json=%.test) #$(TEST_FAIL:%.test.json=%.test)
+TEST_IDS			:=		$(TEST_OK:%.test.json=%.test)
 
 COVARAGE			:=		$(COVERAGE_DIR)/lcov.info
 COVERAGE_SEGMENTS	:=		"CODE"
@@ -32,7 +30,6 @@ TEST_EXEC			:=		$(TEST_EXEC_DIR)/6502_tester
 
 TEST_FLAGS			:=		--debug=$(DEBUG) --coverage=$(COVARAGE) --segment=$(COVERAGE_SEGMENTS)
 TEST_OK_FLAGS		:=		--quiet-summary --quiet-ok
-# TEST_FAIL_FLAGS		:=		--quiet-summary --quiet-fail
 
 .PHONY : all build test prepare clean
 
@@ -62,10 +59,6 @@ $(COVERAGE_DIR) :
 
 $(TEST_OK_DIR)/%.test : $(TEST_OK_DIR)/%.test.json
 	$(TEST_EXEC) $(TEST_FLAGS) $(TEST_OK_FLAGS) -t $<
-
-# $(TEST_FAIL_DIR)/%.test : $(TEST_FAIL_DIR)/%.test.json
-# 	$(eval TEST_FAILED_CODE := $(shell echo $< | sed -e 's~^$(TEST_FAIL_DIR)/~~' -e 's~/.*~~'))
-# 	$(TEST_EXEC) $(TEST_FLAGS) $(TEST_FAIL_FLAGS) -t $< 2> /dev/null && { exit 1; } || { [ $$? -ne $(TEST_FAILED_CODE) ] && exit 2 || exit 0 ; }
 
 clean :
 	-rm -r $(BUILD_DIR)
