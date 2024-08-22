@@ -15,7 +15,6 @@ import com.famiforth.lexer.Lexer;
 import com.famiforth.lexer.LexerToken;
 import com.famiforth.parser.ParserToken.DefinitionType;
 import com.famiforth.parser.dictionary.Definition;
-import com.famiforth.parser.dictionary.DefinitionUtils;
 import com.famiforth.parser.dictionary.UserDictionary;
 
 /** FamilyForth Parser
@@ -213,7 +212,6 @@ public class Parser {
         return UserDictionary.getDefinition(wordName);
     }
 
-    @SuppressWarnings("unchecked")
     /**
      * Parse inline assembly.  Used to initalize constants
      * @param lexerToken
@@ -221,7 +219,7 @@ public class Parser {
      * @return Anonymous definition
      */
     private Definition parseConstBlock(LexerToken lexerToken) {
-        List<String> wordList = (List<String>) parseBlock(lexerToken, Keyword.ENDCONST);
+        List<String> wordList = parseBlock(lexerToken, Keyword.ENDCONST);
         return UserDictionary.getAnonymousDefinition(wordList);
     }
 
@@ -232,10 +230,16 @@ public class Parser {
      * @return New word's definition
      */
     private Definition parseCodeBlock(LexerToken lexerToken, boolean isMacro) {
-        Queue<String> wordList = parseBlock(lexerToken, isMacro ? Keyword.ENDMACRO : Keyword.ENDCODE);
+        List<String> wordList = parseBlock(lexerToken, isMacro ? Keyword.ENDMACRO : Keyword.ENDCODE);
 
-        // Poll the name of the assembly defined word
-        String wordName = wordList.poll();
+        // Remove the name of the assembly defined word
+        // Check for and handle args
+        String wordName = wordList.remove(0);
+        if(wordName.contains(" ")){
+            String name = wordName.split(" ")[0];
+            wordList.add(0, wordName.replaceFirst(name, ""));
+            wordName = name;
+        }
 
         // Generate a definition for the code block
         UserDictionary.addUserDefinedWord(wordName, isMacro, List.copyOf(wordList));
@@ -262,14 +266,15 @@ public class Parser {
         if(Keyword.SEMICOLON.equals(Keyword.getByValue(token.value)) || 
             LexerToken.TokenType.SKIP_LINE.equals(token.type)){
             lexer.skipLine();
+            token = lexer.next_token();
         }
         return token;
     }
 
 
-    private Queue<String> parseBlock(LexerToken lexerToken, Keyword terminator){
+    private List<String> parseBlock(LexerToken lexerToken, Keyword terminator){
         LexerToken token = lexerToken;
-        Queue<String> wordList = new LinkedList<>();
+        List<String> wordList = new LinkedList<>();
         int lineNumber = lexerToken.lineNumber;
         StringJoiner lineJoiner = new StringJoiner(" ");
 

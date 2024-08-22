@@ -2,13 +2,14 @@ package com.famiforth.generator;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.famiforth.exceptions.GeneratorException;
 import com.famiforth.parser.ParserToken;
+import com.famiforth.parser.dictionary.Definition;
+import com.famiforth.parser.dictionary.DefinitionUtils;
 import com.famiforth.parser.dictionary.UserDictionary;
 
 /** FamilyForth Code Generator
@@ -17,19 +18,11 @@ import com.famiforth.parser.dictionary.UserDictionary;
 public class AssemblyGenerator extends AbstractGenerator {
 
     private static final String JSR = "jsr ";
-    private static List<String> defaultFilesToInclude = Arrays.asList("init.asm");
+    private static final String JMP = "jmp ";
+    private static final String RETURN = "rts";
     
     public AssemblyGenerator(FileOutputStream fileOutputStream) {
         super(fileOutputStream);
-    }
-
-    @Override
-    public void writeFileHeader() throws IOException {
-        writeFileHeader(defaultFilesToInclude);
-    }
-
-    private void writeFileHeader(List<String> headerFileList) throws IOException {
-        writeLines(headerFileList.stream().map(str -> String.format(".include \"%s\"", str)).collect(Collectors.toList()));
     }
 
     @Override
@@ -37,10 +30,16 @@ public class AssemblyGenerator extends AbstractGenerator {
         List<String> lines = new LinkedList<>();
         switch(token.type){
             case COLON:
-                lines = token.isMacro() ? generateMacro(token) : generateSubroutine(token);
+                lines = token.isMacro() ? generateMacro(token, false) : generateSubroutine(token, false);
+                break;
+            case CONST:
+                lines = token.def.getWords();
                 break;
             case CODE:
-                lines = token.def.getWords();
+                lines = generateSubroutine(token, true);
+                break;
+            case MACRO:
+                lines = generateMacro(token, true);
                 break;
             case IF:
                 lines = generateIfStatement(token);
@@ -100,33 +99,62 @@ public class AssemblyGenerator extends AbstractGenerator {
         });
     }
 
-    private List<String> generateMacro(ParserToken token) {
+    private List<String> generateMacro(ParserToken token, boolean isInline) {
         final String macroHeader = String.format(".macro %s", token.def.getLabel());
         final List<String> words = token.def.getWords();
         final String macroFooter = ".endmacro";
 
-        List<String> macroList = new LinkedList<>();
-        macroList.add(macroHeader);
-        macroList.addAll(words.stream().map(UserDictionary::getDefinition)
-                                        .map(def -> String.format("\t%s%s", def.isMacro() ? "" : JSR, def.getLabel()))
-                                        .collect(Collectors.toList()));
-        macroList.add(macroFooter);
-        return macroList;
+        return generateIndentedCodeBlock(macroHeader, macroFooter, words, isInline);
     }
 
-    private List<String> generateSubroutine(ParserToken token) {
+    private List<String> generateSubroutine(ParserToken token, boolean isInline) {
         final String procHeader = String.format(".proc %s", token.def.getLabel());
         final List<String> words = token.def.getWords();
         final String procFooter = ".endproc";
 
-        List<String> subroutineList = new LinkedList<>();
-        subroutineList.add(procHeader);
-        subroutineList.addAll(words.stream()
-                                    .map(UserDictionary::getDefinition)
-                                    .map(def -> String.format("\t%s%s", def.isMacro() ? "" : JSR, def.getLabel()))
-                                    .collect(Collectors.toList()));
-        subroutineList.add(procFooter);
-        return subroutineList;
+        return generateIndentedCodeBlock(procHeader, procFooter, words, isInline);
+    }
+
+    /**
+     * Converts a word list into an indented block of assembly
+     * @param header
+     * @param footer
+     * @param body
+     * @param isInline
+     */
+    private List<String> generateIndentedCodeBlock(String header, String footer, List<String> body, boolean isInline){
+        List<String> codeBlock = new LinkedList<>();
+        codeBlock.add(header);
+        if(isInline){
+            codeBlock.addAll(body.stream()
+                .map(str -> {
+                    if(str.startsWith(JSR) || str.startsWith(JMP)){
+                        String[] instruction = str.split(" ");
+                        if(instruction.length == 2){
+                            if(!UserDictionary.isDefined(instruction[1])){
+                                return str;
+                            }
+                            return instruction[0] + " " + DefinitionUtils.convertToVaildLabel(instruction[1]);
+                        } else {
+                            throw new GeneratorException("Invalid jump instruction error.");
+                        }
+                    }
+                    return str;
+                })
+                .map(str -> String.format("\t%s", str))
+                .collect(Collectors.toList()));
+        } else {
+            codeBlock.addAll(body.stream()
+                .map(UserDictionary::getDefinition)
+                .map(def -> {
+                    String str = def.isMacro() || RETURN.equalsIgnoreCase(def.getLabel()) ? "" : JSR;
+                    return String.format("\t%s%s", str, def.getLabel());
+                })
+                .collect(Collectors.toList()));
+            codeBlock.add("\t" + RETURN);
+        }
+        codeBlock.add(footer);
+        return codeBlock;
     }
 
     private List<String> generateIfStatement(ParserToken token) {

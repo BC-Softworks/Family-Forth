@@ -64,7 +64,7 @@ public class Lexer {
      * directly grabbing next for easier debugging
      */
     protected static void advance() {
-        if(currentLine.isEmpty()){
+        while(currentLine.isEmpty() || currentLine.peek() == null){
             if(scanner.hasNextLine()){
                 String[] nextLine = StringUtils.split(scanner.nextLine());
                 currentLine.addAll(Arrays.asList(nextLine));
@@ -82,7 +82,6 @@ public class Lexer {
         str_token = currentLine.poll();
         // Remove all non ASCII Characters
         str_token = str_token.replaceAll("[^\\x00-\\x7F]", "");
-        str_token = str_token.toUpperCase();
         tokenNumber += 1;
 	}
 

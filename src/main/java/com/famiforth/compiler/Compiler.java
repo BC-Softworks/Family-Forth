@@ -22,22 +22,21 @@ public class Compiler {
     private Parser parser;
     private AbstractGenerator generator;
 
-    public Compiler(String fileIn, String fileOut, String customDictionary) {
+    public Compiler(String fileIn, String fileOut, String initalDictionary) {
 
         // Create a Lexer, Parser, and Generator using the parsed options
         try {
             Lexer lexer = new Lexer(new FileReader(new File(fileIn)));
-            parser = new Parser(lexer, customDictionary);
-            generator = new AssemblyGenerator(new FileOutputStream(new File(fileOut)));
+            parser = new Parser(lexer, initalDictionary);
+            File fOut = new File(fileOut);
+            fOut.getParentFile().mkdirs();
+            generator = new AssemblyGenerator(new FileOutputStream(fOut));
         } catch (FileNotFoundException ex) {
             System.err.println("Error: " + ex.getMessage());
         }
     }
 
     public void compile() throws IOException {
-        // Write assembly header block first
-        generator.writeFileHeader();
-
         // Used for debugging
         List<ParserToken> parsedWords = new Stack<>();
 

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 import org.junit.Test;
 
@@ -36,24 +35,6 @@ public class LexerTest {
             LexerToken token = lexer.next_token();
             assertEquals(LexerToken.TokenType.KEYWORD, token.type);
         }
-    }
-
-    // Test valid user defined words are recognized
-
-    @Test
-    /**
-     * Test that the lexer capitalizes output
-     * This ensure that the created dictionary is not case sensitive
-     * @throws IOException
-     */
-    public void capitalizationTest() throws IOException {
-        // Random string of lowercase letters
-        String randString = Character.toString(new Random().nextInt(25) + 'a').repeat(java.lang.Math.abs(new Random().nextInt() % 64));
-
-        init(randString);
-        LexerToken token = lexer.next_token();
-        assertEquals(TokenType.WORD, token.type);
-        assertEquals(randString.toUpperCase(), token.value);
     }
 
     // Test numeric input

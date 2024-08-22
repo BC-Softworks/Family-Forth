@@ -34,7 +34,7 @@ public class UserDictionary {
     public static UserDictionary initalize(final String fileName) {
         if (instance == null) {
             try {
-                instance =  fileName == null ? new UserDictionary() : new UserDictionary(fileName);
+                instance = fileName == null ? new UserDictionary() : new UserDictionary(fileName);
             } catch (final IOException e) {
                 System.err.println(e);
                 throw new RuntimeException(e);
@@ -136,6 +136,12 @@ public class UserDictionary {
         initCheck();
         final String[] arr = CompilerUtils.littleEndian(word);
         return new Definition(word, String.format("PUSHCELL #%s, #%s", arr[0], arr[1]), true);
+    }
+
+    public static boolean isDefined(final String word){
+        initCheck();
+        Definition def = dictionary.get(word);
+        return def != null;
     }
 
     /**

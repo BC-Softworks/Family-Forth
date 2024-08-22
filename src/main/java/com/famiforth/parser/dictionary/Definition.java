@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 /** Represents a word in the UserDictionary
  * @author Edward Conn
  */
@@ -66,8 +68,8 @@ public class Definition {
         this.isPrimitive = true;
         this.isImmediate = false;
         this.isMacro = isMacro;
-        this.name = name;
-        this.label = label;
+        this.name = StringUtils.upperCase(name);
+        this.label = StringUtils.upperCase(label);
         this.words = List.of();
     }
 
@@ -82,8 +84,8 @@ public class Definition {
         this.isPrimitive = false;
         this.isImmediate = false;
         this.isMacro = isMacro;
-        this.name = name;
-        this.label = DefinitionUtils.convertToVaildLabel(name);
+        this.name = StringUtils.upperCase(name);
+        this.label = DefinitionUtils.convertToVaildLabel(StringUtils.upperCase(name));
         this.words = words;
     }
 

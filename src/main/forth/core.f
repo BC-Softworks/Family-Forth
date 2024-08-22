@@ -6,7 +6,7 @@
 \ 0= 0< AND OR XOR 2* 2/ < > = U< 
 \ LSHIFT RSHIFT DEPTH S>D
 
-\\ Kernel "register" locations
+\ Kernel "register" locations
 CONST
 	lowByteW	= $00
 	hiByteW		= $01
@@ -21,7 +21,11 @@ CONST
 	true		= %11111111
 ENDCONST
 
-\\ Global Macros
+\ Global Macros
+
+MACRO RETURN
+	rts
+ENDMACRO
 
 MACRO PUT
 	dex
@@ -43,31 +47,6 @@ MACRO LOAD_RETURN
 	lda hiByteW2
 	pha
 ENDMACRO
-
-\ Used to load constants onto the stack
-MACRO PUSH arg1
-	.if (.blank(arg))
-		.error "Syntax error"
-	.endif
-	PUT
-	lda #0
-	sta $01,X
-	lda arg1
-	sta $00,X
-ENDMACRO
-
-MACRO PUSHCELL arg1, arg2
-	.if (.blank(arg))
-		.error "Syntax error"
-	.endif
-	PUT
-	lda arg1
-	sta $00,X
-	lda arg2
-	sta $01,X
-ENDMACRO
-
-.segment "CODE"
 
 \ Helper procs
 
@@ -94,8 +73,6 @@ CODE SETTOS
 	rts
 ENDCODE
 
-.segment "CODE"
-
 ( x -- )
 \ Drop x from the stack
 \ Underflow prevention
@@ -110,8 +87,7 @@ ENDCODE
 
 ( x1 x2 -- )
 \ Drop x1 and x2 from the stack
-\ Tokenized 2DROP
-CODE TWODROP
+CODE 2DROP
 	txa
 	clc
 	adc #4
@@ -214,7 +190,7 @@ CODE 2SWAP
 	rts
 ENDCODE
 
-\\ Logical operations
+\ Logical operations
 
 \ ( x -- flag )
 \ flag is true if and only if x is equal to zero.
@@ -284,7 +260,7 @@ CODE XOR
 	jmp DROP
 ENDCODE
 
-\\ Bit Shifts
+\ Bit Shifts
 
 \ ( x1 -- x2 )
 \ x2 is the result of shifting x1 one bit toward the most-significant bit, 
@@ -393,7 +369,7 @@ CODE LSHIFT
 	ldy $00,X
 	jsr DROP	\ Drop u
 @loop:
-	jsr TWOSTAR
+	jsr 2*
 	dey
 	bne @loop
 	rts
@@ -418,7 +394,7 @@ CODE RSHIFT
 	ldy $00,X
 	jsr DROP		\ Drop u
 @loop:
-	jsr TWOSLASH
+	jsr 2/
 	dey
 	bne @loop
 	rts
@@ -430,7 +406,9 @@ ENDCODE
 CODE DEPTH
 	txa				\ Transfer stack pointer to A
 	bne	@put		\ If empty return zero
-	PUSH #0
+	lda #0
+	sta $01,X
+	sta $00,X
 	rts
 @put:	
 	PUT
@@ -439,7 +417,7 @@ CODE DEPTH
 	sta $00,X
 	lda #0			\ Clear A
 	sta $01,X
-	jmp TWOSLASH
+	jmp 2/
 ENDCODE
 
 ( n -- d )

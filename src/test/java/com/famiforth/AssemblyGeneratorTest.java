@@ -30,13 +30,6 @@ public class AssemblyGeneratorTest {
     }
 
     @Test
-    public void writeFileHeaderTest() throws IOException{
-        setup();
-        generator.writeFileHeader();
-    }
-
-
-    @Test
     public void generateIfStatementTest() throws IOException {
         setup();
         ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("IF"), DefinitionType.IF, Pair.of("0",""));

@@ -22,8 +22,6 @@ public abstract class AbstractGenerator {
         fileOutputStream.close();
     };
 
-    public abstract void writeFileHeader() throws IOException;
-
     public abstract List<String> generate(ParserToken token) throws IOException;
 
 }

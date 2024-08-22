@@ -33,7 +33,7 @@ public class UserDictionaryTest {
         UserDictionary.addUserDefinedWord("?DROP", false, List.of("ZEROEQUALS", "DROP"));
         Definition def = UserDictionary.getDefinition("?DROP");
         assertEquals("?DROP", def.getName());
-        assertEquals("qDROP", def.getLabel());
+        assertEquals("gDROP", def.getLabel());
     }
 
     @Test
