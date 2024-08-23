@@ -16,11 +16,11 @@ import com.famiforth.compiler.Compiler;
 
 
 public class FamilyForth {
-    static final String DEFAULT_FILE_OUT = "build/out.asm";
+    static final String DEFAULT_FILE_OUT = "build/asm/out.asm";
     static final String DEFAULT_DICTIONARY_LOCATION = "src/main/resources/json/core_dictionary.json";
 
-    static String fileIn;
-    static String fileOut = DEFAULT_FILE_OUT;
+    static File fileIn;
+    static File fileOut;
     static String customDictionary = DEFAULT_DICTIONARY_LOCATION;
     static String[] includedFiles;
 
@@ -50,11 +50,13 @@ public class FamilyForth {
             }
 
             if(cmd.hasOption("o")){
-                fileOut = cmd.getOptionValue("o");
-                if(!new File(fileOut).canWrite()){
+                fileOut = new File(cmd.getOptionValue("o"));
+                if(!fileOut.canWrite()){
                     System.err.println("Error: Unable to write to output file.");
                     System.exit(0);
                 }
+            } else {
+                fileOut = new File(DEFAULT_FILE_OUT);
             }
 
             List<String> unparsedArgs = cmd.getArgList();
@@ -63,8 +65,8 @@ public class FamilyForth {
                 System.exit(0);
             }
 
-            fileIn = unparsedArgs.get(0);
-            if(!new File(fileIn).canRead()){
+            fileIn = new File(unparsedArgs.get(0));
+            if(!fileIn.canRead()){
                 System.err.println("Error: Unable to read source file.");
                 System.exit(0);
             }

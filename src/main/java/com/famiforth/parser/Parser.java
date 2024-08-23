@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.StringJoiner;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.famiforth.exceptions.SyntaxErrorException;
@@ -25,19 +26,22 @@ public class Parser {
     private final Lexer lexer;
     private final Deque<String> cfStack;
 
-
     private String wordName;
     private int ifCounter;
     private int doCounter;
     private int beginCounter;
 
-    public Parser(Lexer scan, String dictionaryFile) {
-        UserDictionary.initalize(dictionaryFile);
+    public Parser(Lexer scan) {
         this.lexer = scan;
         this.cfStack = new LinkedList<>();
         ifCounter = 0;
         doCounter = 0;
         beginCounter = 0;
+    }
+
+    public Parser(Lexer scan, String dictionaryFile) {
+        this(scan);
+        UserDictionary.initalize(dictionaryFile);
     }
 
     public boolean hasNext() {
@@ -153,6 +157,14 @@ public class Parser {
                         type = DefinitionType.RECURSE;
                         def = getDefinition(token);
                         reference = Pair.of(cfStack.pollLast(), null);
+                        break;
+                    case INCLUDE:
+                        type = DefinitionType.INCLUDE;
+                        reference = Pair.of(StringUtils.remove(lexer.next_token().value, '"'), null);
+                        break;
+                    case REQUIRE:
+                        type = DefinitionType.REQUIRE;
+                        reference = Pair.of(StringUtils.remove(lexer.next_token().value, '"'), null);
                         break;
                     default:
                         throw new SyntaxErrorException("Compilation time word encountered out of order.");

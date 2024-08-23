@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.famiforth.compiler.CompilerUtils;
 import com.famiforth.generator.AbstractGenerator;
 import com.famiforth.generator.AssemblyGenerator;
 import com.famiforth.parser.ParserToken;
@@ -60,5 +61,20 @@ public class AssemblyGeneratorTest {
         ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("RECURSE"), DefinitionType.RECURSE, Pair.of("", ""), "NAME");
         generator.generate(token);
         assertEquals("RECURSE NAME", generator.generate(token).get(0));
+    }
+
+    @Test
+    /**
+     * Test Integer to signed hexadecimel conversion
+     */
+    public void integerToHexTest(){
+        assertEquals("0000", CompilerUtils.integerToHex(0));
+        assertEquals("0008", CompilerUtils.integerToHex(8));
+        assertEquals("000F", CompilerUtils.integerToHex(15));
+        assertEquals("0010", CompilerUtils.integerToHex(16));
+        assertEquals("FFFF", CompilerUtils.integerToHex(-1));
+        assertEquals("FFF8", CompilerUtils.integerToHex(-8));
+        assertEquals("FFF1", CompilerUtils.integerToHex(-15));
+        assertEquals("FFF0", CompilerUtils.integerToHex(-16));
     }
 }

@@ -67,7 +67,11 @@
 ; STATE is true when in compilation state, false otherwise. The true value in STATE is non-zero, but is otherwise implementation-defined.
 ; Only the following standard words alter the value in STATE: : (colon), ; (semicolon), ABORT, QUIT, :NONAME, [ (left-bracket), ] (right-bracket).
 .macro STATE
-		PUSH #mode
+		PUT
+		lda #mode
+		sta 00,X
+		lda #0
+		sta 01,X
 .endmacro
 
 ; ( -- ) ( R: i * x -- )

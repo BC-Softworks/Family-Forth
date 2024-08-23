@@ -52,6 +52,8 @@ public class ParserToken {
         WHILE,
         REPEAT,
         RECURSE,
+        INCLUDE,
+        REQUIRE,
         INTEGER,
         WORD
     }

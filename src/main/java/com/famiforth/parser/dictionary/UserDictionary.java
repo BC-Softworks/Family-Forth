@@ -135,7 +135,9 @@ public class UserDictionary {
     public static Definition getIntegerDefinition(final String word){
         initCheck();
         final String[] arr = CompilerUtils.littleEndian(word);
-        return new Definition(word, String.format("PUSHCELL #%s, #%s", arr[0], arr[1]), true);
+        Definition def = new Definition(word, String.format("%s,%s", arr[0], arr[1]), true);
+        def.setIsNumber();
+        return def;
     }
 
     public static boolean isDefined(final String word){

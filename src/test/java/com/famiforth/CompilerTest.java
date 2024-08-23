@@ -1,5 +1,6 @@
 package com.famiforth;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -10,14 +11,30 @@ public class CompilerTest {
     
     private Compiler compiler;
 
-    private String fileIn;
-    private String fileOut;
+    private File fileIn;
+    private File fileOut;
 
 
     @Test
     public void compileCoreTest() throws IOException {
-        fileIn = "src/main/forth/core.f";
-        fileOut = "build/asm/core.asm";
+        fileIn = new File("src/main/forth/core.f");
+        fileOut = new File("build/asm/core.asm");
+        compiler = new Compiler(fileIn, fileOut, null);
+        compiler.compile();
+    }
+
+    @Test
+    public void compileMathTest() throws IOException {
+        fileIn = new File("src/main/forth/math.f");
+        fileOut = new File("build/asm/math.asm");
+        compiler = new Compiler(fileIn, fileOut, null);
+        compiler.compile();
+    }
+
+    @Test
+    public void compileMemoryTest() throws IOException {
+        fileIn = new File("src/main/forth/memory.f");
+        fileOut = new File("build/asm/memory.asm");
         compiler = new Compiler(fileIn, fileOut, null);
         compiler.compile();
     }

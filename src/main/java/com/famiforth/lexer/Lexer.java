@@ -17,9 +17,9 @@ import com.famiforth.lexer.LexerToken.TokenType;
 */
 public class Lexer {
 
-    private static Scanner scanner;
-    private static Queue<String> currentLine;
-    private static String str_token;
+    private Scanner scanner;
+    private Queue<String> currentLine;
+    private String str_token;
     
     // Total number of tokens lexed
     private static int tokenNumber;
@@ -63,7 +63,7 @@ public class Lexer {
      * This is done by line instead of 
      * directly grabbing next for easier debugging
      */
-    protected static void advance() {
+    protected void advance() {
         while(currentLine.isEmpty() || currentLine.peek() == null){
             if(scanner.hasNextLine()){
                 String[] nextLine = StringUtils.split(scanner.nextLine());

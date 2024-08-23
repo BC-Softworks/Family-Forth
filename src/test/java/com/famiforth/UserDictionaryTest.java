@@ -33,7 +33,7 @@ public class UserDictionaryTest {
         UserDictionary.addUserDefinedWord("?DROP", false, List.of("ZEROEQUALS", "DROP"));
         Definition def = UserDictionary.getDefinition("?DROP");
         assertEquals("?DROP", def.getName());
-        assertEquals("gDROP", def.getLabel());
+        assertEquals("qDROP", def.getLabel());
     }
 
     @Test
@@ -41,6 +41,6 @@ public class UserDictionaryTest {
         dictionary = UserDictionary.initalize(testFileName);
         Definition def = UserDictionary.getDefinition("12345");
         assertEquals("12345", def.getName());
-        assertEquals("PUSHCELL #39, #30", def.getLabel());
+        assertEquals("39,30", def.getLabel());
     }
 }

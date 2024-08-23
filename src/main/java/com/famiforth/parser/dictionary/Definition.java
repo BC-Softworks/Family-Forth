@@ -18,6 +18,8 @@ public class Definition {
 
     private boolean isImmediate;
 
+    private boolean isNumber;
+
     private String name;
     
     private String label;
@@ -33,12 +35,20 @@ public class Definition {
         return isMacro;
     }
 
-    public void setIsImmediate() {
+    protected void setIsImmediate() {
         this.isImmediate = true;
     }
 
     public boolean isImmediate() {
         return isImmediate;
+    }
+
+    protected void setIsNumber() {
+        this.isNumber = true;
+    }
+
+    public boolean isNumber() {
+        return isNumber;
     }
 
     public boolean isPrimitive() {
@@ -67,6 +77,7 @@ public class Definition {
     protected Definition(String name, String label, boolean isMacro) {
         this.isPrimitive = true;
         this.isImmediate = false;
+        this.isNumber = false;
         this.isMacro = isMacro;
         this.name = StringUtils.upperCase(name);
         this.label = StringUtils.upperCase(label);
@@ -83,6 +94,7 @@ public class Definition {
     protected Definition(String name, boolean isMacro, List<String> words) {
         this.isPrimitive = false;
         this.isImmediate = false;
+        this.isNumber = false;
         this.isMacro = isMacro;
         this.name = StringUtils.upperCase(name);
         this.label = DefinitionUtils.convertToVaildLabel(StringUtils.upperCase(name));

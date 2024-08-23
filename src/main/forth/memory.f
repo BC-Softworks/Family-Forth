@@ -6,6 +6,8 @@
 \ CELL+ CELLS R> >R R@ 
 \ ALLOT HERE , C, MOVE FILL
 
+require "math.f"
+
 ( a-addr -- x ) 
 \ Returns the full cell
 CODE @
@@ -34,7 +36,7 @@ ENDCODE
 
 ( a-addr -- x1 x2 ) 
 \ Returns two full cells
-: 2@ DUP @ SWAP 2 ADD @ ;
+: 2@ DUP @ SWAP 2 + @ ;
 
 ( -- )
 \ If the data-space pointer is not aligned, 
@@ -43,7 +45,8 @@ CODE ALIGN
 	lda lowByteDSP
 	and #$01
 	beq @end
-	PUSH #1
+	lda #1
+	PUSH
 	jmp ALLOT
 @end:	
 	rts
@@ -55,12 +58,14 @@ CODE ALIGNED
 	lda $00,X
 	and #1
 	beq @push
-	PUSH #1
+	lda #1
+	PUSH
 	bne @add
-@push:	
-	PUSH #2
+@push:
+	lda #2
+	PUSH
 @add:
-	jmp ADD
+	jmp +
 ENDCODE
 
 ( x a-addr -- )
@@ -199,7 +204,7 @@ ENDCODE
 \ Reserve space for one character in the data space and store char in the space.
 \ If the data-space pointer is character aligned when C, begins execution, it will remain character aligned when C, finishes execution.
 \ An ambiguous condition exists if the data-space pointer is not character-aligned prior to execution of C,. 
-: C, 1 ALLOT  HERE CSTORE ;
+: C, 1 ALLOT HERE C! ;
 
 ( addr1 addr2 u -- )
 \ If u is greater than zero, copy the contents of u 
@@ -210,7 +215,7 @@ CODE MOVE
 	lda $00,X
 	ora $01,X		\ Compare low and high bytes
 	bne @rot		\ Skip if u = 0
-	jsr TWODROP		\ Drop addr1, addr2, and u
+	jsr 2DROP		\ Drop addr1, addr2, and u
 	jmp DROP
 
 @rot:	
@@ -226,7 +231,7 @@ CODE MOVE
 	lda ($00),Y		\ Load byte from addr1 + y
 	sta ($02),Y		\ Store byte at addr2 + y
 	iny				\ Increment Y
-	jsr ONESUB		\ Subtract one from u \ TODO: Use unsigned sub
+	jsr 1-			\ Subtract one from u \ TODO: Use unsigned sub
 	lda $00,X
 	ora $01,X		\ Compare low and high bytes
 	bne @loop		\ Break if zero
@@ -240,7 +245,7 @@ CODE FILL
 	ora $03,X		\ Compare low and high bytes
 	bne start		\ Skip if u = 0
 	jsr DROP		\ Drop addr1, addr2, and u
-	jmp TWODROP
+	jmp 2DROP
 
 start:	
 	lda $00,X		\ Load char into W2
@@ -255,7 +260,7 @@ start:
 	lda $02			\ Load byte from addr1 + y
 	sta ($00),Y		\ Store byte at addr2 + y
 	iny				\ Increment Y
-	jsr ONESUB		\ Subtract one from u
+	jsr 1-			\ Subtract one from u
 	lda $00,X
 	ora $01,X		\ Compare low and high bytes
 	bne @loop		\ Break if zero
@@ -272,7 +277,7 @@ CODE COUNT
 	ldy #$00	\ Set y to 0
 @loop:	
 	iny
-	jsr ONEADD	\ Increment c-addr1
+	jsr 1+		\ Increment c-addr1
 	lda ($00),Y	\ Load current address
 	bne @loop	\ Loop if char is not zero
 

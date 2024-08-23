@@ -4,11 +4,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.famiforth.exceptions.GeneratorException;
 import com.famiforth.parser.ParserToken;
-import com.famiforth.parser.dictionary.Definition;
 import com.famiforth.parser.dictionary.DefinitionUtils;
 import com.famiforth.parser.dictionary.UserDictionary;
 
@@ -63,12 +63,21 @@ public class AssemblyGenerator extends AbstractGenerator {
             case RECURSE:
                 lines = generateRecurseStatement(token);
                 break;
-            case INTEGER:
-                lines = List.of(token.def.getLabel());
+            case INCLUDE:
+                lines = generateIncludeStatement(token);
+                break;
+            case REQUIRE:
+                lines = generateRequireStatement(token);
+                break;
             // Control word macros that do not need a label / take arguments
             case DO:
             case BEGIN:
             case REPEAT:
+                lines = List.of(token.def.getLabel());
+                break;
+            case INTEGER:
+                lines = generatePushStatement(token);
+                break;
             case WORD:
                 lines = List.of((token.def.isMacro() ? "" : JSR) + token.def.getLabel());
                 break;
@@ -147,6 +156,16 @@ public class AssemblyGenerator extends AbstractGenerator {
             codeBlock.addAll(body.stream()
                 .map(UserDictionary::getDefinition)
                 .map(def -> {
+                    if(def.isNumber()){
+                        String[] splitString = def.getLabel().split(",");
+                        StringJoiner joiner = new StringJoiner(lineSeparator);
+                        joiner.add("\tPUT");
+                        joiner.add(String.format("\tlda #$%s", splitString[0]));
+                        joiner.add(String.format("\tsta %s", "00,X"));
+                        joiner.add(String.format("\tlda #$%s", splitString[1]));
+                        joiner.add(String.format("\tsta %s", "01,X"));
+                        return joiner.toString();
+                    }
                     String str = def.isMacro() || RETURN.equalsIgnoreCase(def.getLabel()) ? "" : JSR;
                     return String.format("\t%s%s", str, def.getLabel());
                 })
@@ -192,4 +211,21 @@ public class AssemblyGenerator extends AbstractGenerator {
         return List.of(String.format("%s %s", token.def.getLabel(), token.name));
     }
 
+    private List<String> generateRequireStatement(ParserToken token) {
+        return List.of(String.format(".include \"%s\"", token.reference.getLeft().substring(0, token.reference.getLeft().indexOf(".")) + ".asm"));
+    }
+
+    private List<String> generateIncludeStatement(ParserToken token) {
+        return List.of(String.format(".include \"%s\"", token.reference.getLeft().substring(0, token.reference.getLeft().indexOf(".")) + ".asm"));
+    }
+
+    private List<String> generatePushStatement(ParserToken token) {
+        String[] splitString = token.def.getLabel().split(",");
+        List<String> lst = new LinkedList<>();
+        lst.add(String.format("lda %s", splitString[0]));
+        lst.add(String.format("sta %s", "00,X"));
+        lst.add(String.format("lda %s", splitString[1]));
+        lst.add(String.format("sta %s", "01,X"));
+        return lst;
+    }
 }

@@ -6,6 +6,8 @@
 \ MIN MAX NEGATE INVERT CHAR+
 \ UM* UM/MOD
 
+require "core.f"
+
 ( n1 n2 -- n3 )
 CODE +
 		clc

@@ -73,6 +73,9 @@ public class DefinitionUtils {
             if("/".equals(str)){
                 return "slash";
             }
+            if(",".equals(str)){
+                return "comma";
+            }
 
             if(specialCharString.contains(str)) {
                 int index = specialCharString.indexOf(str);

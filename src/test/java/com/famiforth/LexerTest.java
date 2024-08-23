@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
-import com.famiforth.compiler.CompilerUtils;
 import com.famiforth.lexer.Lexer;
 import com.famiforth.lexer.LexerToken;
 import com.famiforth.lexer.LexerToken.TokenType;
@@ -80,18 +79,4 @@ public class LexerTest {
         assertEquals("\\", token.value);
     }
 
-    @Test
-    /**
-     * Test Integer to signed hexadecimel conversion
-     */
-    public void integerToHexTest(){
-        assertEquals("0000", CompilerUtils.integerToHex(0));
-        assertEquals("0008", CompilerUtils.integerToHex(8));
-        assertEquals("000F", CompilerUtils.integerToHex(15));
-        assertEquals("0010", CompilerUtils.integerToHex(16));
-        assertEquals("FFFF", CompilerUtils.integerToHex(-1));
-        assertEquals("FFF8", CompilerUtils.integerToHex(-8));
-        assertEquals("FFF1", CompilerUtils.integerToHex(-15));
-        assertEquals("FFF0", CompilerUtils.integerToHex(-16));
-    }
 }
