@@ -3,77 +3,131 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "ALIGNED"
+            "label": "UslashMOD"
         }
     },
     "testCases": {
-        "$0200 ALIGNED": {
+        "15 / 3": {
             "setup": {
                 "register": {
                     "X": {
-                        "value": "$FE"
+                        "value": "$FC"
                     }
                 },
                 "memory": [
+                    {
+                        "address": "$FC",
+                        "value": 3
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 0
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 15
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 0
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": 5
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 0
+                        }
+                    }
+                ]
+            }
+        },
+        "256 / 3": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": 3
+                    },
+                    {
+                        "address": "$FD",
+                        "value": 0
+                    },
                     {
                         "address": "$FE",
                         "value": "$00"
                     },
                     {
                         "address": "$FF",
-                        "value": "$02"
+                        "value": "$01"
                     }
                 ]
                 
             },
             "expected": {
-                "memory": [
-                    {
-                        "address": "$FE",
-                        "value": {
-                            "eq": "$02"
-                        }
-                    },
-                    {
-                        "address": "$FF",
-                        "value": {
-                            "eq": "$02"
-                        }
-                    }
-                ]
-            }
-        },
-        "$0201 ALIGNED": {
-            "setup": {
                 "register": {
                     "X": {
-                        "value": "$FE"
+                        "value": { 
+                            "eq": "$FC"
+                        }
                     }
                 },
                 "memory": [
                     {
-                        "address": "$FE",
-                        "value": "$01"
+                        "address": "$FC",
+                        "value": {
+                            "eq": "$55"
+                        }
                     },
                     {
-                        "address": "$FF",
-                        "value": "$02"
-                    }
-                ]
-                
-            },
-            "expected": {
-                "memory": [
+                        "address": "$FD",
+                        "value": {
+                            "eq": "$00"
+                        }
+                    },
                     {
                         "address": "$FE",
                         "value": {
-                            "eq": "$02"
+                            "eq": "$01"
                         }
                     },
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": "$02"
+                            "eq": "$00"
                         }
                     }
                 ]
@@ -90,13 +144,13 @@
                     "start": {
                         "address": "$0"
                     },
-                    "size": "$500"
+                    "size": "$800"
                 },
                 {
                     "start": {
                         "address": "$2000"
                     },
-                    "size": "$2000"
+                    "size": "$2020"
                 },
                 {
                     "detect": true

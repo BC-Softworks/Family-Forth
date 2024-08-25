@@ -54,6 +54,7 @@ public class ParserToken {
         RECURSE,
         INCLUDE,
         REQUIRE,
+        SEGMENT,
         INTEGER,
         WORD
     }

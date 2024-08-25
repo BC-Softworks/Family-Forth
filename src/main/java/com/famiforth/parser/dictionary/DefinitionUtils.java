@@ -43,9 +43,42 @@ public class DefinitionUtils {
      * @return the word with special characters replaced with lowercase letters
      */
     private static String replaceSpecialCharacters(String word) {
-        final String specialCharString = "1234567890$%&~:;?";
-        final String lowercaseAlphabet = "abcdefghijklmnopq";
+        final String specialCharString = "$%&~:;?";
+        final String lowercaseAlphabet = "klmnopq";
         return Arrays.asList(word.split("")).stream().map(str -> {
+            // Digits
+            if("0".equals(str)){
+                return "zero";
+            }
+            if("1".equals(str)){
+                return "one";
+            }
+            if("2".equals(str)){
+                return "two";
+            }
+            if("3".equals(str)){
+                return "three";
+            }
+            if("4".equals(str)){
+                return "four";
+            }
+            if("5".equals(str)){
+                return "five";
+            }
+            if("6".equals(str)){
+                return "six";
+            }
+            if("7".equals(str)){
+                return "seven";
+            }
+            if("8".equals(str)){
+                return "eight";
+            }
+            if("9".equals(str)){
+                return "nine";
+            }
+
+            // Special symbols
             if("!".equals(str)){
                 return "store";
             }

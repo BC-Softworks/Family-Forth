@@ -5,16 +5,17 @@
 \ NIP PICK ROLL ERASE TRUE FALSE <> 0> 0<> 
 \ TUCK PAD U> 2>R 2R> 2R@ UNUSED
 
-require "core.f"
 require "memory.f"
+
+segment "CODE"
 
 ( x1 x2 -- x2 )
 ( Remove the second cell on the stack )
 CODE NIP
-	lda $00,X    ; Load the lowByte from the TOS
-	sta $02,X    ; Overwrite lowByte of second cell
-	lda $01,X    ; Load the highByte from the TOS
-	sta $03,X    ; Overwrite highByte of second cell
+	lda $00,X    \ Load the lowByte from the TOS
+	sta $02,X    \ Overwrite lowByte of second cell
+	lda $01,X    \ Load the highByte from the TOS
+	sta $03,X    \ Overwrite highByte of second cell
 	jmp DROP
 ENDCODE
 
@@ -101,11 +102,11 @@ CODE <>
 	bne @t
 	lda $01,X
 	cmp $03,X
-	bne @true
-	jsr TWODROP 	\ Drop x2
+	bne @t
+	jsr 2DROP 		\ Drop x2
 	jmp FALSE		\ x1 == x2
 @t:	
-	jsr TWODROP
+	jsr 2DROP
 	jmp TRUE
 ENDCODE
 
@@ -126,7 +127,7 @@ ENDCODE
 
 ( x -- flag )
 \ flag is true if and only if x is not equal to zero. 
-: 0<> 0 NOTEQUALS ;
+: 0<> 0 <> ;
 
 ( x1 x2-- x2 x1 x2 )
 ( Copy the first stack item below the second stack item. )

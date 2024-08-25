@@ -8,6 +8,8 @@
 
 require "core.f"
 
+segment "CODE"
+
 ( n1 n2 -- n3 )
 CODE +
 		clc
@@ -103,12 +105,12 @@ CODE /MOD
     sty lowByteW	\ Used to store quotient
     sty hiByteW
 @loop:	
-    jsr TWODUP		\ If R < D fall through
-    jsr LESS		\ Check if lesser	
+    jsr 2DUP		\ If R < D fall through
+    jsr <   		\ Check if lesser	
     lda $00,X		\ Load low byte of flag
     bne @end		\ Break if true
     jsr DROP		\ Drop flag
-    jsr SUB			\ R = R - D
+    jsr -			\ R = R - D
     PUT 			\ Restore stack pointer
 
     clc				
@@ -149,10 +151,10 @@ ENDCODE
 \ Divide d by n3 producing the single-cell remainder n4 and the single-cell quotient n5.
 CODE */MOD
     jsr DROP	\ Move pointer to multiply x1 and x2
-    jsr M_STAR	\ (n1 n2 n3 -- d1 n3)
+    jsr M*      \ (n1 n2 n3 -- d1 n3)
     PUT
 
-    jsr DIVMOD	\ TODO: Replace with 32 x 16 division
+    jsr /MOD	\ TODO: Replace with 32 x 16 division
     lda $00,X
     sta $04,X
     lda $01,X

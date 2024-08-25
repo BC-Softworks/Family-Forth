@@ -69,6 +69,9 @@ public class AssemblyGenerator extends AbstractGenerator {
             case REQUIRE:
                 lines = generateRequireStatement(token);
                 break;
+            case SEGMENT:
+                lines = generateSegmentStatement(token);
+                break;
             // Control word macros that do not need a label / take arguments
             case DO:
             case BEGIN:
@@ -217,6 +220,10 @@ public class AssemblyGenerator extends AbstractGenerator {
 
     private List<String> generateIncludeStatement(ParserToken token) {
         return List.of(String.format(".include \"%s\"", token.reference.getLeft().substring(0, token.reference.getLeft().indexOf(".")) + ".asm"));
+    }
+
+    private List<String> generateSegmentStatement(ParserToken token) {
+        return List.of(String.format(".segment \"%s\"", token.reference.getLeft()));
     }
 
     private List<String> generatePushStatement(ParserToken token) {

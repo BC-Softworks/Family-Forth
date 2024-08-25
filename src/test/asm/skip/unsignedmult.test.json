@@ -3,11 +3,11 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "UNSIGNEDDIVMOD"
+            "label": "Ustar"
         }
     },
     "testCases": {
-        "15 / 3": {
+        "1 * 6": {
             "setup": {
                 "register": {
                     "X": {
@@ -17,7 +17,7 @@
                 "memory": [
                     {
                         "address": "$FC",
-                        "value": 3
+                        "value": 1
                     },
                     {
                         "address": "$FD",
@@ -25,7 +25,7 @@
                     },
                     {
                         "address": "$FE",
-                        "value": 15
+                        "value": 6
                     },
                     {
                         "address": "$FF",
@@ -46,7 +46,7 @@
                     {
                         "address": "$FC",
                         "value": {
-                            "eq": 5
+                            "eq": 6
                         }
                     },
                     {
@@ -70,7 +70,7 @@
                 ]
             }
         },
-        "256 / 3": {
+        "8 * 8": {
             "setup": {
                 "register": {
                     "X": {
@@ -80,7 +80,7 @@
                 "memory": [
                     {
                         "address": "$FC",
-                        "value": 3
+                        "value": "$0F"
                     },
                     {
                         "address": "$FD",
@@ -88,11 +88,11 @@
                     },
                     {
                         "address": "$FE",
-                        "value": "$00"
+                        "value": "$0F"
                     },
                     {
                         "address": "$FF",
-                        "value": "$01"
+                        "value": 0
                     }
                 ]
                 
@@ -109,13 +109,76 @@
                     {
                         "address": "$FC",
                         "value": {
-                            "eq": "$55"
+                            "eq": "$E1"
                         }
                     },
                     {
                         "address": "$FD",
                         "value": {
-                            "eq": "$00"
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": 0
+                        }
+                    },
+                    {
+                        "address": "$FF",
+                        "value": {
+                            "eq": 0
+                        }
+                    }
+                ]
+            }
+        },
+        "65535 * 2": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FC"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$FD",
+                        "value": "$FF"
+                    },
+                    {
+                        "address": "$FE",
+                        "value": 2
+                    },
+                    {
+                        "address": "$FF",
+                        "value": 0
+                    }
+                ]
+                
+            },
+            "expected": {
+                "register": {
+                    "X": {
+                        "value": { 
+                            "eq": "$FC"
+                        }
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FC",
+                        "value": {
+                            "eq": "$FE"
+                        }
+                    },
+                    {
+                        "address": "$FD",
+                        "value": {
+                            "eq": "$FF"
                         }
                     },
                     {
@@ -127,7 +190,7 @@
                     {
                         "address": "$FF",
                         "value": {
-                            "eq": "$00"
+                            "eq": 0
                         }
                     }
                 ]

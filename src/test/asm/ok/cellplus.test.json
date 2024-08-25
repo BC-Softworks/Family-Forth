@@ -3,7 +3,7 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "CELLPLUS"
+            "label": "CELLplus"
         }
     },
     "testCases": {

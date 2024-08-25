@@ -8,6 +8,8 @@
 
 require "math.f"
 
+segment "CODE"
+
 ( a-addr -- x ) 
 \ Returns the full cell
 CODE @
@@ -141,7 +143,7 @@ CODE >R
 	jmp DROP
 ENDCODE
 
-( -- n)
+( -- n )
 \ Copy the number on top of the return stack to the data stack.
 CODE R@
 	SAVE_RETURN

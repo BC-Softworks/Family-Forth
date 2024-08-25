@@ -166,6 +166,10 @@ public class Parser {
                         type = DefinitionType.REQUIRE;
                         reference = Pair.of(StringUtils.remove(lexer.next_token().value, '"'), null);
                         break;
+                    case SEGMENT:
+                        type = DefinitionType.SEGMENT;
+                        reference = Pair.of(StringUtils.remove(lexer.next_token().value, '"'), null);
+                        break;
                     default:
                         throw new SyntaxErrorException("Compilation time word encountered out of order.");
                 }

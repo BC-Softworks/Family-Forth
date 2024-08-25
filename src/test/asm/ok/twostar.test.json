@@ -3,11 +3,11 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "TWOSTAR"
+            "label": "twostar"
         }
     },
     "testCases": {
-        "4 TWOSTAR": {
+        "4 2*": {
             "setup": {
                 "register": {
                     "X": {
@@ -43,7 +43,7 @@
                 ]
             }
         },
-        "127 TWOSTAR": {
+        "127 2*": {
             "setup": {
                 "register": {
                     "X": {

@@ -3,7 +3,7 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "TWODROP"
+            "label": "twoDROP"
         }
         
     },
@@ -25,6 +25,30 @@
                     }
                 }
             }
+        }
+    },
+    "config": {
+        "testMemoryAccess": {
+            "feature": [
+                "ACCESS_TO_OUT_OF_SEGMENT"
+            ],
+            "ignoreList": [
+                {
+                    "start": {
+                        "address": "$0"
+                    },
+                    "size": "$200"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$2000"
+                },
+                {
+                    "detect": true
+                }
+            ]
         }
     }
 }

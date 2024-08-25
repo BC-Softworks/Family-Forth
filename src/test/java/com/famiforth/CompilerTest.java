@@ -38,4 +38,12 @@ public class CompilerTest {
         compiler = new Compiler(fileIn, fileOut, null);
         compiler.compile();
     }
+
+    @Test
+    public void compileCoreExtTest() throws IOException {
+        fileIn = new File("src/main/forth/core_ext.f");
+        fileOut = new File("build/asm/core_ext.asm");
+        compiler = new Compiler(fileIn, fileOut, null);
+        compiler.compile();
+    }
 }

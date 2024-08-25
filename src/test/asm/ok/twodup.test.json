@@ -3,7 +3,7 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "TWODUP"
+            "label": "twoDUP"
         }
         
     },
@@ -81,13 +81,13 @@
                     "start": {
                         "address": "$0"
                     },
-                    "size": "$800"
+                    "size": "$200"
                 },
                 {
                     "start": {
                         "address": "$2000"
                     },
-                    "size": "$2020"
+                    "size": "$200"
                 },
                 {
                     "detect": true

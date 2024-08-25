@@ -3,11 +3,11 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "TWOSLASH"
+            "label": "twoslash"
         }
     },
     "testCases": {
-        "256 TWOSLASH": {
+        "256 2/": {
             "setup": {
                 "register": {
                     "X": {
@@ -43,7 +43,7 @@
                 ]
             }
         },
-        "9 TWOSLASH": {
+        "9 2/": {
             "setup": {
                 "register": {
                     "X": {
@@ -79,7 +79,7 @@
                 ]
             }
         },
-        "4 TWOSLASH": {
+        "4 2/": {
             "setup": {
                 "register": {
                     "X": {

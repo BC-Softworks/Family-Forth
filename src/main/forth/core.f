@@ -79,6 +79,8 @@ CODE SETTOS
 	rts
 ENDCODE
 
+segment "CODE"
+
 ( x -- )
 \ Drop x from the stack
 \ Underflow prevention

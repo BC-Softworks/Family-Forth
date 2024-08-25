@@ -18,6 +18,7 @@ public enum Keyword{
     ENDMACRO("ENDMACRO"),
     INCLUDE("INCLUDE"),
     REQUIRE("REQUIRE"),
+    SEGMENT("SEGMENT"),
     IF("IF"),
     ELSE("ELSE"),
     THEN("THEN"),
