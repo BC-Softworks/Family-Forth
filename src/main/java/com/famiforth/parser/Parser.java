@@ -87,17 +87,14 @@ public class Parser {
                     case CODE:
                         type = DefinitionType.CODE;
                         def = parseCodeBlock(token, false);
-                        System.out.println(def);
                         break;
                     case MACRO:
                         type = DefinitionType.MACRO;
                         def = parseCodeBlock(token, true);
-                        System.out.println(def);
                         break;
                     case CONST:
                         type = DefinitionType.CONST;
                         def = parseConstBlock(token);
-                        System.out.println(def);
                         break;
                     case IF:
                         type = DefinitionType.IF;

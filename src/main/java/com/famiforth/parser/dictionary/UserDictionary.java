@@ -48,6 +48,10 @@ public class UserDictionary {
         return initalize(null);
     }
 
+    public static void empty() {
+        instance = null;
+    }
+
     /**
      * Adds a newly compiled primitive word to the UserDictionary
      * @param name
@@ -176,12 +180,12 @@ public class UserDictionary {
      */
     private static void addWord(final Definition def) {
         if(def.getName() == null || def.getName().isEmpty()){
-            throw new NullPointerException(String.format("Error: Anonymous definitions can not be added to the dictionary"));
+            throw new NullPointerException("Error: Anonymous definitions can not be added to the dictionary");
         }
 
         final Definition existingDefinition = dictionary.get(def.getName());
         if (existingDefinition != null && existingDefinition.isPrimitive()) {
-            throw new IllegalArgumentException(String.format("Error: Can not override primitives"));
+            throw new IllegalArgumentException("Error: Can not override primitives");
         }
 
         dictionary.put(def.getName(), def);

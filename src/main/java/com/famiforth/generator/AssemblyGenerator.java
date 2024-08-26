@@ -25,6 +25,14 @@ public class AssemblyGenerator extends AbstractGenerator {
         super(fileOutputStream);
     }
 
+    public void writeGuard(String fileName) {
+        List<String> lines = new LinkedList<>();
+        lines.add(String.format(".ifndef %s_GUARD", fileName));
+        lines.add(String.format("\t%s_GUARD = 1", fileName));
+        lines.add(".endif");
+        writeLines(lines);
+    }
+
     @Override
     public List<String> generate(ParserToken token) throws IOException{
         List<String> lines = new LinkedList<>();
@@ -99,7 +107,7 @@ public class AssemblyGenerator extends AbstractGenerator {
      * @param lines
      * @throws IOException
      */
-    protected void writeLines(List<String> lines) throws IOException {
+    protected void writeLines(List<String> lines) {
         lines.forEach(line -> {
             try {
                 getFileOutputStream().write((line).getBytes());

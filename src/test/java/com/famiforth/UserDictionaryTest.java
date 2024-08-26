@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Test;
 
 import com.famiforth.parser.dictionary.Definition;
@@ -15,6 +16,10 @@ public class UserDictionaryTest {
     final String testFileName = "src/test/resources/test_dictionary.json";
 
     UserDictionary dictionary;
+
+    @After public void cleanup() {
+        UserDictionary.empty();
+    }
 
     @Test
     public void initalizationTest() throws IOException {
