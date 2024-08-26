@@ -48,7 +48,7 @@ $(BUILD_DIR)/%.o : $(ASM_DIR)/%.asm
 
 build_prepare : 
 	mvn package
-	java -jar target/famiforthh-1.0-SNAPSHOT.jar
+	java -jar target/famiforthh-1.0-SNAPSHOT.jar 
 	@echo "Assembly file generated."
 
 test : $(TEST_EXEC) test_prepare $(TEST_IDS)

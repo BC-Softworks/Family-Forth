@@ -17,11 +17,10 @@ import com.famiforth.compiler.Compiler;
 
 public class FamilyForth {
     static final String DEFAULT_FILE_OUT = "build/asm/out.asm";
-    static final String DEFAULT_DICTIONARY_LOCATION = "src/main/resources/json/core_dictionary.json";
 
     static File fileIn;
     static File fileOut;
-    static String customDictionary = DEFAULT_DICTIONARY_LOCATION;
+    static String customDictionary;
     static String[] includedFiles;
 
     private static void parseArguments(String args[]){
