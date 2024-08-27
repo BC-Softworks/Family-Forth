@@ -47,7 +47,7 @@ public class Compiler {
             System.err.println("Error: " + ex.getMessage());
         }
 
-        generator.writeGuard(fileOut.getName().toUpperCase());
+        generator.writeGuard(fileOut.getName().substring(0, fileOut.getName().lastIndexOf(".")).toUpperCase());
         parseFile(parser, generator);
 
         // Close FileOutputStream
@@ -92,7 +92,7 @@ public class Compiler {
             File fOut = new File(fileOut.getParent() + File.separator + fileOutName);
             fOut.getParentFile().mkdirs();
             AbstractGenerator generator = new AssemblyGenerator(new FileOutputStream(fOut));
-            generator.writeGuard(fileOut.getName().toUpperCase());
+            generator.writeGuard(libraryName.toUpperCase());
             parseFile(parser, generator);
             generator.close();
         }

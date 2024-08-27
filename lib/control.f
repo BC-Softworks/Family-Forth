@@ -6,7 +6,7 @@
 \ BEGIN WHILE REPEAT
 \ IF ELSE THEN I J
 
-require "memory.asm"
+require "memory.f"
 
 segment "CODE"
 
@@ -81,7 +81,7 @@ CODE LOOP
 		jsr R>			\ Load the counter
 		jsr SWAP
 		jsr 2DUP		\ Duplicate the limit and counter
-		jsr EQUAL		\ Check if equal
+		jsr =			\ Check if equal
 		bne @end		\ Numbers are equal end loop
 		jsr DROP		\ Drop the flag
 		jsr 1+			\ Add one to the counter
@@ -93,7 +93,8 @@ CODE LOOP
 		lda lowByteW  	\ Load the lowbyte of the addr in the W register
 		pla           	\ Push the lowbyte of the start of the loop
 		rts				\ Return to the top of the loop
-@end:	jsr 2DROP		\ Set the return to address end of loop
+@end:	
+		jsr 2DROP		\ Set the return to address end of loop
 		jmp 2DROP		\ Drop address, limit, counter, and flag
 ENDCODE
 
@@ -143,7 +144,8 @@ CODE +LOOP
 		lda lowByteW  	\ Load the lowbyte of the addr in the W register
 		pla           	\ Push the lowbyte of the start of the loop
 		rts				\ Return to the top of the loop			
-@end:	jsr 2DROP		\ Set the return to address end of loop
+@end:	
+		jsr 2DROP		\ Set the return to address end of loop
 		jmp 2DROP		\ Drop address, limit, counter, and flag
 ENDCODE
 
