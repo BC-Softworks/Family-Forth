@@ -26,9 +26,9 @@ ENDCODE
 \ If all bits of x are zero, continue execution
 \ at the location specified by the resolution of orig. 
 MACRO IF orig
-		lda $00,X
-		and $01,X
-		beq orig
+	lda $00,X
+	and $01,X
+	beq orig
 ENDMACRO
 
 ( C: orig1 -- orig2 )
@@ -41,7 +41,7 @@ ENDMACRO
 \ Continue execution at the location given by the resolution of orig2.
 \ In this implmentation it is the following block of code so a nop suffices
 MACRO ELSE
-		nop
+	nop
 ENDMACRO
 
 ( C: orig -- )
@@ -52,7 +52,7 @@ ENDMACRO
 \ Continue execution.
 \ Provide an address for jmp
 MACRO THEN
-		nop
+	nop
 ENDMACRO
 
 
@@ -62,9 +62,9 @@ ENDMACRO
 \ Anything already on the return stack becomes unavailable until the loop-control 
 \ parameters are discarded. 
 MACRO DO
-		jsr 2>R		\ Place n1 | u1 n2 | u2 onto the return stack
-		jsr GET_PC	\ Places the address of this line in W2
-		LOAD_RETURN \ Places the previous line on the return stack
+	jsr 2>R		\ Place n1 | u1 n2 | u2 onto the return stack
+	jsr GET_PC	\ Places the address of this line in W2
+	LOAD_RETURN \ Places the previous line on the return stack
 ENDMACRO
 
 \ ( -- ) ( R: loop-sys1 -- | loop-sys2 ) 
@@ -72,30 +72,30 @@ ENDMACRO
 \ discard the loop parameters and continue execution immediately following the loop. 
 \ Otherwise continue execution at the beginning of the loop. 
 CODE LOOP
-		pla           	\ Save the fall through address
-		sta lowByteW  	\ Store the lowbyte of the addr in the W register
-		pla           	\ Repeat for the high byte
-		sta hiByteW
-		jsr R>			\ Load the tol addr to the data stack
-		jsr R>			\ Load the limit
-		jsr R>			\ Load the counter
-		jsr SWAP
-		jsr 2DUP		\ Duplicate the limit and counter
-		jsr =			\ Check if equal
-		bne @end		\ Numbers are equal end loop
-		jsr DROP		\ Drop the flag
-		jsr 1+			\ Add one to the counter
-		jsr SWAP
-		jsr >R			\ Push the limit back onto the return stack
-		jmp >R			\ Push the counter back onto the return stack
-		lda hiByteW		\ Load the highByte of the addr in the W register
-		pla           	\ Push the highByte of the start of the loop
-		lda lowByteW  	\ Load the lowbyte of the addr in the W register
-		pla           	\ Push the lowbyte of the start of the loop
-		rts				\ Return to the top of the loop
+	pla           	\ Save the fall through address
+	sta lowByteW  	\ Store the lowbyte of the addr in the W register
+	pla           	\ Repeat for the high byte
+	sta hiByteW
+	jsr R>			\ Load the tol addr to the data stack
+	jsr R>			\ Load the limit
+	jsr R>			\ Load the counter
+	jsr SWAP
+	jsr 2DUP		\ Duplicate the limit and counter
+	jsr =			\ Check if equal
+	bne @end		\ Numbers are equal end loop
+	jsr DROP		\ Drop the flag
+	jsr 1+			\ Add one to the counter
+	jsr SWAP
+	jsr >R			\ Push the limit back onto the return stack
+	jmp >R			\ Push the counter back onto the return stack
+	lda hiByteW		\ Load the highByte of the addr in the W register
+	pla           	\ Push the highByte of the start of the loop
+	lda lowByteW  	\ Load the lowbyte of the addr in the W register
+	pla           	\ Push the lowbyte of the start of the loop
+	rts				\ Return to the top of the loop
 @end:	
-		jsr 2DROP		\ Set the return to address end of loop
-		jmp 2DROP		\ Drop address, limit, counter, and flag
+	jsr 2DROP		\ Set the return to address end of loop
+	jmp 2DROP		\ Drop address, limit, counter, and flag
 ENDCODE
 
 \ ( -- ) ( R: loop-sys -- )
@@ -105,7 +105,8 @@ ENDCODE
 \ Continue execution immediately following the innermost syntactically enclosing DO...LOOP or DO...+LOOP. 
 MACRO LEAVE addr
 		ldy #5
-@loop:	pla
+@loop:	
+		pla
 		dey			\ Load loop-sys and drop on the floor
 		bne @loop	\ Six bytes, three cells
 		clc
