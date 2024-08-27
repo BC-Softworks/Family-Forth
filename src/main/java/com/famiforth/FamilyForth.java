@@ -2,6 +2,7 @@ package com.famiforth;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -16,10 +17,10 @@ import com.famiforth.compiler.Compiler;
 
 
 public class FamilyForth {
-    static final String DEFAULT_FILE_OUT = "build/asm/out.asm";
 
     static File fileIn;
     static File fileOut;
+    static Path pathOut;
     static String customDictionary;
     static String[] includedFiles;
 
@@ -49,13 +50,7 @@ public class FamilyForth {
             }
 
             if(cmd.hasOption("o")){
-                fileOut = new File(cmd.getOptionValue("o"));
-                if(!fileOut.canWrite()){
-                    System.err.println("Error: Unable to write to output file.");
-                    System.exit(0);
-                }
-            } else {
-                fileOut = new File(DEFAULT_FILE_OUT);
+                pathOut = Path.of(cmd.getOptionValue("o"));
             }
 
             List<String> unparsedArgs = cmd.getArgList();
@@ -70,6 +65,9 @@ public class FamilyForth {
                 System.exit(0);
             }
 
+            
+            String fileOutName = fileIn.getName().substring(0, fileIn.getName().lastIndexOf(".")) + ".asm";
+            fileOut = pathOut == null ? new File(fileOutName) : new File(pathOut.toString() + File.separator + fileOutName);
         } catch (ParseException ex) {
             System.err.println("Error: " + ex.getMessage());
         }

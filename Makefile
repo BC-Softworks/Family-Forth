@@ -32,9 +32,17 @@ TEST_EXEC			:=		$(TEST_EXEC_DIR)/6502_tester
 TEST_FLAGS			:=		--debug=$(DEBUG) --coverage=$(COVARAGE) --segment=$(COVERAGE_SEGMENTS)
 TEST_OK_FLAGS		:=		--quiet-summary --quiet-ok
 
-.PHONY : all build test prepare clean
+.PHONY : all prepare build test clean
 
-all : build
+all : prepare build
+
+prepare :
+	mkdir -p $(ASM_DIR)
+	mvn clean compile assembly:single
+	for name in lib/*.f; do\
+        java -jar target/famiforth-1.0-SNAPSHOT.jar $${name} -o build/asm ; \
+    done
+	@echo "Assembly file generated."
 
 build : $(TARGET)
 
@@ -46,19 +54,11 @@ $(BUILD_DIR)/%.o : $(ASM_DIR)/%.asm
 	mkdir -p $(BUILD_DIR)
 	$(AS) $(ASFLAGS) -o $@ $<
 
-build_prepare : 
-	mvn package
-	java -jar target/famiforthh-1.0-SNAPSHOT.jar 
-	@echo "Assembly file generated."
-
 test : $(TEST_EXEC) test_prepare $(TEST_IDS)
 	@echo "All tests passed."
 
 $(TEST_EXEC) :
 	make -C $(TEST_EXEC_DIR)
-
-test_prepare : $(COVERAGE_DIR)
-	-rm $(COVARAGE)
 
 $(COVERAGE_DIR) :
 	mkdir -p $(COVERAGE_DIR)

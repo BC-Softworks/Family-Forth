@@ -95,7 +95,6 @@ public class Compiler {
             generator.writeGuard(fileOut.getName().toUpperCase());
             parseFile(parser, generator);
             generator.close();
-            System.out.println("Dependency " + libraryName + "compiled successful.");
         }
     }
 
