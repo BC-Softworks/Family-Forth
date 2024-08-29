@@ -442,4 +442,3 @@ CODE S>D
 	jsr SETTOS
 	jmp SWAP
 ENDCODE
-

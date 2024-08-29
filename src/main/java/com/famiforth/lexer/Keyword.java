@@ -19,6 +19,7 @@ public enum Keyword{
     INCLUDE("INCLUDE"),
     REQUIRE("REQUIRE"),
     SEGMENT("SEGMENT"),
+    CREATE("CREATE"),
     IF("IF"),
     ELSE("ELSE"),
     THEN("THEN"),

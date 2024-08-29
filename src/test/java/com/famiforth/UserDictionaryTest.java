@@ -47,5 +47,8 @@ public class UserDictionaryTest {
         Definition def = UserDictionary.getDefinition("12345");
         assertEquals("12345", def.getName());
         assertEquals("39,30", def.getLabel());
+        def = UserDictionary.getDefinition("$1345");
+        assertEquals("$1345", def.getName());
+        assertEquals("45,13", def.getLabel());
     }
 }

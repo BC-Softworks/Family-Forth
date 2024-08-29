@@ -96,11 +96,13 @@ public class Lexer {
             type = TokenType.BEGIN_COMMENT;
         } else if(")".equals(str_token)){
             type = TokenType.END_COMMENT;
-        } else if(CompilerUtils.isInteger(str_token, 10)){
-            type = TokenType.INTEGER;
         } else if(CompilerUtils.isFloat(str_token)){
             type = TokenType.FLOAT;
-        } else {
+        } else if(CompilerUtils.isHex(str_token)){
+            type = TokenType.HEX;
+        } else if(CompilerUtils.isDecimal(str_token)){
+            type = TokenType.DECIMAL;
+        }  else {
             type = TokenType.WORD;
         }
         return type;

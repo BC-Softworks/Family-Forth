@@ -43,7 +43,7 @@ public class LexerTest {
         String minShort = "" + Short.MIN_VALUE;
         init(minShort);
         LexerToken token = lexer.next_token();
-        assertEquals(TokenType.INTEGER, token.type);
+        assertEquals(TokenType.DECIMAL, token.type);
         assertEquals(minShort, token.value);
     }
 

@@ -20,7 +20,8 @@ public class LexerToken {
         END_COMMENT,
         KEYWORD,
         FLOAT,
-        INTEGER,
+        HEX,
+        DECIMAL,
         WORD
     }
 }

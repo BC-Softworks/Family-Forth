@@ -73,6 +73,16 @@ public class UserDictionary {
     }
 
     /**
+     * Adds an empty user defined word to the UserDictionary
+     * @param name
+     * @param words
+     * @param isMacro
+     */
+    public static void addEmptyWord(String name) {
+        addWord(new Definition(name, false, List.of()));
+    }
+
+    /**
      * Sets a word's isImmediate flag to true
      * @param name
      */
@@ -104,7 +114,15 @@ public class UserDictionary {
      */
     public static List<String> getFlattenedDefinition(final String word) {
         initCheck();
-        final Definition def = CompilerUtils.isInteger(word, 10) ? getIntegerDefinition(word) : getDefinition(word);
+        Definition def = null;
+        if(CompilerUtils.isDecimal(word)) {
+            def = getIntegerDefinition(word, true);
+        } else if(CompilerUtils.isHex(word)) {
+            def = getIntegerDefinition(word, false);
+        } else {
+            def = getDefinition(word);
+        }
+
         if(def == null){
             throw new SyntaxErrorException("Undefined word \"" + word + "\" referenced.");
         }
@@ -125,8 +143,10 @@ public class UserDictionary {
         }
 
         // If the definition is not found, check if the word is a number.
-        if(CompilerUtils.isInteger(word, 10)){
-            return getIntegerDefinition(word);
+        if(CompilerUtils.isDecimal(word)){
+            return getIntegerDefinition(word, true);
+        } else if(CompilerUtils.isHex(word)){
+            return getIntegerDefinition(word, false);
         }
 
         throw new NullPointerException(String.format("The word, %s, is not defined in the dictionary.", word));
@@ -136,10 +156,16 @@ public class UserDictionary {
      * @param word
      * @return Definition of the provided word
     */
-    public static Definition getIntegerDefinition(final String word){
+    public static Definition getIntegerDefinition(final String word, boolean isDecimal){
         initCheck();
-        final String[] arr = CompilerUtils.littleEndian(word);
-        Definition def = new Definition(word, String.format("%s,%s", arr[0], arr[1]), true);
+        Definition def = null;
+        if(isDecimal){
+            String[] arr = CompilerUtils.littleEndian(word);
+            def = new Definition(word, String.format("%s,%s", arr[0], arr[1]), true);
+        } else {
+            String padded = CompilerUtils.padHex(word.substring(1));
+            def = new Definition(word, String.format("%s,%s", padded.substring(2, 4), padded.substring(0, 2)), true);
+        }
         def.setIsNumber();
         return def;
     }

@@ -25,7 +25,8 @@ public class Parser {
 
     private final Lexer lexer;
     private final Deque<String> cfStack;
-
+    
+    private LexerToken previousToken;
     private String wordName;
     private int ifCounter;
     private int doCounter;
@@ -74,16 +75,22 @@ public class Parser {
                 DefinitionType type = null;
                 Pair<String, String> reference = null;
                 switch(Keyword.getByValue(token.value)) {
-                    case COLON:
-                        type = DefinitionType.COLON;
-                        def = parseColonStatement(token);
-                        break;
                     case IMMEDIATE:
                         // Get definition of last word.
                         // Set it to be an immediate word.
                         // Update the dictionary
                         UserDictionary.modifyUserDefinedWord(wordName);
                         return null;
+                    case CREATE:
+                        // Add empty word to be defined later
+                        // Saved as a non-primitive
+                        previousToken = lexer.next_token();
+                        UserDictionary.addEmptyWord(previousToken.value);
+                        return null;
+                    case COLON:
+                        type = DefinitionType.COLON;
+                        def = parseColonStatement(token);
+                        break;
                     case CODE:
                         type = DefinitionType.CODE;
                         def = parseCodeBlock(token, false);
@@ -170,11 +177,17 @@ public class Parser {
                     default:
                         throw new SyntaxErrorException("Compilation time word encountered out of order.");
                 }
+                previousToken = token;
                 return new ParserToken(def, type, reference, wordName);
             case WORD:
+                previousToken = token;
                 return new ParserToken(getDefinition(token), DefinitionType.WORD);
-            case INTEGER:
-                return new ParserToken(UserDictionary.getIntegerDefinition(token.value), DefinitionType.INTEGER);
+            case HEX:
+                previousToken = token;
+                return new ParserToken(UserDictionary.getIntegerDefinition(token.value, false), DefinitionType.INTEGER);
+            case DECIMAL:
+                previousToken = token;
+                return new ParserToken(UserDictionary.getIntegerDefinition(token.value, true), DefinitionType.INTEGER);
             // TokensTypes that result in an exception
             case END_COMMENT:
                 throw new SyntaxErrorException("A comment can not be closed if it was not opened");

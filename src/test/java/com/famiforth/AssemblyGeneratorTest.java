@@ -65,16 +65,16 @@ public class AssemblyGeneratorTest {
 
     @Test
     /**
-     * Test Integer to signed hexadecimel conversion
+     * Test decimal to signed hexadecimel conversion
      */
-    public void integerToHexTest(){
-        assertEquals("0000", CompilerUtils.integerToHex(0));
-        assertEquals("0008", CompilerUtils.integerToHex(8));
-        assertEquals("000F", CompilerUtils.integerToHex(15));
-        assertEquals("0010", CompilerUtils.integerToHex(16));
-        assertEquals("FFFF", CompilerUtils.integerToHex(-1));
-        assertEquals("FFF8", CompilerUtils.integerToHex(-8));
-        assertEquals("FFF1", CompilerUtils.integerToHex(-15));
-        assertEquals("FFF0", CompilerUtils.integerToHex(-16));
+    public void decimalToHexTest(){
+        assertEquals("0000", CompilerUtils.decimalToHex(0));
+        assertEquals("0008", CompilerUtils.decimalToHex(8));
+        assertEquals("000F", CompilerUtils.decimalToHex(15));
+        assertEquals("0010", CompilerUtils.decimalToHex(16));
+        assertEquals("FFFF", CompilerUtils.decimalToHex(-1));
+        assertEquals("FFF8", CompilerUtils.decimalToHex(-8));
+        assertEquals("FFF1", CompilerUtils.decimalToHex(-15));
+        assertEquals("FFF0", CompilerUtils.decimalToHex(-16));
     }
 }
