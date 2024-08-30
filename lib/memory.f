@@ -300,8 +300,7 @@ CODE EXECUTE
 	pha 
 	lda $00,X
 	pha
-	jmp DROP	\ Jump to drop then to 
-				\ address from top of stack
+	jmp DROP	\ Jump to drop then to  address from top of stack
 ENDCODE
 
 ( "<spaces>name" -- )

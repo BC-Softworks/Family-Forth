@@ -181,7 +181,13 @@ public class AssemblyGenerator extends AbstractGenerator {
                     return String.format("\t%s%s", str, def.getLabel());
                 })
                 .collect(Collectors.toList()));
-            codeBlock.add("\t" + RETURN);
+            // If the last line is a subroutine use jmp instead of rts
+            if(codeBlock.get(codeBlock.size() - 1).startsWith("\t" + JSR)){
+                String str = codeBlock.remove(codeBlock.size() - 1);
+                codeBlock.add(str.replace(JSR, JMP));
+            } else {
+                codeBlock.add("\t" + RETURN);
+            }
         }
         codeBlock.add(footer);
         return codeBlock;

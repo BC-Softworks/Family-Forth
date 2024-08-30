@@ -31,39 +31,39 @@ ENDCODE
 ( x -- true | false )
 \ Return true if and only if 
 \ the A button has been pressed
-: A 1 DUP CTRL AND = ;
+: A_PRESSED $01 DUP CTRL AND = ;
 
 ( x -- true | false )
 \ Return true if and only if 
 \ the B button has been pressed
-: B 2 DUP CTRL AND = ;
+: B_PRESSED $02 DUP CTRL AND = ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the select button has been pressed
-: SELECT 4 DUP CTRL AND = ;
+: SELECT $04 DUP CTRL AND = ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the START button has been pressed
-: START 4 DUP CTRL AND = ;
+: START $08 DUP CTRL AND = ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the up button has been pressed
-: UP 8 DUP CTRL AND = ;
+: UP $0010 DUP CTRL AND = ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the down button has been pressed
-: DOWN 16 DUP CTRL AND = ;
+: DOWN $0020 DUP CTRL AND = ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the down button has been pressed
-: LEFT 32 DUP CTRL AND = ;
+: LEFT $0040 DUP CTRL AND = ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the down button has been pressed
-: RIGHT 64 DUP CTRL AND = ;
+: RIGHT $0080 DUP CTRL AND = ;

@@ -54,6 +54,9 @@ $(BUILD_DIR)/%.o : $(ASM_DIR)/%.asm
 	mkdir -p $(BUILD_DIR)
 	$(AS) $(ASFLAGS) -o $@ $<
 
+test_prepare : $(COVERAGE_DIR)
+	-rm $(COVARAGE)
+
 test : $(TEST_EXEC) test_prepare $(TEST_IDS)
 	@echo "All tests passed."
 
