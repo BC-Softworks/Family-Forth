@@ -115,9 +115,14 @@ CODE >R
 	jmp DROP
 ENDCODE
 
-
+( -- n )
 \ Copy the number on top of the return stack to the data stack.
-: R@ ( -- n ) R> DUP >R ;
+CODE R@
+	jsr R> 
+	jsr >R 
+	PUT 
+	rts
+ENDCODE
 
 ( n -- )
 \ If n is greater than zero, reserve n address units of data space. 

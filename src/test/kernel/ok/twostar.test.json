@@ -90,13 +90,13 @@
                     "start": {
                         "address": "$0"
                     },
-                    "size": "$800"
+                    "size": "$400"
                 },
                 {
                     "start": {
                         "address": "$2000"
                     },
-                    "size": "$2020"
+                    "size": "$1000"
                 },
                 {
                     "detect": true

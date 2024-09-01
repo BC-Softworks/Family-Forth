@@ -11,24 +11,24 @@
             "setup": {
                 "register": {
                     "X": {
-                        "value": "$FB"
+                        "value": "$FC"
                     }
                 },
                 "memory": [
                     {
-                        "address": "$FB",
+                        "address": "$FC",
                         "value": 1
                     },
                     {
-                        "address": "$FC",
+                        "address": "$FD",
                         "value": 2
                     },
                     {
-                        "address": "$FD",
+                        "address": "$FE",
                         "value": 3
                     },
                     {
-                        "address": "$FE",
+                        "address": "$FF",
                         "value": 4
                     }
                 ]
@@ -37,25 +37,25 @@
             "expected": {
                 "memory": [
                     {
-                        "address": "$FB",
+                        "address": "$FC",
                         "value": {
                             "eq": 3
                         }
                     },
                     {
-                        "address": "$FC",
+                        "address": "$FD",
                         "value": {
                             "eq": 4
                         }
                     },
                     {
-                        "address": "$FD",
+                        "address": "$FE",
                         "value": {
                             "eq": 1
                         }
                     },
                     {
-                        "address": "$FE",
+                        "address": "$FF",
                         "value": {
                             "eq": 2
                         }
@@ -80,7 +80,7 @@
                     "start": {
                         "address": "$2000"
                     },
-                    "size": "$2020"
+                    "size": "$2000"
                 },
                 {
                     "detect": true

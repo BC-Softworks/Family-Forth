@@ -295,7 +295,7 @@ ENDCODE
 
 ( u1 u2 -- flag )
 \ flag is true if and only if u1 is less than u2. 
-CODE <U
+CODE U<
 	lda $03,X
 	cmp $01,X
 	bcc @true

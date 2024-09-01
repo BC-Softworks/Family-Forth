@@ -3,11 +3,11 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "Rfetch"
+            "label": "UNUSED"
         }
     },
     "testCases": {
-        "R@": {
+        "UNUSED": {
             "setup": {
                 "register": {
                     "X": {
@@ -16,13 +16,12 @@
                 },
                 "memory": [
                     {
-                        "address": "$01FE",
-                        "value": "$34"
-                        
+                        "address": "$04",
+                        "value": "$00"
                     },
                     {
-                        "address": "$01FF",
-                        "value": "$12"
+                        "address": "$05",
+                        "value": "$07"
                     }
                 ]
                 
@@ -39,26 +38,13 @@
                     {
                         "address": "$FE",
                         "value": { 
-                            "eq": "$34"
+                            "eq": "$7E"
                         }
                     },
                     {
                         "address": "$FF",
                         "value": { 
-                            "eq": "$12"
-                        }
-                    },
-                    {
-                        "address": "$01FE",
-                        "value": { 
-                            "eq": "$34"
-                        }
-                        
-                    },
-                    {
-                        "address": "$01FF",
-                        "value": { 
-                            "eq": "$12"
+                            "eq": "$03"
                         }
                     }
                 ]
@@ -79,9 +65,15 @@
                 },
                 {
                     "start": {
-                        "address": "$1000"
+                        "address": "$600"
                     },
-                    "size": "$2000"
+                    "size": "$100"
+                },
+                {
+                    "start": {
+                        "address": "$2000"
+                    },
+                    "size": "$200"
                 },
                 {
                     "detect": true

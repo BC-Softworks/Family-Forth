@@ -36,16 +36,16 @@ ENDMACRO
 \ Save return value in W2
 MACRO SAVE_RETURN
 	pla
-	sta hiByteW2
-	pla
 	sta lowByteW2
+	pla
+	sta hiByteW2
 ENDMACRO
 
 \ Load return value from W2
 MACRO LOAD_RETURN
-	lda lowByteW2
-	pha
 	lda hiByteW2
+	pha
+	lda lowByteW2
 	pha
 ENDMACRO
 
