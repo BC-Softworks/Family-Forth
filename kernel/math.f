@@ -2,9 +2,9 @@
 \ author: Edward Conn
 
 \ Defines the following core words
-\ ADD SUB 1+ 1- ABS * / */ MOD/ 
+\ + - < > = 1+ 1- ABS * / */ MOD/ 
 \ MIN MAX NEGATE INVERT CHAR+
-\ UM* UM/MOD
+\ UM* UM/MOD U< 
 
 require "core.f"
 
@@ -12,26 +12,26 @@ segment "CODE"
 
 ( n1 n2 -- n3 )
 CODE +
-		clc
-		.repeat 2	  \ Decrementing between additions
-			lda $00,X \ allows a repeat to be used
-			adc $02,X \ Doesn't work with SUB
-			sta $02,X
-			inx       \ inx in place to eliminate drop
-		.endrep
-		rts
+    clc
+    lda $00,X
+    adc $02,X
+    sta $02,X
+    lda $01,X
+    adc $03,X
+    sta $03,X
+    jmp DROP
 ENDCODE
 
 ( n1 n2 -- n3 )
 CODE -
-		sec			\ Set carry bit
-		lda $02,X
-		sbc $00,X
-		sta $02,X	\ Store high byte
-		lda $03,X
-		sbc $01,X
-		sta $03,X	\ Store low byte
-		jmp DROP
+    sec			\ Set carry bit
+    lda $02,X
+    sbc $00,X
+    sta $02,X	\ Store high byte
+    lda $03,X
+    sbc $01,X
+    sta $03,X	\ Store low byte
+    jmp DROP
 ENDCODE
 
 ( n1 | u1 -- n2 | u2 )
@@ -42,31 +42,37 @@ ENDCODE
 \ Sub one (1) to n1 | u1 giving the differene n2 | u2.
 : 1- 1 - ;
 
+( n1 n2 -- flag )
+\ flag is true if and only if n1 is less than n2. 
+: < - 0< ; 
+
+( n1 n2 -- flag )
+\ flag is true if and only if n1 is greater than n2. 
+: > SWAP - 0< ;
+
+( n1 n2 -- flag )
+\ flag is true if and only if n1 is equal to n2. 
+: = XOR 0= ;
 
 ( n -- u )
 \ u is the absolute value of n. 
 CODE ABS
-		lda $01,X
-		and #%01111111
-		sta $01,X
-		rts
+    lda $01,X
+    and #%01111111
+    sta $01,X
+    rts
 ENDCODE
 
 ( n1 n2 -- d )
 \ Modified version that uses the Y register from 6502.org
 CODE M*
-    lda $00,X		\ Load the first cell into W
-    sta lowByteW
-    lda $01,X
-    sta hiByteW
+    jsr LDW		    \ Load the first cell into W
 
-    lda $02,X		\ Load the first cell into W2
+    lda $02,X		\ Load the second cell into W2
     sta lowByteW2
     lda $03,X
     sta hiByteW2
 
-    n1 = lowByteW
-    n2 = lowByteW2
 mult16: 
     lda #$00
     sta $02,X	 	\ clear upper bits of product
@@ -74,15 +80,15 @@ mult16:
     ldy #$10		\ set binary count to 16 
 		
 shift:	
-    lsr n1+1 		\ divide n1 by 2 
-    ror n1
+    lsr lowByteW+1 	\ divide lowByteW by 2 
+    ror lowByteW
     bcc rot_r 
-    lda $02,X	 	\ get upper half of pproduct and add n2
+    lda $02,X	 	\ get upper half of product and add lowByteW2
     clc
-    adc n2
+    adc lowByteW2
     sta $02,X
     lda $03,X
-    adc n2+1
+    adc lowByteW2+1
 
 rot_r:	
     ror			 	\ rotate partial product
@@ -151,11 +157,11 @@ ENDCODE
 \ Divide d by n3 producing the single-cell remainder n4 and the single-cell quotient n5.
 CODE */MOD
     jsr DROP	\ Move pointer to multiply x1 and x2
-    jsr M*      \ (n1 n2 n3 -- d1 n3)
+    jsr M*      \ ( n1 n2 n3 -- d1 n3 )
     PUT
 
-    jsr /MOD	\ TODO: Replace with 32 x 16 division
-    lda $00,X
+    jsr /MOD	\ ( d1 n3 -- x1 x2 x3 )
+    lda $00,X   \ TODO: Replace with 32 x 16 division
     sta $04,X
     lda $01,X
     sta $05,X
@@ -210,7 +216,6 @@ ENDCODE
 
 \ ( c-addr1 -- c-addr2 )
 \ Add the size in address units of a character to c-addr1, giving c-addr2.
-
 : CHAR+ 1+ ;
 
 \ ( u1 u2 -- ud )
@@ -287,3 +292,23 @@ CODE UM/MOD
     jmp SWAP		\ Swap remainder and quotient
 ENDCODE
 
+
+( u1 u2 -- flag )
+\ flag is true if and only if u1 is less than u2. 
+CODE <U
+	lda $03,X
+	cmp $01,X
+	bcc @true
+	bne @false
+	lda $02,X
+	cmp $00,X
+	bcc @true
+@false:	
+	lda #false
+	beq @end
+@true:
+	lda #true
+@end:
+	jsr DROP
+	jmp SETTOS
+ENDCODE

@@ -109,6 +109,9 @@ public class DefinitionUtils {
             if(",".equals(str)){
                 return "comma";
             }
+            if("'".equals(str)){
+                return "tick";
+            }
 
             if(specialCharString.contains(str)) {
                 int index = specialCharString.indexOf(str);

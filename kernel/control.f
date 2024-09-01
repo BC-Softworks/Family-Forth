@@ -62,55 +62,10 @@ ENDMACRO
 \ Anything already on the return stack becomes unavailable until the loop-control 
 \ parameters are discarded. 
 MACRO DO
-	jsr 2>R		\ Place n1 | u1 n2 | u2 onto the return stack
+	jsr >R		\ Place n2 | u2 onto the return stack
+	jsr >R		\ Place n1 | u1 onto the return stack
 	jsr GET_PC	\ Places the address of this line in W2
 	LOAD_RETURN \ Places the previous line on the return stack
-ENDMACRO
-
-\ ( -- ) ( R: loop-sys1 -- | loop-sys2 ) 
-\ Add one to the loop index. If the loop index is then equal to the loop limit, 
-\ discard the loop parameters and continue execution immediately following the loop. 
-\ Otherwise continue execution at the beginning of the loop. 
-CODE LOOP
-	pla           	\ Save the fall through address
-	sta lowByteW  	\ Store the lowbyte of the addr in the W register
-	pla           	\ Repeat for the high byte
-	sta hiByteW
-	jsr R>			\ Load the tol addr to the data stack
-	jsr R>			\ Load the limit
-	jsr R>			\ Load the counter
-	jsr SWAP
-	jsr 2DUP		\ Duplicate the limit and counter
-	jsr =			\ Check if equal
-	bne @end		\ Numbers are equal end loop
-	jsr DROP		\ Drop the flag
-	jsr 1+			\ Add one to the counter
-	jsr SWAP
-	jsr >R			\ Push the limit back onto the return stack
-	jmp >R			\ Push the counter back onto the return stack
-	lda hiByteW		\ Load the highByte of the addr in the W register
-	pla           	\ Push the highByte of the start of the loop
-	lda lowByteW  	\ Load the lowbyte of the addr in the W register
-	pla           	\ Push the lowbyte of the start of the loop
-	rts				\ Return to the top of the loop
-@end:	
-	jsr 2DROP		\ Set the return to address end of loop
-	jmp 2DROP		\ Drop address, limit, counter, and flag
-ENDCODE
-
-\ ( -- ) ( R: loop-sys -- )
-\
-\ Discard the current loop control parameters.
-\ An ambiguous condition exists if they are unavailable.
-\ Continue execution immediately following the innermost syntactically enclosing DO...LOOP or DO...+LOOP. 
-MACRO LEAVE addr
-		ldy #5
-@loop:	
-		pla
-		dey			\ Load loop-sys and drop on the floor
-		bne @loop	\ Six bytes, three cells
-		clc
-		bcc addr	\ Branch to after LOOP or +LOOP
 ENDMACRO
 
 \ ( C: do-sys -- )
@@ -128,27 +83,52 @@ CODE +LOOP
 		sta lowByteW  	\ Store the lowbyte of the addr in the W register
 		pla				\ Repeat for the high byte
 		sta hiByteW
-		jsr R>			\ Load the tol addr to the data stack
-		jsr R>			\ Load the limit
-		jsr R>			\ Load the counter
-		jsr SWAP
-		jsr 1+			\ Add one to the counter
+
+		jsr R>			( n -- n addr )
+		jsr SWAP		( n addr -- addr n )
+		jsr R>			( addr n -- addr n c )
+		jsr +			( addr n c -- addr n+c )
+		jsr R>			( addr n+c -- addr n+c l )
 		jsr 2DUP		\ Duplicate the limit and counter
 		jsr =			\ Check if equal
+		lda $00,X
 		bne @end		\ Numbers are equal end loop
 		jsr DROP		\ Drop the flag
-		jsr SWAP
-		jsr >R			\ Push the limit back onto the return stack
-		jmp >R			\ Push the counter back onto the return stack
-		lda hiByteW		\ Load the highByte of the addr in the W register
-		pla           	\ Push the highByte of the start of the loop
-		lda lowByteW  	\ Load the lowbyte of the addr in the W register
-		pla           	\ Push the lowbyte of the start of the loop
-		rts				\ Return to the top of the loop			
+		jsr SWAP		( addr n+c l -- addr l n+c )
+		jsr >R			( addr n+c l -- addr l )
+		jsr >R			( addr l -- addr )
+		jsr DUP			( addr -- addr addr )
+		jsr >R			( addr addr -- addr )
+		jmp >R 			\ Return to the top of the loop			
 @end:	
-		jsr 2DROP		\ Set the return to address end of loop
-		jmp 2DROP		\ Drop address, limit, counter, and flag
+		lda hiByteW		\ Load the highByte of the addr in the W register
+		pha           	\ Push the highByte of the start of the loop
+		lda lowByteW  	\ Load the lowbyte of the addr in the W register
+		pha           	\ Push the lowbyte of the start of the loop
+		jsr 2DROP		( addr n+c l f -- addr n+c )
+		jmp 2DROP		( addr n+c -- )
 ENDCODE
+
+\ ( -- ) ( R: loop-sys1 -- | loop-sys2 ) 
+\ Add one to the loop index. If the loop index is then equal to the loop limit, 
+\ discard the loop parameters and continue execution immediately following the loop. 
+\ Otherwise continue execution at the beginning of the loop. 
+: LOOP 1 +LOOP ;
+
+\ ( -- ) ( R: loop-sys -- )
+\
+\ Discard the current loop control parameters.
+\ An ambiguous condition exists if they are unavailable.
+\ Continue execution immediately following the innermost syntactically enclosing DO...LOOP or DO...+LOOP. 
+MACRO LEAVE addr
+		ldy #5
+@loop:	
+		pla
+		dey			\ Load loop-sys and drop on the floor
+		bne @loop	\ Six bytes, three cells
+		clc
+		bcc addr	\ Branch to after LOOP or +LOOP
+ENDMACRO
 
 \ ( C: -- dest )
 \ Put the next location for a transfer of control, dest, onto the control flow stack. 
@@ -157,7 +137,7 @@ ENDCODE
 \ ( -- )
 \ Continue execution. 
 MACRO BEGIN
-		nop
+	nop
 ENDMACRO
 
 \ ( C: dest -- orig dest )
@@ -168,9 +148,9 @@ ENDMACRO
 \ ( x -- )
 \ If all bits of x are zero, continue execution at the location specified by the resolution of orig. 
 MACRO WHILE orig
-		lda $00,X
-		and $01,X
-		beq orig
+	lda $00,X
+	and $01,X
+	beq orig
 ENDMACRO
 
 \ ( C: orig dest -- )
@@ -211,16 +191,16 @@ ENDCODE
 \ n | u is a copy of the current (innermost) loop index. 
 \ An ambiguous condition exists if the loop control parameters are unavailable. 
 MACRO I
-		lda #8
-		sta lowByteW2
-		jsr LPARM
+	lda #8
+	sta lowByteW2
+	jsr LPARM
 ENDMACRO
 
 \ ( -- n | u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
 \ n | u is a copy of the next-outer loop index.
 \ An ambiguous condition exists if the loop control parameters of the next-outer loop, loop-sys1, are unavailable.
 MACRO J
-		lda #14
-		sta lowByteW2
-		jsr LPARM
+	lda #14
+	sta lowByteW2
+	jsr LPARM
 ENDMACRO

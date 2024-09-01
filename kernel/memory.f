@@ -41,40 +41,11 @@ ENDCODE
 \ Returns two full cells
 : 2@ DUP @ SWAP 2 + @ ;
 
-( -- )
-\ If the data-space pointer is not aligned, 
-\ reserve enough space to align it.
-CODE ALIGN
-	lda lowByteDSP
-	and #$01
-	beq @end
-	lda #1
-	PUSH
-	jmp ALLOT
-@end:	
-	rts
-ENDCODE
-
-( addr -- a-addr )
-\ a-addr is the first aligned address greater than or equal to addr. 
-CODE ALIGNED
-	lda $00,X
-	and #1
-	beq @push
-	lda #1
-	PUSH
-	bne @add
-@push:
-	lda #2
-	PUSH
-@add:
-	jmp +
-ENDCODE
 
 ( x a-addr -- )
 \ Store the cell x1 at a-addr,
 CODE !
-	jsr LDW
+	jsr LDW			\ Store the address in W
 	jsr DROP		\ Drop the address from the stack
 	ldy #0			\ Set offset to zero
 	lda $00,X
@@ -144,21 +115,9 @@ CODE >R
 	jmp DROP
 ENDCODE
 
-( -- n )
+
 \ Copy the number on top of the return stack to the data stack.
-CODE R@
-	SAVE_RETURN
-	PUT
-	pla
-	sta $00,X		\ Push lower byte
-	pla
-	sta $01,X		\ Push higher byte
-	pha
-	lda $00,X		\ Load lowbyte to push back onto the stack
-	pha
-	LOAD_RETURN
-	rts
-ENDCODE
+: R@ ( -- n ) R> DUP >R ;
 
 ( n -- )
 \ If n is greater than zero, reserve n address units of data space. 
@@ -171,12 +130,6 @@ ENDCODE
 \ If the data-space pointer is character aligned and n is a multiple of the size of a character when ALLOT begins execution, 
 \ it will remain character aligned when ALLOT finishes execution. 
 CODE ALLOT
-	lda $00,X
-	ora $01,X
-	bne @sub		\ Only zero is both bytes are zero
-	jmp DROP		\ Both bytes zero
-	
-@sub:	
 	sec
 	lda lowByteDSP
 	sbc $00,X
@@ -190,14 +143,30 @@ ENDCODE
 ( -- addr )
 \ addr is the data-space pointer. 
 CODE HERE
-		dex
-		lda hiByteDSP
-		sta $00,X
-		dex
-		lda lowByteDSP
-		sta $00,X
-		rts
+	dex
+	lda hiByteDSP
+	sta $00,X
+	dex
+	lda lowByteDSP
+	sta $00,X
+	rts
 ENDCODE
+
+( addr -- a-addr )
+\ a-addr is the first aligned address greater than or equal to addr. 
+CODE ALIGNED
+	lda $00,X
+	and #1
+	beq @aligned
+	jmp CHAR+
+@aligned:
+	rts
+ENDCODE
+
+( -- )
+\ If the data-space pointer is not aligned, 
+\ reserve enough space to align it.
+: ALIGN HERE ALIGNED HERE - ALLOT ;
 
 ( x -- )
 \ Reserve one cell of data space and store x in the cell. 
@@ -223,7 +192,10 @@ CODE MOVE
 
 @rot:	
 	jsr SWAP		\ Swap u and addr2
-	jsr LDW2		\ Copy addr2 to W2
+	lda $00,X		\ Copy addr2 to W2
+	sta lowByteW2
+	lda $01,X
+	sta hiByteW2
 	jsr DROP		\ Drop addr2
 	jsr SWAP		\ Swap u and addr1
 	jsr LDW			\ Copy addr1 to W
@@ -288,7 +260,7 @@ CODE COUNT
 	tya			\ Set top of stack to Y
 	sta $00,X
 	lda #0
-	sta $01,X	\ TODO: Decide if 256+ strings are acceptable
+	sta $01,X
 	rts
 ENDCODE
 
@@ -296,21 +268,6 @@ ENDCODE
 \ Remove xt from the stack and perform the semantics identified by it.
 \ Other stack effects are due to the word EXECUTEd. 
 CODE EXECUTE
-	lda $01,X
-	pha 
-	lda $00,X
-	pha
-	jmp DROP	\ Jump to drop then to  address from top of stack
+	jsr >R
+	rts	      \ Return to address pushed
 ENDCODE
-
-( "<spaces>name" -- )
-\ Skip leading space delimiters. Parse name delimited by a space.
-\ Create a definition for name with the execution semantics defined below.
-\ If the data-space pointer is not aligned, reserve enough data space to align it.
-\ The new data-space pointer defines name's data field.
-\ CREATE does not allocate data space in name's data field. 
-
-( -- a-addr )
-\ a-addr is the address of name's data field.
-\ TODO: Finish.  Currently handled by cross compiler
-: CREATE ALIGN ALLOT ;

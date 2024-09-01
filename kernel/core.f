@@ -2,8 +2,9 @@
 \ author: Edward Conn
 
 \ Defines the following words
-\ DROP 2DROP DUP SWAP OVER 2DUP 2OVER ?DUP ROT 2SWAP 
-\ 0= 0< AND OR XOR 2* 2/ < > = U< 
+\ DROP 2DROP DUP SWAP OVER 
+\ 2DUP 2OVER ?DUP ROT 2SWAP 
+\ 0= 0< AND OR XOR 2* 2/ 
 \ LSHIFT RSHIFT DEPTH S>D
 
 \ Kernel "register" locations
@@ -32,12 +33,6 @@ MACRO PUT
 	dex
 ENDMACRO
 
-MACRO PUSH
-	sta 00,X
-	lda #0
-	sta 01,X
-ENDMACRO
-
 \ Save return value in W2
 MACRO SAVE_RETURN
 	pla
@@ -61,14 +56,6 @@ CODE LDW
 	sta lowByteW
 	lda $01,X
 	sta hiByteW
-	rts
-ENDCODE
-
-CODE LDW2
-	lda $00,X
-	sta lowByteW2
-	lda $01,X
-	sta hiByteW2
 	rts
 ENDCODE
 
@@ -103,7 +90,7 @@ CODE 2DROP
 	rts
 ENDCODE
 
-( x -- xx )
+( x -- x x )
 \ Copy x and place it on the stack
 CODE DUP
 	PUT
@@ -127,7 +114,7 @@ CODE SWAP
 	lda $03,X    \ Load the hiByte
 	sta $01,X
 
-	lda lowByteW   \ Load the lowByte from W
+	lda lowByteW \ Load the lowByte from W
 	sta $02,X
 	lda hiByteW  \ Load the hiByte from W
 	sta $03,X
@@ -292,71 +279,6 @@ CODE 2/
 	ora $01,X		\ Restore the 7th bit
 	sta $01,X
 	rts
-ENDCODE
-
-\ Helper proc
-\ TODO: Forget after initing file;
-CODE CMP16
-	lda $02,X
-	cmp $00,X
-	lda $03,X
-	sbc $01,X
-	bvc @skip 	\ N eor V
-	eor #$80
-@skip:	
-	rts
-ENDCODE
-
-( n1 n2 -- flag )
-\ flag is true if and only if n1 is less than n2. 
-CODE <
-	jsr CMP16
-	bpl @pos 	\ If N not set 
-	lda #true
-	jmp @store
-@pos: 	
-	lda #false  \ A bit was set to 1
-@store:	
-	jsr DROP
-	jmp SETTOS
-ENDCODE
-
-( n1 n2 -- flag )
-\ flag is true if and only if n1 is greater than n2. 
-CODE >
-	jsr CMP16
-	bmi @neg 	\ N set
-	lda #true
-	jmp @store
-@neg: 	
-	lda #false  \ A bit was set to 1
-@store:	
-	jsr DROP
-	jmp SETTOS
-ENDCODE
-
-( n1 n2 -- flag )
-\ flag is true if and only if n1 is equal to n2. 
-: = XOR 0= ;
-
-( u1 u2 -- flag )
-\ flag is true if and only if u1 is less than u2. 
-CODE <U
-	lda $03,X
-	cmp $01,X
-	bcc @true
-	bne @false
-	lda $02,X
-	cmp $00,X
-	bcc @true
-@false:	
-	lda #false
-	beq @end
-@true:
-	lda #true
-@end:
-	jsr DROP
-	jmp SETTOS
 ENDCODE
 
 ( x1 u -- x2 )

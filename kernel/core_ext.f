@@ -11,14 +11,7 @@ segment "CODE"
 
 ( x1 x2 -- x2 )
 ( Remove the second cell on the stack )
-CODE NIP
-	lda $00,X    \ Load the lowByte from the TOS
-	sta $02,X    \ Overwrite lowByte of second cell
-	lda $01,X    \ Load the highByte from the TOS
-	sta $03,X    \ Overwrite highByte of second cell
-	jmp DROP
-ENDCODE
-
+: NIP SWAP DROP ;
 
 ( xu...x1 x0 u -- xu...x1 x0 xu )
 \ Remove u. Copy the xu to the top of the stack. 
@@ -96,19 +89,7 @@ ENDCODE
 
 ( x1 x2 -- flag )
 \ flag is true if and only if x1 is not bit-for-bit the same as x2.
-CODE <>
-	lda $00,X
-	cmp $02,X
-	bne @t
-	lda $01,X
-	cmp $03,X
-	bne @t
-	jsr 2DROP 		\ Drop x2
-	jmp FALSE		\ x1 == x2
-@t:	
-	jsr 2DROP
-	jmp TRUE
-ENDCODE
+: <> = 0= ;
 
 
 ( n -- flag )

@@ -150,7 +150,7 @@ public class AssemblyGenerator extends AbstractGenerator {
                 .map(str -> {
                     if(str.startsWith(JSR) || str.startsWith(JMP)){
                         String[] instruction = str.split(" ");
-                        if(instruction.length == 2){
+                        if(instruction.length >= 2){
                             if(!UserDictionary.isDefined(instruction[1])){
                                 return str;
                             }

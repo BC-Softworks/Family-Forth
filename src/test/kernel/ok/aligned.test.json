@@ -3,62 +3,77 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "Rfetch"
+            "label": "ALIGNED"
         }
     },
     "testCases": {
-        "R@": {
+        "$0200 ALIGNED": {
             "setup": {
                 "register": {
                     "X": {
-                        "value": "$00"
-                    }
-                },
-                "memory": [
-                    {
-                        "address": "$01FE",
-                        "value": "$34"
-                        
-                    },
-                    {
-                        "address": "$01FF",
-                        "value": "$12"
-                    }
-                ]
-                
-            },
-            "expected": {
-                "register": {
-                    "X": {
-                        "value": { 
-                            "eq": "$FE"
-                        }
+                        "value": "$FE"
                     }
                 },
                 "memory": [
                     {
                         "address": "$FE",
-                        "value": { 
-                            "eq": "$34"
+                        "value": "$00"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$02"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$00"
                         }
                     },
                     {
                         "address": "$FF",
-                        "value": { 
-                            "eq": "$12"
+                        "value": {
+                            "eq": "$02"
+                        }
+                    }
+                ]
+            }
+        },
+        "$0201 ALIGNED": {
+            "setup": {
+                "register": {
+                    "X": {
+                        "value": "$FE"
+                    }
+                },
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": "$01"
+                    },
+                    {
+                        "address": "$FF",
+                        "value": "$02"
+                    }
+                ]
+                
+            },
+            "expected": {
+                "memory": [
+                    {
+                        "address": "$FE",
+                        "value": {
+                            "eq": "$02"
                         }
                     },
                     {
-                        "address": "$01FE",
-                        "value": { 
-                            "eq": "$34"
-                        }
-                        
-                    },
-                    {
-                        "address": "$01FF",
-                        "value": { 
-                            "eq": "$12"
+                        "address": "$FF",
+                        "value": {
+                            "eq": "$02"
                         }
                     }
                 ]
@@ -75,13 +90,13 @@
                     "start": {
                         "address": "$0"
                     },
-                    "size": "$200"
+                    "size": "$500"
                 },
                 {
                     "start": {
                         "address": "$2000"
                     },
-                    "size": "$2000"
+                    "size": "$800"
                 },
                 {
                     "detect": true
