@@ -190,17 +190,17 @@ ENDCODE
 \ ( -- n | u ) ( R: loop-sys -- loop-sys )
 \ n | u is a copy of the current (innermost) loop index. 
 \ An ambiguous condition exists if the loop control parameters are unavailable. 
-MACRO I
+CODE I
 	lda #8
 	sta lowByteW2
-	jsr LPARM
-ENDMACRO
+	jmp LPARM
+ENDCODE
 
 \ ( -- n | u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
 \ n | u is a copy of the next-outer loop index.
 \ An ambiguous condition exists if the loop control parameters of the next-outer loop, loop-sys1, are unavailable.
-MACRO J
+CODE J
 	lda #14
 	sta lowByteW2
-	jsr LPARM
-ENDMACRO
+	jmp LPARM
+ENDCODE

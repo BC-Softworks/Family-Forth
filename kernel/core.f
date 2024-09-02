@@ -17,6 +17,8 @@ CONST
 	hiByteDSP	= $05
 	radix		= $06
 	mode		= $07
+	lowByteDP	= $08
+	hiByteDP	= $09
 	heap		= $0100
 	false		= %00000000
 	true		= %11111111

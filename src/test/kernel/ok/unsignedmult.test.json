@@ -3,7 +3,7 @@
     "target": {
         "testType": "JSR",
         "start": {
-            "label": "Ustar"
+            "label": "UMstar"
         }
     },
     "testCases": {

@@ -5,7 +5,7 @@
 \ @ C@ 2@ ! +! C! ALIGN ALIGNED 
 \ CELL+ CELLS R> >R R@ 
 \ ALLOT HERE , C, MOVE FILL
-\ CREATE VARIABLE CONSTANT
+\ EXECUTE CREATE VARIABLE CONSTANT
 
 require "math.f"
 
@@ -37,10 +37,8 @@ CODE C@
 	rts  
 ENDCODE
 
-( a-addr -- x1 x2 ) 
 \ Returns two full cells
-: 2@ DUP @ SWAP 2 + @ ;
-
+: 2@ ( a-addr -- x1 x2 )  DUP @ SWAP 2 + @ ;
 
 ( x a-addr -- )
 \ Store the cell x1 at a-addr,
@@ -56,9 +54,8 @@ CODE !
 	jmp DROP		\ Drop x from the stack
 ENDCODE
 
-\ ( x a-addr -- )
 \ Add x to the single-cell number at a-addr.
-: +! SWAP OVER @ + SWAP	! ;
+: +! ( x a-addr -- ) SWAP OVER @ + SWAP	! ;
 
 ( char c-addr -- )
 \ Store char at c-addr. 
@@ -73,19 +70,15 @@ CODE C!
 	jmp DROP		; Drop x from the stack
 ENDCODE
 
-( x1 x2 a-addr -- )
 \ Store the cell pair x1 x2 at a-addr, with x2 at a-addr and x1 at the
 \ next consecutive cell.
-: 2! SWAP OVER ! 2 + ! ;
+: 2! ( x1 x2 a-addr -- ) SWAP OVER ! 2 + ! ;
 
-
-( a-addr1 -- a-addr2 )
 \ Add the size in address units of a cell to a-addr1, giving a-addr2.
-: CELL+ 2 + ;
+: CELL+ ( a-addr1 -- a-addr2 ) 2 + ;
 
-( n1 -- n2 )
 \ n2 is the size in address units of n1 cells. 
-: CELLS LSHIFT ;
+: CELLS ( n1 -- n2 ) LSHIFT ;
 
 \ ( -- n)
 \ Transfer n from the return stack to the data stack.
@@ -168,20 +161,17 @@ CODE ALIGNED
 	rts
 ENDCODE
 
-( -- )
 \ If the data-space pointer is not aligned, 
 \ reserve enough space to align it.
-: ALIGN HERE ALIGNED HERE - ALLOT ;
+: ALIGN ( -- ) HERE ALIGNED HERE - ALLOT ;
 
-( x -- )
 \ Reserve one cell of data space and store x in the cell. 
-: , 2 ALLOT HERE ! ;
+: , ( x -- ) 2 ALLOT HERE ! ;
 
-( char -- )
 \ Reserve space for one character in the data space and store char in the space.
 \ If the data-space pointer is character aligned when C, begins execution, it will remain character aligned when C, finishes execution.
 \ An ambiguous condition exists if the data-space pointer is not character-aligned prior to execution of C,. 
-: C, 1 ALLOT HERE C! ;
+: C, ( char -- ) 1 ALLOT HERE C! ;
 
 ( addr1 addr2 u -- )
 \ If u is greater than zero, copy the contents of u 
