@@ -35,7 +35,7 @@ public class UserDictionaryTest {
     @Test
     public void specialCharacterTest() throws IOException {
         dictionary = UserDictionary.initalize(testFileName);
-        UserDictionary.addUserDefinedWord("?DROP", false, List.of("ZEROEQUALS", "DROP"));
+        UserDictionary.addWord("?DROP", false, List.of("ZEROEQUALS", "DROP"));
         Definition def = UserDictionary.getDefinition("?DROP");
         assertEquals("?DROP", def.getName());
         assertEquals("qDROP", def.getLabel());

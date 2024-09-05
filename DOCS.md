@@ -18,7 +18,7 @@
 * W2  = Working register two
 * PSP = Parameter Stack Pointer
 * RSP = Return Stack Pointer
-* DP  = Data Space Pointer
+* DSP = Data Space Pointer
 
 ## Kernel Memory locations
 
@@ -26,7 +26,7 @@
 | ---- |--------------- | --------- | -------------- |
 | W    |  Zpage         | $00 - $01 |                |
 | W2   |  Zpage         | $02 - $03 |                |
-| DP   |  Zpage         | $04 - $05 | $0400 to $07FF |
+| DSP  |  Zpage         | $04 - $05 | $0400 to $07FF |
 | BASE |  Zpage         |    $06    |    #2 - #70    |
 | MODE |  Zpage         |    $07    |                |
 | SRC  |  Zpage         | $08 - $09 | $300  to $037F |

@@ -14,6 +14,8 @@ public class Definition {
 
     private boolean isMacro;
 
+    private boolean hasArgs;
+
     private boolean isPrimitive;
 
     private boolean isImmediate;
@@ -33,6 +35,14 @@ public class Definition {
     
     public boolean isMacro() {
         return isMacro;
+    }
+
+    protected void setHasArgs() {
+        this.hasArgs = true;
+    }
+
+    public boolean hasArgs() {
+        return hasArgs;
     }
 
     protected void setIsImmediate() {
@@ -76,6 +86,7 @@ public class Definition {
      */
     protected Definition(String name, String label, boolean isMacro) {
         this.isPrimitive = true;
+        this.hasArgs = false;
         this.isImmediate = false;
         this.isNumber = false;
         this.isMacro = isMacro;
@@ -91,13 +102,19 @@ public class Definition {
      * @param words
      * @param isMacro 
      */
-    protected Definition(String name, boolean isMacro, List<String> words) {
-        this.isPrimitive = false;
+    protected Definition(String name, boolean isMacro, boolean isPrimitive, List<String> words) {
+        this.isPrimitive = isPrimitive;
+        this.hasArgs = false;
         this.isImmediate = false;
         this.isNumber = false;
         this.isMacro = isMacro;
-        this.name = StringUtils.upperCase(name);
-        this.label = DefinitionUtils.convertToVaildLabel(StringUtils.upperCase(name));
+        if(StringUtils.containsWhitespace(name)){
+            this.name = StringUtils.upperCase(name);
+            this.label = name;
+        } else {
+            this.name = StringUtils.upperCase(name);
+            this.label = DefinitionUtils.convertToVaildLabel(this.name);
+        }
         this.words = words;
     }
 

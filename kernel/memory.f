@@ -267,12 +267,10 @@ CODE EXECUTE
 	rts	      \ Return to address pushed
 ENDCODE
 
-\ Runtime code only TODO: Add compile time parsing
+\ Runtime code only
+\ TODO: Add compile time parsing
 \ a-addr is the address of name's data field.
 : CREATE ( -- a-addr ) HERE 1 ALLOT HERE ;
 
-( -- a-addr )
-: VARIABLE CREATE 0 , ;
-
-( -- x )
-: COSNTANT VARIABLE @ ;
+\ a-addr is the address of the reserved cell.
+: VARIABLE ( -- a-addr ) CREATE DUP 0 , ;

@@ -4,7 +4,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.famiforth.exceptions.GeneratorException;
@@ -87,8 +86,6 @@ public class AssemblyGenerator extends AbstractGenerator {
                 lines = List.of(token.def.getLabel());
                 break;
             case INTEGER:
-                lines = generatePushStatement(token);
-                break;
             case WORD:
                 lines = List.of((token.def.isMacro() ? "" : JSR) + token.def.getLabel());
                 break;
@@ -167,16 +164,6 @@ public class AssemblyGenerator extends AbstractGenerator {
             codeBlock.addAll(body.stream()
                 .map(UserDictionary::getDefinition)
                 .map(def -> {
-                    if(def.isNumber()){
-                        String[] splitString = def.getLabel().split(",");
-                        StringJoiner joiner = new StringJoiner(lineSeparator);
-                        joiner.add("\tPUT");
-                        joiner.add(String.format("\tlda #$%s", splitString[0]));
-                        joiner.add(String.format("\tsta %s", "00,X"));
-                        joiner.add(String.format("\tlda #$%s", splitString[1]));
-                        joiner.add(String.format("\tsta %s", "01,X"));
-                        return joiner.toString();
-                    }
                     String str = def.isMacro() || RETURN.equalsIgnoreCase(def.getLabel()) ? "" : JSR;
                     return String.format("\t%s%s", str, def.getLabel());
                 })
@@ -238,15 +225,5 @@ public class AssemblyGenerator extends AbstractGenerator {
 
     private List<String> generateSegmentStatement(ParserToken token) {
         return List.of(String.format(".segment \"%s\"", token.reference.getLeft()));
-    }
-
-    private List<String> generatePushStatement(ParserToken token) {
-        String[] splitString = token.def.getLabel().split(",");
-        List<String> lst = new LinkedList<>();
-        lst.add(String.format("lda %s", splitString[0]));
-        lst.add(String.format("sta %s", "00,X"));
-        lst.add(String.format("lda %s", splitString[1]));
-        lst.add(String.format("sta %s", "01,X"));
-        return lst;
     }
 }

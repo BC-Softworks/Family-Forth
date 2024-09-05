@@ -11,6 +11,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 
 import com.famiforth.compiler.CompilerUtils;
@@ -21,6 +22,7 @@ import com.famiforth.exceptions.SyntaxErrorException;
  * A special condition exists for integers which have anonymous definitions 
  */
 public class UserDictionary {
+    private static final String PUSH = "PUSH";
     private static boolean initalized = false;
     private static UserDictionary instance = null;
     private static Dictionary<String, Definition> dictionary;
@@ -53,24 +55,27 @@ public class UserDictionary {
     }
 
     /**
-     * Adds a newly compiled primitive word to the UserDictionary
-     * @param name
-     * @param words
-     * @param isMacro
-     */
-    public static void addPrimitiveWord(String name, String label, boolean isMacro) {
-        addWord(new Definition(name, label, isMacro));
-    }
-
-    /**
      * Adds a newly compiled user defined word to the UserDictionary
      * @param name
      * @param words
      * @param isMacro
      */
-    public static void addUserDefinedWord(String name, boolean isMacro, final List<String> words) {
-        addWord(new Definition(name, isMacro, words));
+    public static void addWord(String name, boolean isMacro, boolean isPrimitive, final List<String> words) {
+        Definition def = new Definition(name, isMacro, isPrimitive, words);
+        if(StringUtils.containsWhitespace(name)){
+            if(isMacro){
+                def.setHasArgs();
+            } else {
+                throw new SyntaxErrorException("User defined words can not contain whitespace.");
+            }
+        }
+        addWord(def);
     }
+
+    public static void addWord(String name, boolean isMacro, final List<String> words) {
+        addWord(name, isMacro, false, words);
+    }
+
 
     /**
      * Adds an empty user defined word to the UserDictionary
@@ -79,7 +84,7 @@ public class UserDictionary {
      * @param isMacro
      */
     public static void addEmptyWord(String name) {
-        addWord(new Definition(name, false, List.of()));
+        addWord(new Definition(name, false, false, List.of()));
     }
 
     /**
@@ -91,7 +96,6 @@ public class UserDictionary {
         def.setIsImmediate();
         addWord(def);
     }
-
 
     /**
      * Fetches the Definition of the word from the dictionary 
@@ -137,7 +141,7 @@ public class UserDictionary {
      */
     public static Definition getDefinition(final String word) {
         initCheck();
-        Definition def = dictionary.get(word);
+        Definition def = dictionary.get(word.toUpperCase());
         if(def != null){
             return def;
         }
@@ -161,10 +165,10 @@ public class UserDictionary {
         Definition def = null;
         if(isDecimal){
             String[] arr = CompilerUtils.littleEndian(word);
-            def = new Definition(word, String.format("%s,%s", arr[0], arr[1]), true);
+            def = new Definition(word, String.format(PUSH + " #$%s, #$%s", arr[0], arr[1]), true);
         } else {
             String padded = CompilerUtils.padHex(word.substring(1));
-            def = new Definition(word, String.format("%s,%s", padded.substring(2, 4), padded.substring(0, 2)), true);
+            def = new Definition(word, String.format(PUSH + " #$%s, #$%s", padded.substring(2, 4), padded.substring(0, 2)), true);
         }
         def.setIsNumber();
         return def;
@@ -185,7 +189,7 @@ public class UserDictionary {
     }
 
     public static Definition getAnonymousDefinition(final List<String> wordList){
-        return new Definition("", true, wordList);
+        return new Definition("", true, true, wordList);
     }
 
     /**

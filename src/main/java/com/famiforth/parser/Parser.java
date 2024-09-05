@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -87,6 +88,16 @@ public class Parser {
                         previousToken = lexer.next_token();
                         UserDictionary.addEmptyWord(previousToken.value);
                         return null;
+                    case CONSTANT:
+                        type = DefinitionType.CONSTANT;
+                        token = lexer.next_token();
+                        def = UserDictionary.getDefinition(previousToken.value);
+                        break;
+                    case VARIABLE:
+                        type = DefinitionType.VARIABLE;
+                        def = getDefinition(token);
+                        reference = Pair.of(lexer.next_token().value, null);
+                        break;
                     case COLON:
                         type = DefinitionType.COLON;
                         def = parseColonStatement(token);
@@ -218,6 +229,7 @@ public class Parser {
      * @return
      */
     private Definition parseColonStatement(LexerToken lexerToken) {
+        boolean postpone = false;
         LexerToken token = lexerToken;
         Queue<String> wordList = new LinkedList<>();
         while(true) {
@@ -225,14 +237,26 @@ public class Parser {
             if((Keyword.SEMICOLON).equals(Keyword.getByValue(token.value))){
                 break;
             }
-            wordList.add(token.value);
+            
+            if((Keyword.POSTPONE).equals(Keyword.getByValue(token.value))){
+                postpone = true;
+            } else {
+                if(postpone && !UserDictionary.getDefinition(token.value).isPrimitive()){
+                    wordList.addAll(UserDictionary.getDefinition(token.value).getWords());
+                } else {
+                    wordList.add(token.value);
+                }
+                postpone = false;
+            }
+
+            previousToken = token;
         }
 
         // Poll the name of the word
         wordName = wordList.poll();
 
         // Add the word to the dictionary
-        UserDictionary.addUserDefinedWord(wordName, false, List.copyOf(wordList));
+        UserDictionary.addWord(wordName, false, List.copyOf(wordList));
 
         // Return newly created Definition
         return UserDictionary.getDefinition(wordName);
@@ -261,15 +285,10 @@ public class Parser {
         // Remove the name of the assembly defined word
         // Check for and handle args
         String wordName = wordList.remove(0);
-        if(wordName.contains(" ")){
-            String name = wordName.split(" ")[0];
-            wordList.add(0, wordName.replaceFirst(name, ""));
-            wordName = name;
-        }
 
         // Generate a definition for the code block
-        UserDictionary.addUserDefinedWord(wordName, isMacro, List.copyOf(wordList));
-        
+        UserDictionary.addWord(wordName, isMacro, true, List.copyOf(wordList));
+
         // Return newly created Definition
         return UserDictionary.getDefinition(wordName);
     }

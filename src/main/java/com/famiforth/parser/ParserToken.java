@@ -37,6 +37,9 @@ public class ParserToken {
     public enum DefinitionType{
         COLON,
         IMMEDIATE,
+        POSTPONE,
+        CONSTANT,
+        VARIABLE,
         CODE,
         MACRO,
         CONST,

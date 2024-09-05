@@ -3,7 +3,6 @@
 
 \ Defines the following words
 \ : \ [ ] STATE QUIT ABORT
-\ IMMEDIATE POSTPONE
 \ BASE BIN DECIMEL HEX
 
 require "memory.f"

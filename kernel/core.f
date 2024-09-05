@@ -35,6 +35,14 @@ MACRO PUT
 	dex
 ENDMACRO
 
+MACRO PUSH arg0, arg1
+	PUT
+    lda arg0
+    sta 00,X
+	lda arg1
+    sta 01,X
+ENDMACRO
+
 \ Save return value in W2
 MACRO SAVE_RETURN
 	pla
