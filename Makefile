@@ -1,11 +1,11 @@
 # Makefile for FamilyForth's generated assembly code
 # Requires ca65 and ld65 to build and 6502_tester to test
-SRC_DIR				:=		kernel
+SRC_DIR				:=		lib
 ASM_DIR				:=		build/asm
 CONFIG_DIR			:=		cfg
 BUILD_DIR			:=		build/objects
 DIST_DIR			:=		dist
-TEST_DIR			:=		src/test/kernel
+TEST_DIR			:=		src/test/lib
 TEST_OK_DIR			:=		$(TEST_DIR)/ok
 TEST_EXEC_DIR		:=		../6502_tester
 COVERAGE_DIR		:=		coverage
@@ -39,7 +39,7 @@ all : prepare build
 prepare :
 	mkdir -p $(ASM_DIR)
 	mvn clean compile assembly:single
-	for name in kernel/*.f; do\
+	for name in lib/*.f; do\
         java -jar target/famiforth-1.0-SNAPSHOT.jar $${name} -o build/asm ; \
     done
 	@echo "Assembly file generated."

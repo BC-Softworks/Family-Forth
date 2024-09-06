@@ -3,7 +3,7 @@
 
 \ Defines the following words core extension words:
 \ NIP PICK ROLL ERASE TRUE FALSE <> 0> 0<> 
-\ TUCK PAD U> 2>R 2R> 2R@ UNUSED VALUE
+\ TUCK PAD U> 2>R 2R> 2R@ UNUSED
 
 require "memory.f"
 

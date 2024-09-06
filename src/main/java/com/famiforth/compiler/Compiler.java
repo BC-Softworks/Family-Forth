@@ -1,15 +1,23 @@
 package com.famiforth.compiler;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
 import com.famiforth.generator.AssemblyGenerator;
+import com.famiforth.exceptions.CompilerException;
 import com.famiforth.generator.AbstractGenerator;
 import com.famiforth.lexer.Lexer;
 import com.famiforth.parser.Parser;
@@ -83,8 +91,18 @@ public class Compiler {
      * @throws IOException
      */
     private void parseParentFile(String fileInName, DefinitionType type) throws IOException {
-        Lexer lexer = new Lexer(new FileReader(new File(fileIn.getParent() + File.separator + fileInName)));
-        Parser parser = new Parser(lexer);
+        Reader fileIn = null;
+        try{
+            fileIn = findRequiredFile(fileInName);
+        } catch(NullPointerException ex) {
+            throw new CompilerException("Unable to find the required file: " + fileInName, ex);
+        } catch(IOException ex) {
+            throw new CompilerException("Unable to open the required file: " + fileInName, ex);
+        }
+
+        final Lexer lexer = new Lexer(fileIn);
+        final Parser parser = new Parser(lexer);
+
         String libraryName = fileInName.substring(0, fileInName.indexOf("."));
         if(!parsedLibraries.contains(libraryName)){
             parsedLibraries.add(libraryName);
@@ -98,4 +116,24 @@ public class Compiler {
         }
     }
 
+    /**
+     * @param fileInName
+     * @return the require file with the given name
+     * @throws IOException if the required file can not be opened
+     * @throws NullPointerException if the required file is not found 
+     */
+    private Reader findRequiredFile(String fileInName) throws IOException {
+        Reader reader = null;
+        FileFilter filter = file -> file.getName().startsWith("fileInName") && file.getName().endsWith(".f");
+        // Check the current directory first
+        File[] matches = new File(fileIn.getParent()).listFiles(filter);
+        if(matches.length > 0){
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(matches[0])));
+        } else {
+            // Then check the kernel
+            InputStream stream = getClass().getResourceAsStream("kernel" + File.separator + fileInName);
+            reader = new BufferedReader(new InputStreamReader(stream));
+        }
+        return reader;
+    }
 }
