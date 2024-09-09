@@ -10,6 +10,22 @@ require "memory.f"
 
 segment "CODE"
 
+\ Put the location of a new unresolved forward reference orig onto the control flow stack.
+MACRO PUSHORIG orig
+	lda orig + 1
+	pha
+	lda orig
+	pha
+ENDMACRO
+
+\ Pull the location of a forward reference orig onto the data stack.
+MACRO POPORIG orig
+	pla
+	sta orig
+	pla
+	sta orig + 1
+ENDMACRO
+
 \ Stores the program counter in W2
 CODE GET_PC
 	SAVE_RETURN
@@ -25,11 +41,7 @@ ENDCODE
 ( x -- )
 \ If all bits of x are zero, continue execution
 \ at the location specified by the resolution of orig. 
-MACRO IF orig
-	lda $00,X
-	and $01,X
-	beq orig
-ENDMACRO
+: IF 0BRANCH ;
 
 ( C: orig1 -- orig2 )
 \ Put the location of a new unresolved forward reference orig2 onto the control flow stack. 
@@ -39,10 +51,7 @@ ENDMACRO
 
 ( -- )
 \ Continue execution at the location given by the resolution of orig2.
-\ In this implmentation it is the following block of code so a nop suffices
-MACRO ELSE
-	nop
-ENDMACRO
+: ELSE NONE ;
 
 ( C: orig -- )
 \ Append the run-time semantics given below to the current definition.
@@ -50,23 +59,14 @@ ENDMACRO
 \
 \ ( -- )
 \ Continue execution.
-\ Provide an address for jmp
-MACRO THEN
-	nop
-ENDMACRO
-
+: THEN R> DROP ;
 
 \ ( n1 | u1 n2 | u2 -- ) ( R: -- loop-sys )
 \ Set up loop control parameters with index n2 | u2 and limit n1 | u1.
 \ An ambiguous condition exists if n1 | u1 and n2 | u2 are not both the same type.
 \ Anything already on the return stack becomes unavailable until the loop-control 
 \ parameters are discarded. 
-MACRO DO
-	jsr >R		\ Place n2 | u2 onto the return stack
-	jsr >R		\ Place n1 | u1 onto the return stack
-	jsr GET_PC	\ Places the address of this line in W2
-	LOAD_RETURN \ Places the previous line on the return stack
-ENDMACRO
+: DO >R	>R GET_PC LOAD_RETURN ;
 
 \ ( C: do-sys -- )
 \ Append the run-time semantics given below to the current definition.
@@ -136,9 +136,7 @@ ENDMACRO
 \
 \ ( -- )
 \ Continue execution. 
-MACRO BEGIN
-	nop
-ENDMACRO
+: BEGIN >R DUP R> R> ;
 
 \ ( C: dest -- orig dest )
 \ Put the location of a new unresolved forward reference orig onto the control flow stack, under the existing dest.
@@ -147,11 +145,7 @@ ENDMACRO
 \
 \ ( x -- )
 \ If all bits of x are zero, continue execution at the location specified by the resolution of orig. 
-MACRO WHILE orig
-	lda $00,X
-	and $01,X
-	beq orig
-ENDMACRO
+: WHILE 0BRANCH ;
 
 \ ( C: orig dest -- )
 \ Append the run-time semantics given below to the current definition, resolving the backward reference dest. 
@@ -159,9 +153,7 @@ ENDMACRO
 \
 \ ( -- )
 \ Continue execution at the location given by dest. 
-MACRO REPEAT dest
-		jsr dest	\ Jumps to dest
-ENDMACRO
+: REPEAT BRANCH ;
 
 \ Helper for I and J
 \ Roughly halves bytes used

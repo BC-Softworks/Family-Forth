@@ -181,19 +181,25 @@ public class AssemblyGenerator extends AbstractGenerator {
     }
 
     private List<String> generateIfStatement(ParserToken token) {
-        return List.of(String.format("%s %s", token.def.getLabel(), token.reference.getLeft()));
+        List<String> lst = new LinkedList<>();
+        lst.add(String.format("PUSHORIG %s", token.reference.getLeft()));
+        lst.add(token.def.getLabel());
+        return List.of(); 
     }
 
     private List<String> generateElseStatement(ParserToken token) {
         List<String> lst = new LinkedList<>();
-        lst.add("clc");
-        lst.add(String.format("bcc %s", token.reference.getRight()));
-        lst.add(String.format("%s: %s", token.reference.getLeft(), token.def.getLabel()));
+        lst.add(String.format("%s: ", token.reference.getLeft()));
+        lst.add(String.format("%s", token.def.getLabel()));
+        lst.add(String.format("PUSHORIG %s", token.reference.getRight()));
         return lst;
     }
 
     private List<String> generateThenStatement(ParserToken token) {
-        return List.of(String.format("%s: %s", token.reference.getLeft(), token.def.getLabel()));
+        List<String> lst = new LinkedList<>();
+        lst.add(String.format("%s", token.def.getLabel()));
+        lst.add(String.format("%s: ", token.reference.getLeft()));
+        return lst;
     }
 
     private List<String> generateLoopStatement(ParserToken token) {

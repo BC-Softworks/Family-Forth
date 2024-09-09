@@ -4,16 +4,16 @@
 \ Defines the following words
 \ SILENCE
 
-require "memory.f"
+require "control.f"
 
 CONST
-    pulse1 = $4000	    \ Pulse 1 	Timer, length counter, envelope, sweep
-    pulse2 = $4004 	    \ Pulse 2 	Timer, length counter, envelope, sweep
-    triangle = $4008 	\ Triangle 	Timer, length counter, linear counter
-    noise = $400C	    \ Noise 	Timer, length counter, envelope, linear feedback shift register
-    dmc = $4010 	    \ DMC 	Timer, memory reader, sample buffer, output unit
+    pulse1  = $4000	    \ Pulse 1 	Timer, length counter, envelope, sweep
+    pulse2  = $4004 	\ Pulse 2 	Timer, length counter, envelope, sweep
+    tri     = $4008 	\ Triangle 	Timer, length counter, linear counter
+    noise   = $400C	    \ Noise 	Timer, length counter, envelope, linear feedback shift register
+    dmc     = $4010 	\ DMC 	    Timer, memory reader, sample buffer, output unit
     counter = $4015 	\ Channel enable and length counter status
-    frame = $4017 	 	\ Frame counter
+    frame   = $4017 	\ Frame counter
 ENDCONST
 
 : SILENCE $13 0 
@@ -21,7 +21,7 @@ ENDCONST
         I           (  -- i )
         DUP         ( i -- i i )
         4 MOD       ( i i -- i b )
-        IF 
+        IF
             $30     
         ELSE 
             $00 

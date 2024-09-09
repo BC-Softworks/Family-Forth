@@ -19,15 +19,30 @@ CONST
 	mode		= $07
 	lowByteDP	= $08
 	hiByteDP	= $09
-	heap		= $0100
 	false		= %00000000
 	true		= %11111111
 ENDCONST
 
 \ Global Macros
 
-MACRO RETURN
+MACRO BRANCH
 	rts
+ENDMACRO
+
+( x -- )
+( R: addr -- | addr )
+\ Branch to the next address on the
+\ return stack if teh TOS is 0
+CODE 0BRANCH
+	lda $00,X
+	and $01,X
+	beq @end
+	rts
+@end:
+ENDCODE
+
+MACRO NONE
+	nop
 ENDMACRO
 
 MACRO PUT

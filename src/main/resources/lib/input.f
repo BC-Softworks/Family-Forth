@@ -3,7 +3,7 @@
 \ Defines the following words
 \ CTRL
 
-require "core.f"
+require "math.f"
 
 ( -- x )
 \ Place the controller bytes on the data stack
@@ -30,40 +30,45 @@ ENDCODE
 
 ( x -- true | false )
 \ Return true if and only if 
+\ the button has been pressed
+: PRESSED DUP CTRL AND = ;
+
+( x -- true | false )
+\ Return true if and only if 
 \ the A button has been pressed
-: A_PRESSED $01 DUP CTRL AND = ;
+: A_PRESSED $01 PRESSED ;
 
 ( x -- true | false )
 \ Return true if and only if 
 \ the B button has been pressed
-: B_PRESSED $02 DUP CTRL AND = ;
+: B_PRESSED $02 PRESSED ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the select button has been pressed
-: SELECT $04 DUP CTRL AND = ;
+: SELECT $04 PRESSED ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the START button has been pressed
-: START $08 DUP CTRL AND = ;
+: START $08 PRESSED ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the up button has been pressed
-: UP $0010 DUP CTRL AND = ;
+: UP $0010 PRESSED ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the down button has been pressed
-: DOWN $0020 DUP CTRL AND = ;
+: DOWN $0020 PRESSED ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the down button has been pressed
-: LEFT $0040 DUP CTRL AND = ;
+: LEFT $0040 PRESSED ;
 
 ( x -- true | false )
 \ Return true if and only if
 \ the down button has been pressed
-: RIGHT $0080 DUP CTRL AND = ;
+: RIGHT $0080 PRESSED ;

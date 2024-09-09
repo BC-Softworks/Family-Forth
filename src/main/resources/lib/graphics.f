@@ -4,7 +4,7 @@
 \ Defines the following words
 \ SPRITE
 
-require "memory.f"
+require "core_ext.f"
 
 CONST
     PPU_MASK	= $2001

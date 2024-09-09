@@ -61,13 +61,7 @@ ENDCODE
 ( addr u -- )
 \ If u is greater than zero, clear all bits
 \ in each of u consecutive address units of memory beginning at addr. 
-CODE ERASE
-	PUT
-	ldy #0
-	sty $00,X
-	sty $01,X
-	jmp FILL
-ENDCODE
+: ERASE 0 FILL ;
 
 ( -- true )
 \ Return a true flag, a single-cell value with all bits set. 

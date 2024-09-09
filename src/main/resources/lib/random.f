@@ -3,7 +3,7 @@
 
 require "memory.f"
 
-variable seed
+: seed $3000 ;
 
 : setseed ( n -- ) seed ! ;
 

@@ -5,8 +5,10 @@ ASM_DIR				:=		build/asm
 CONFIG_DIR			:=		cfg
 BUILD_DIR			:=		build/objects
 DIST_DIR			:=		dist
-TEST_DIR			:=		src/test/lib
+TEST_DIR			:=		src/test/kernel
 TEST_OK_DIR			:=		$(TEST_DIR)/ok
+LIB_TEST_DIR		:=		src/test/lib
+LIB_TEST_OK_DIR		:=		$(LIB_TEST_DIR)/ok
 TEST_EXEC_DIR		:=		../6502_tester
 COVERAGE_DIR		:=		coverage
 
@@ -34,12 +36,15 @@ TEST_OK_FLAGS		:=		--quiet-summary --quiet-ok
 
 .PHONY : all prepare build test clean
 
-all : prepare build
+all : prepare build test
 
 prepare :
 	mkdir -p $(ASM_DIR)
 	mvn clean compile assembly:single
-	for name in lib/*.f; do\
+	for name in src/main/resources/kernel/*.f; do\
+        java -jar target/famiforth-1.0-SNAPSHOT.jar $${name} -o build/asm ; \
+    done
+	for name in src/main/resources/lib/*.f; do\
         java -jar target/famiforth-1.0-SNAPSHOT.jar $${name} -o build/asm ; \
     done
 	@echo "Assembly file generated."
