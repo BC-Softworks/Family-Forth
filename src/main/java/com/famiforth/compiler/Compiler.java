@@ -28,16 +28,29 @@ import com.famiforth.parser.ParserToken.DefinitionType;
 */
 public class Compiler {
 
-    private File fileIn;
-    private File fileOut;
-    private String initalDictionary;
-    private List<String> parsedLibraries;
+    final private byte mirror;
+    final private byte mapper;
+    final private byte backup;
+    final private byte prgBanks;
+    final private byte charBanks;
+    final private File fileIn;
+    final private File fileOut;
+    final private File cfgFile;  // Used to validate segements
+    final private String initalDictionary;
+    final private List<String> parsedLibraries;
 
-    public Compiler(File fileIn, File fileOut, String initalDictionary) {
+    public Compiler(byte mirror, byte mapper, byte backup, byte prgBanks, byte charBanks, File fileIn, File fileOut,
+            File cfgFile, String initalDictionary) {
+        this.mirror = mirror;
+        this.mapper = mapper;
+        this.backup = backup;
+        this.prgBanks = prgBanks;
+        this.charBanks = charBanks;
         this.fileIn = fileIn;
         this.fileOut = fileOut;
+        this.cfgFile = cfgFile;
         this.initalDictionary = initalDictionary;
-        parsedLibraries = new ArrayList<>();
+        this.parsedLibraries = new ArrayList<>();
     }
 
     public void compile() throws IOException {
@@ -55,6 +68,12 @@ public class Compiler {
         }
 
         generator.writeGuard(fileOut.getName().substring(0, fileOut.getName().lastIndexOf(".")).toUpperCase());
+
+        // Only include a header file if a config is included
+        if(cfgFile != null){
+            generator.writeHeader(fileOut.getName(), mapper, mirror, backup, prgBanks, charBanks);
+        }
+        
         parseFile(parser, generator);
 
         // Close FileOutputStream
@@ -119,15 +138,21 @@ public class Compiler {
      * @param fileInName
      * @return the require file with the given name
      * @throws IOException if the required file can not be opened
-     * @throws NullPointerException if the required file is not found 
+     * @throws NullPointerException if the required file is not found
+     * TODO: Support other file extensions
      */
     private Reader findRequiredFile(String fileInName) throws IOException {
         InputStream stream = null;
-        FileFilter filter = file -> file.getName().startsWith("fileInName") && file.getName().endsWith(".f");
+        FileFilter filter = file -> file.getName().startsWith(fileInName) && file.getName().endsWith(".f");
+
         // Check the current directory first
-        File[] matches = new File(fileIn.getParent()).listFiles(filter);
+        File requiredFile = new File(fileIn.getParent());
+        File[] matches = requiredFile.listFiles(filter);
         if(matches.length > 0){
             stream = new FileInputStream(matches[0]);
+        } else if (fileInName.startsWith("lib")){
+            // Then check the lib
+            stream = ClassLoader.getSystemResourceAsStream("lib" + File.separator + fileInName);
         } else {
             // Then check the kernel
             stream = ClassLoader.getSystemResourceAsStream("kernel" + File.separator + fileInName);

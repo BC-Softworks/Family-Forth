@@ -24,6 +24,38 @@ public class AssemblyGenerator extends AbstractGenerator {
         super(fileOutputStream);
     }
 
+
+    /**
+     * Add a iNES header to the beginning of the main assembly file
+     * @param fileName
+     * @param mapper
+     * @param mirror True if mirrored vertically, false mirrored if horizontally
+     * @param backup True if the cartridge has SRAM
+     * @param prgBanks Number of 16k PRG Banks
+     * @param charBanks Number of 8k CHR Banks
+     */
+    @Override
+    public void writeHeader(String fileName, byte mapper, byte mirror, byte backup, byte prgBanks, byte charBanks) {
+        List<String> lines = new LinkedList<>();
+        lines.add(".segment HEADER");
+        lines.add(String.format("INES_MAPPER = $%2x ;", mapper ));
+        lines.add(String.format("INES_MIRROR = $%2x ;", mirror ));
+        lines.add(String.format("INES_SRAM   = $%2x ;", backup ));
+        
+        lines.add(".byte 'N', 'E', 'S', $1A ;");
+        lines.add(String.format(".byte $%2x ;", prgBanks));   // Number of PRG banks
+        lines.add(String.format(".byte $%2x ;", charBanks));  // Number of CHR banks
+        lines.add(".byte INES_MIRROR | (INES_SRAM << 1) | ((INES_MAPPER & $f) << 4)");
+        lines.add(".byte (INES_MAPPER & %11110000)");
+        lines.add(".byte $0, $0, $0, $0, $0, $0, $0, $0 ; padding");
+        writeLines(lines);
+    }
+
+    /**
+     * Write a file include guard
+     * @param fileName
+     */
+    @Override
     public void writeGuard(String fileName) {
         List<String> lines = new LinkedList<>();
         lines.add(String.format(".ifndef %s_GUARD", fileName));
