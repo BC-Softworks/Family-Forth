@@ -1,18 +1,11 @@
 package com.famiforth.parser.dictionary;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
 
 import com.famiforth.compiler.CompilerUtils;
 import com.famiforth.exceptions.SyntaxErrorException;
@@ -228,33 +221,6 @@ public class UserDictionary {
 
     private UserDictionary(final String fileName) throws IOException {
         dictionary = new Hashtable<String, Definition>();
-        populateDictionary(fileName);
     }
 
-    private static void populateDictionary(final String jsonFilePath) throws IOException {
-        populateDictionary(List.of(jsonFilePath));
-    }
-
-    /**
-     * Populate the current dictionary instance with the
-     * contents of the provided JSON files. If a word is encountered twice,
-     * a warning will be logged and the first definitions will be perserved.
-     * 
-     * @param jsonFilePaths
-     * @throws IOException
-     */
-    private static void populateDictionary(final Collection<String> jsonFilePaths) throws IOException {
-        File file;
-        for (final String fileName : jsonFilePaths) {
-            file = new File(fileName);
-            final Path filePath = Paths.get(file.toURI());
-            try {
-                final JSONArray jsonArr = new JSONArray(Files.readAllLines(filePath).stream().collect(Collectors.joining()));
-                Definition.fromJSONList(jsonArr.toList()).forEach(UserDictionary::addWord);
-            } catch (final IOException error) {
-                System.err.println("Failed to open: " + fileName);
-                throw error;
-            }
-        }
-    }
 }
