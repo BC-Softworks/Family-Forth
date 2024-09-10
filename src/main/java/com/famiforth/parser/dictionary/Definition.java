@@ -1,7 +1,10 @@
 package com.famiforth.parser.dictionary;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 
 /** Represents a word in the UserDictionary
@@ -113,6 +116,35 @@ public class Definition {
             this.label = DefinitionUtils.convertToVaildLabel(this.name);
         }
         this.words = words;
+    }
+
+    private Definition(){}
+
+    @SuppressWarnings("unchecked")
+    public static List<Definition> fromJSONList(List<Object> list) {
+        if (list.isEmpty()) {
+            return List.of();
+        }
+
+        return list.stream().map(obj -> (HashMap<String, Object>) obj)
+                .map(Definition::fromHashMap)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Convert a HashMap of values to a Definition
+     * @param obj
+     * @return the Definition represented by the provided HashMap
+     */
+    public static Definition fromHashMap(HashMap<String, Object> map) {
+
+        Definition definition = new Definition();
+        definition.isPrimitive = true; // Only primitives maybe included in a json map
+        definition.name = map.get("name").toString();
+        definition.label = map.get("label").toString();
+        definition.isMacro = Boolean.parseBoolean(map.get("isMacro").toString());
+        definition.words = List.of();
+        return definition;
     }
     
     /**
