@@ -28,7 +28,10 @@ import com.famiforth.parser.ParserToken.DefinitionType;
 */
 public class Compiler {
 
+    final private boolean guard;
     final private boolean header;
+    final private boolean vector;
+    final private boolean oam;
     final private byte mirror;
     final private byte mapper;
     final private byte backup;
@@ -40,9 +43,12 @@ public class Compiler {
     final private String initalDictionary;
     final private List<String> parsedLibraries;
 
-    public Compiler(boolean header, byte mirror, byte mapper, byte backup, byte prgBanks, byte charBanks, File fileIn, File fileOut,
-            File cfgFile, String initalDictionary) {
+    public Compiler(boolean guard, boolean header, boolean vector, boolean oam, byte mirror, byte mapper, byte backup, byte prgBanks, byte charBanks, 
+            File fileIn, File fileOut, File cfgFile, String initalDictionary) {
+        this.guard = guard;
         this.header = header;
+        this.vector = vector;
+        this.oam = oam;
         this.mirror = mirror;
         this.mapper = mapper;
         this.backup = backup;
@@ -69,10 +75,20 @@ public class Compiler {
             System.err.println("Error: " + ex.getMessage());
         }
 
-        generator.writeGuard(fileOut.getName().substring(0, fileOut.getName().lastIndexOf(".")).toUpperCase());
+        if(guard){
+            generator.writeGuard(fileOut.getName().substring(0, fileOut.getName().lastIndexOf(".")).toUpperCase());
+        }
 
         if(header){
             generator.writeHeader(fileOut.getName(), mapper, mirror, backup, prgBanks, charBanks);
+        }
+
+        if(vector){
+            generator.writeVector(fileOut.getName());
+        }
+        
+        if(oam){
+            generator.writeOAM(fileOut.getName());
         }
         
         parseFile(parser, generator);

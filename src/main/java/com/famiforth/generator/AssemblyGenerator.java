@@ -37,17 +37,18 @@ public class AssemblyGenerator extends AbstractGenerator {
     @Override
     public void writeHeader(String fileName, byte mapper, byte mirror, byte backup, byte prgBanks, byte charBanks) {
         List<String> lines = new LinkedList<>();
-        lines.add(".segment HEADER");
-        lines.add(String.format("INES_MAPPER = $%2x ;", mapper ));
-        lines.add(String.format("INES_MIRROR = $%2x ;", mirror ));
-        lines.add(String.format("INES_SRAM   = $%2x ;", backup ));
+        lines.add(".segment \"HEADER\"");
+        lines.add(String.format("INES_MAPPER = $%2s", mapper > 10 ? mapper : "0" + mapper));
+        lines.add(String.format("INES_MIRROR = $%2s", mirror > 10 ? mirror : "0" + mirror));
+        lines.add(String.format("INES_SRAM   = $%2s", backup > 10 ? backup : "0" + backup));
         
-        lines.add(".byte 'N', 'E', 'S', $1A ;");
-        lines.add(String.format(".byte $%2x ;", prgBanks));   // Number of PRG banks
-        lines.add(String.format(".byte $%2x ;", charBanks));  // Number of CHR banks
+        lines.add(".byte 'N', 'E', 'S', $1A");
+        lines.add(String.format(".byte $%2s", prgBanks > 10 ? prgBanks : "0" + prgBanks));   // Number of PRG banks
+        lines.add(String.format(".byte $%2s", charBanks > 10 ? charBanks : "0" + charBanks));  // Number of CHR banks
         lines.add(".byte INES_MIRROR | (INES_SRAM << 1) | ((INES_MAPPER & $f) << 4)");
         lines.add(".byte (INES_MAPPER & %11110000)");
-        lines.add(".byte $0, $0, $0, $0, $0, $0, $0, $0 ; padding");
+        lines.add(".byte $0, $0, $0, $0, $0, $0, $0, $0");
+        lines.add("");
         writeLines(lines);
     }
 
@@ -61,6 +62,34 @@ public class AssemblyGenerator extends AbstractGenerator {
         lines.add(String.format(".ifndef %s_GUARD", fileName));
         lines.add(String.format("\t%s_GUARD = 1", fileName));
         lines.add(".endif");
+        writeLines(lines);
+    }
+
+    /**
+     * Write nmi, irq, and reset vectors
+     * @param fileName
+     */
+    @Override
+    public void writeVector(String fileName) {
+        List<String> lines = new LinkedList<>();
+        lines.add(".segment \"VECTORS\"");
+        lines.add(".word nmi");
+        lines.add(".word reset");
+        lines.add(".word irq");
+        lines.add("");
+        writeLines(lines);
+    }
+
+    /**
+     * Reserve OAM
+     * @param fileName
+     */
+    @Override
+    public void writeOAM(String fileName) {
+        List<String> lines = new LinkedList<>();
+        lines.add(".segment \"OAM\"");
+        lines.add("oam: .res 256");
+        lines.add("");
         writeLines(lines);
     }
 

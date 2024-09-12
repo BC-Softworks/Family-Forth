@@ -57,8 +57,16 @@ public class FamilyForth {
                 builder.setCfgFile(cfgFile);
             }
 
-            if(cmd.hasOption("header")){
-                builder.setHeader(true);
+            if(cmd.hasOption("no-header")){
+                builder.setHeader(false);
+            }
+
+            if(cmd.hasOption("no-vector")){
+                builder.setVector(false);
+            }
+
+            if(cmd.hasOption("no-oam")){
+                builder.setOAM(false);
             }
 
             if(cmd.hasOption("mapper")){
@@ -96,8 +104,12 @@ public class FamilyForth {
     private static Options createOptions() {
         Option help = new Option("h", "help", false, "print this message");
         Option cfg = new Option("cfg", "config", true, "ROM Configuration file");
-        Option input = new Option("i", "input", true, "Place the output into <file>");
-        Option output = new Option("o", "output", true, "Place the output into <file>");
+        Option input = new Option("in", "input", true, "Place the output into <file>");
+        Option output = new Option("out", "output", true, "Place the output into <file>");
+        Option header = new Option("nh", "no-header", false, "Do not include a Header section");
+        Option vector = new Option("nv", "no-vector", false, "Do not include a Vector section");
+        Option oam = new Option("no", "no-oam", false, "Do not include a OAM section");
+
         Option mapper = new Option("ma", "mapper", true, "iNES mapper");
         Option mirror = new Option("mi", "mirror", true, "Nametable mirroring, 1 = Vertical, 0 = Horizontal");
         Option backup = new Option("b", "backup", true, "Enable save backup support");
@@ -108,6 +120,9 @@ public class FamilyForth {
                             .addOption(help)
                             .addOption(input)
                             .addOption(output)
+                            .addOption(header)
+                            .addOption(vector)
+                            .addOption(oam)
                             .addOption(mapper)
                             .addOption(mirror)
                             .addOption(backup)

@@ -52,7 +52,9 @@ public class AssemblyGeneratorTest {
         setup();
         ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("THEN"), DefinitionType.THEN, Pair.of("0", ""));
         generator.generate(token);
-        assertEquals("0: THEN", generator.generate(token).get(0));
+        assertEquals("THEN", generator.generate(token).get(0));
+        assertEquals("0: ", generator.generate(token).get(1));
+
     }
 
     @Test

@@ -3,6 +3,8 @@
 
 require "memory.f"
 
+segment "CODE"
+
 : seed $3000 ;
 
 : setseed ( n -- ) seed ! ;

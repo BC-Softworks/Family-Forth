@@ -42,10 +42,10 @@ prepare :
 	mkdir -p $(ASM_DIR)
 	mvn clean compile assembly:single
 	for name in src/main/resources/kernel/*.f; do\
-        java -jar target/famiforth-1.0-SNAPSHOT.jar -i $${name} -o build/asm ; \
+        java -jar target/famiforth-1.0-SNAPSHOT.jar -in $${name} -out build/asm --no-header --no-vector --no-oam ; \
     done
 	for name in src/main/resources/lib/*.f; do\
-        java -jar target/famiforth-1.0-SNAPSHOT.jar -i $${name} -o build/asm ; \
+        java -jar target/famiforth-1.0-SNAPSHOT.jar -in $${name} -out build/asm --no-header --no-vector --no-oam ; \
     done
 	@echo "Assembly file generated."
 

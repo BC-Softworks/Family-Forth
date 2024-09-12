@@ -5,6 +5,8 @@
 
 require "math.f"
 
+segment "CODE"
+
 ( -- x )
 \ Place the controller bytes on the data stack
 \ Player 1's in the low byte

@@ -6,6 +6,8 @@
 
 require "control.f"
 
+segment "CODE"
+
 CONST
     pulse1  = $4000	    \ Pulse 1 	Timer, length counter, envelope, sweep
     pulse2  = $4004 	\ Pulse 2 	Timer, length counter, envelope, sweep

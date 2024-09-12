@@ -6,6 +6,8 @@
 
 require "core_ext.f"
 
+segment "CODE"
+
 CONST
     PPU_MASK	= $2001
     PPU_STATUS	= $2002
@@ -14,6 +16,7 @@ CONST
     PPU_ADDR    = $2006
     PPU_DATA    = $2007 
 ENDCONST
+
 
 : SPRITE ;
 
