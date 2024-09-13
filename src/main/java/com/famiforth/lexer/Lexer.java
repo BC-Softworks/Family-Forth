@@ -40,7 +40,11 @@ public class Lexer {
 
     public boolean hasNext() {
         return !currentLine.isEmpty() || scanner.hasNext();
-    } 
+    }
+
+    public boolean hasNext(String str) {
+        return scanner.hasNext(str);
+    }
 
     /**
      * @return True if there is a remaining line
@@ -48,8 +52,8 @@ public class Lexer {
      */
     public boolean hasNextLine() {
         return scanner.hasNextLine();
-    } 
-
+    }
+    
     /**
      * @return The Tokenized string provided by the Scanner
      */
@@ -59,9 +63,8 @@ public class Lexer {
     }
 
     /**
-     * Advance to the next token
-     * This is done by line instead of 
-     * directly grabbing next for easier debugging
+     * Advance to the next token. 
+     * This is done by line instead of directly grabbing next token for easier debugging
      */
     protected void advance() {
         while(currentLine.isEmpty() || currentLine.peek() == null){

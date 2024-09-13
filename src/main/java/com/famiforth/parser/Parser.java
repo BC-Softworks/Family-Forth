@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.famiforth.compiler.CompilerUtils;
 import com.famiforth.exceptions.SyntaxErrorException;
 import com.famiforth.lexer.Keyword;
 import com.famiforth.lexer.Lexer;
 import com.famiforth.lexer.LexerToken;
+import com.famiforth.lexer.LexerToken.TokenType;
 import com.famiforth.parser.ParserToken.DefinitionType;
 import com.famiforth.parser.dictionary.Definition;
 import com.famiforth.parser.dictionary.UserDictionary;
@@ -88,11 +90,6 @@ public class Parser {
                         previousToken = lexer.next_token();
                         UserDictionary.addEmptyWord(previousToken.value);
                         return null;
-                    case CONSTANT:
-                        type = DefinitionType.CONSTANT;
-                        token = lexer.next_token();
-                        def = UserDictionary.getDefinition(previousToken.value);
-                        break;
                     case VARIABLE:
                         type = DefinitionType.VARIABLE;
                         def = getDefinition(token);
@@ -109,6 +106,13 @@ public class Parser {
                     case MACRO:
                         type = DefinitionType.MACRO;
                         def = parseCodeBlock(token, true);
+                        break;
+                    case CONSTANT:
+                        type = DefinitionType.CONSTANT;
+                        token = lexer.next_token();
+                        def = UserDictionary.getIntegerDefinition(previousToken.value, CompilerUtils.isDecimal(previousToken.value));
+                        UserDictionary.addWord(token.value, true, List.of(def.getLabel()));
+                        def = UserDictionary.getDefinition(token.value);
                         break;
                     case CONST:
                         type = DefinitionType.CONST;
@@ -194,11 +198,13 @@ public class Parser {
                 previousToken = token;
                 return new ParserToken(getDefinition(token), DefinitionType.WORD);
             case HEX:
-                previousToken = token;
-                return new ParserToken(UserDictionary.getIntegerDefinition(token.value, false), DefinitionType.INTEGER);
             case DECIMAL:
                 previousToken = token;
-                return new ParserToken(UserDictionary.getIntegerDefinition(token.value, true), DefinitionType.INTEGER);
+                // Do not return a integer if this integer is part of a constant declaration
+                if(lexer.hasNext(Keyword.CONSTANT.value)){
+                    return null;
+                }
+                return new ParserToken(UserDictionary.getIntegerDefinition(token.value, token.type == TokenType.DECIMAL), DefinitionType.INTEGER);
             // TokensTypes that result in an exception
             case END_COMMENT:
                 throw new SyntaxErrorException("A comment can not be closed if it was not opened");

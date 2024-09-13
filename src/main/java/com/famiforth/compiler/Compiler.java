@@ -13,7 +13,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import com.famiforth.generator.AssemblyGenerator;
 import com.famiforth.exceptions.CompilerException;
@@ -99,21 +98,22 @@ public class Compiler {
     }
 
     private void parseFile(Parser parser, AbstractGenerator generator) throws IOException {
-        // Used for debugging
-        List<ParserToken> parsedWords = new Stack<>();
+        List<ParserToken> parsedWords = new ArrayList<>();
         while(parser.hasNext()){
             ParserToken token = parser.parse();
             if(token != null){
                 // If a requires or include is encountered pause parsing the 
                 // current file and parse that file first.
-                if(ParserToken.DefinitionType.REQUIRE.equals(token.type) || ParserToken.DefinitionType.INCLUDE.equals(token.type)){
+                if( ParserToken.DefinitionType.REQUIRE.equals(token.type) || 
+                    ParserToken.DefinitionType.INCLUDE.equals(token.type)){
                     parseParentFile(token.reference.getLeft(), token.type);
                 }
-
-                generator.generate(token);
-                // Used for debugging
                 parsedWords.add(token);
             }
+        }
+
+        for(ParserToken token : parsedWords){
+            generator.generate(token);
         }
     }
 

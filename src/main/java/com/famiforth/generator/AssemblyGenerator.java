@@ -106,6 +106,7 @@ public class AssemblyGenerator extends AbstractGenerator {
             case CODE:
                 lines = generateSubroutine(token, true);
                 break;
+            case CONSTANT:
             case MACRO:
                 lines = generateMacro(token, true);
                 break;

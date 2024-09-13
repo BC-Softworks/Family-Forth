@@ -29,7 +29,7 @@ ENDMACRO
 MACRO SEMICOLON
 	lda #false
 	sta mode
-	jmp ALIGN
+	jsr ALIGN
 ENDMACRO
 
 ( -- )

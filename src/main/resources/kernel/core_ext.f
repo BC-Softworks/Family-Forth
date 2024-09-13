@@ -65,21 +65,12 @@ ENDCODE
 
 ( -- true )
 \ Return a true flag, a single-cell value with all bits set. 
-CODE TRUE
-	PUT
-	lda #true
-	jmp SETTOS
-ENDCODE
+: TRUE $FFFF ;
 
 ( -- false )
 \ Return a false flag, a single-cell value with no bits set.
 \ Same as pushing 0 onto the stack
-CODE FALSE
-	PUT
-	lda #false
-	jmp SETTOS
-ENDCODE
-
+: FALSE $00 ;
 
 ( x1 x2 -- flag )
 \ flag is true if and only if x1 is not bit-for-bit the same as x2.
