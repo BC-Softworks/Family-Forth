@@ -110,6 +110,7 @@ public class FamilyForth {
         Option version = new Option("v", "version", false, "Print the compiler version number");
 
         Option cfg = new Option("cfg", "config", true, "ROM Configuration file");
+        Option target = new Option("t", "target", true, "Target System");
         Option input = new Option("in", "input", true, "Place the output into <file>");
         Option output = new Option("out", "output", true, "Name the output file");
         Option header = new Option("nh", "no-header", false, "Do not include a Header section");
@@ -134,17 +135,13 @@ public class FamilyForth {
                             .addOption(backup)
                             .addOption(prgbanks)
                             .addOption(chrbanks)
-                            .addOption(version);
+                            .addOption(version)
+                            .addOption(target);
     }
 
     public static void main(String args[]) throws IOException {
         CompilerBuilder builder = parseArguments(args);
-        try {
-            Compiler compiler = builder.toCompiler();
-            compiler.compile();
-        } catch (Throwable e) {
-            System.err.println("\t" + e.getMessage());
-            System.exit(1);
-        }
+        Compiler compiler = builder.toCompiler();
+        compiler.compile();
     }
 }

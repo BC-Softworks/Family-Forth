@@ -15,7 +15,7 @@ TARGET				:=		$(DIST_DIR)/$(PROJECT).nes
 DEBUG				:=		$(DIST_DIR)/$(PROJECT).dbg
 SOURCES				:=		$(shell find $(ASM_DIR) -type f -name '*.asm')
 OBJECTS				:=		$(SOURCES:$(ASM_DIR)/%.asm=$(BUILD_DIR)/%.o)
-NES_CFG				:=		$(CONFIG_DIR)/nes.cfg
+NES_CFG				:=		$(CONFIG_DIR)/example.cfg
 
 TEST_OK				:=		$(shell find $(TEST_OK_DIR) -type f -name '*.test.json' | sort)
 TEST_IDS			:=		$(TEST_OK:%.test.json=%.test)
@@ -39,7 +39,7 @@ all : prepare build test
 prepare :
 	mkdir -p $(ASM_DIR)
 	mkdir -p $(BUILD_DIR)
-	java -jar ../target/famiforth-1.0-SNAPSHOT.jar --in pong.f --out build/asm ; 
+	java -jar ../target/famiforth-1.0-SNAPSHOT.jar --in src/pong.f --out build/asm ; 
 	@echo "Assembly file generated."
 
 build : $(TARGET)
