@@ -31,16 +31,15 @@ public class Parser {
     
     private LexerToken previousToken;
     private String wordName;
-    private int ifCounter;
-    private int doCounter;
-    private int beginCounter;
+
+    private static int beginCounter = 0;
+    private static int doCounter = 0;
+    private static int ifCounter = 0;
+    private static int variableCounter = 1;
 
     public Parser(Lexer scan) {
         this.lexer = scan;
         this.cfStack = new LinkedList<>();
-        ifCounter = 0;
-        doCounter = 0;
-        beginCounter = 0;
     }
 
     public Parser(Lexer scan, String dictionaryFile) {
@@ -92,8 +91,11 @@ public class Parser {
                         return null;
                     case VARIABLE:
                         type = DefinitionType.VARIABLE;
-                        def = getDefinition(token);
-                        reference = Pair.of(lexer.next_token().value, null);
+                        token = lexer.next_token();
+                        def = UserDictionary.getIntegerDefinition("" + (Integer.parseInt("4000", 16) - variableCounter), true);
+                        UserDictionary.addWord(token.value, true, List.of(def.getLabel()));
+                        def = UserDictionary.getDefinition(token.value);
+                        variableCounter += 2;
                         break;
                     case COLON:
                         type = DefinitionType.COLON;

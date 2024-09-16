@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.famiforth.compiler.CompilerUtils;
-import com.famiforth.generator.AbstractGenerator;
 import com.famiforth.generator.AssemblyGenerator;
 import com.famiforth.parser.ParserToken;
 import com.famiforth.parser.ParserToken.DefinitionType;
@@ -20,7 +19,7 @@ import com.famiforth.parser.dictionary.UserDictionary;
 
 public class AssemblyGeneratorTest {
     
-    private AbstractGenerator generator;
+    private AssemblyGenerator generator;
 
     private FileOutputStream fileOut;
 

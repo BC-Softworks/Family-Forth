@@ -102,10 +102,12 @@ public class FamilyForth {
     }
     
     private static Options createOptions() {
-        Option help = new Option("h", "help", false, "print this message");
+        Option help = new Option("h", "help", false, "Print this message");
+        Option version = new Option("v", "version", false, "Print the compiler version number");
+
         Option cfg = new Option("cfg", "config", true, "ROM Configuration file");
         Option input = new Option("in", "input", true, "Place the output into <file>");
-        Option output = new Option("out", "output", true, "Place the output into <file>");
+        Option output = new Option("out", "output", true, "Name the output file");
         Option header = new Option("nh", "no-header", false, "Do not include a Header section");
         Option vector = new Option("nv", "no-vector", false, "Do not include a Vector section");
         Option oam = new Option("no", "no-oam", false, "Do not include a OAM section");
@@ -127,7 +129,8 @@ public class FamilyForth {
                             .addOption(mirror)
                             .addOption(backup)
                             .addOption(prgbanks)
-                            .addOption(chrbanks);
+                            .addOption(chrbanks)
+                            .addOption(version);
     }
 
     public static void main(String args[]) throws IOException {

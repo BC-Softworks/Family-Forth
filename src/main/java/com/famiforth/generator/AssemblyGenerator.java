@@ -14,7 +14,7 @@ import com.famiforth.parser.dictionary.UserDictionary;
 /** FamilyForth Code Generator
  * @author Edward Conn
 */
-public class AssemblyGenerator extends AbstractGenerator {
+public class AssemblyGenerator extends Generator{
 
     private static final String JSR = "jsr ";
     private static final String JMP = "jmp ";
@@ -24,6 +24,21 @@ public class AssemblyGenerator extends AbstractGenerator {
         super(fileOutputStream);
     }
 
+    /**
+     * Generate config
+     * @param fileName
+     */
+    public void writeConfigurationFile(String fileName){
+        
+    }
+
+    /**
+     * Initalize Forth registers
+     * @param fileName
+     */
+    public void writeRegisters(String fileName){
+        
+    }
 
     /**
      * Add a iNES header to the beginning of the main assembly file
@@ -34,7 +49,6 @@ public class AssemblyGenerator extends AbstractGenerator {
      * @param prgBanks Number of 16k PRG Banks
      * @param charBanks Number of 8k CHR Banks
      */
-    @Override
     public void writeHeader(String fileName, byte mapper, byte mirror, byte backup, byte prgBanks, byte charBanks) {
         List<String> lines = new LinkedList<>();
         lines.add(".segment \"HEADER\"");
@@ -56,7 +70,6 @@ public class AssemblyGenerator extends AbstractGenerator {
      * Write a file include guard
      * @param fileName
      */
-    @Override
     public void writeGuard(String fileName) {
         List<String> lines = new LinkedList<>();
         lines.add(String.format(".ifndef %s_GUARD", fileName));
@@ -69,7 +82,6 @@ public class AssemblyGenerator extends AbstractGenerator {
      * Write nmi, irq, and reset vectors
      * @param fileName
      */
-    @Override
     public void writeVector(String fileName) {
         List<String> lines = new LinkedList<>();
         lines.add(".segment \"VECTORS\"");
@@ -84,7 +96,6 @@ public class AssemblyGenerator extends AbstractGenerator {
      * Reserve OAM
      * @param fileName
      */
-    @Override
     public void writeOAM(String fileName) {
         List<String> lines = new LinkedList<>();
         lines.add(".segment \"OAM\"");
@@ -93,7 +104,6 @@ public class AssemblyGenerator extends AbstractGenerator {
         writeLines(lines);
     }
 
-    @Override
     public List<String> generate(ParserToken token) throws IOException{
         List<String> lines = new LinkedList<>();
         switch(token.type){
@@ -108,6 +118,7 @@ public class AssemblyGenerator extends AbstractGenerator {
                 break;
             case CONSTANT:
             case MACRO:
+            case VARIABLE:
                 lines = generateMacro(token, true);
                 break;
             case IF:
@@ -158,24 +169,6 @@ public class AssemblyGenerator extends AbstractGenerator {
         writeLines(lines);
 
         return lines;
-    }
-
-    /**
-     * Write the list of strings in order
-     * seperated by newlines to fileOutputStream
-     * @param lines
-     * @throws IOException
-     */
-    protected void writeLines(List<String> lines) {
-        lines.forEach(line -> {
-            try {
-                getFileOutputStream().write((line).getBytes());
-                getFileOutputStream().write((lineSeparator).getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new GeneratorException(e.getMessage());
-            }
-        });
     }
 
     private List<String> generateMacro(ParserToken token, boolean isInline) {

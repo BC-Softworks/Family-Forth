@@ -16,7 +16,6 @@ import java.util.List;
 
 import com.famiforth.generator.AssemblyGenerator;
 import com.famiforth.exceptions.CompilerException;
-import com.famiforth.generator.AbstractGenerator;
 import com.famiforth.lexer.Lexer;
 import com.famiforth.parser.Parser;
 import com.famiforth.parser.ParserToken;
@@ -63,7 +62,7 @@ public class Compiler {
     public void compile() throws IOException {
         // Create a Lexer, Parser, and Generator using the parsed options
         Parser parser = null;
-        AbstractGenerator generator = null;
+        AssemblyGenerator generator = null;
 
         try {
             Lexer lexer = new Lexer(new FileReader(fileIn));
@@ -97,7 +96,7 @@ public class Compiler {
         System.out.println("Program compiled successful.");
     }
 
-    private void parseFile(Parser parser, AbstractGenerator generator) throws IOException {
+    private void parseFile(Parser parser, AssemblyGenerator generator) throws IOException {
         List<ParserToken> parsedWords = new ArrayList<>();
         while(parser.hasNext()){
             ParserToken token = parser.parse();
@@ -144,7 +143,7 @@ public class Compiler {
             String fileOutName = libraryName + ".asm";
             File fOut = new File(fileOut.getParent() + File.separator + fileOutName);
             fOut.getParentFile().mkdirs();
-            AbstractGenerator generator = new AssemblyGenerator(new FileOutputStream(fOut));
+            AssemblyGenerator generator = new AssemblyGenerator(new FileOutputStream(fOut));
             generator.writeGuard(libraryName.toUpperCase());
             parseFile(parser, generator);
             generator.close();

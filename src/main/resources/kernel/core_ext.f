@@ -76,7 +76,6 @@ ENDCODE
 \ flag is true if and only if x1 is not bit-for-bit the same as x2.
 : <> = 0= ;
 
-
 ( n -- flag )
 \ flag is true if and only if n is greater than zero.
 CODE 0>

@@ -267,10 +267,15 @@ CODE EXECUTE
 	rts	      \ Return to address pushed
 ENDCODE
 
-\ Runtime code only
-\ TODO: Add compile time parsing
+\ Reserving the words in the library, 
+\ definitions unused until paring is finished
+\ Runtime parsing not supported
+
 \ a-addr is the address of name's data field.
-: CREATE ( -- a-addr ) HERE 1 ALLOT HERE ;
+: CREATE ( -- a-addr ) NONE ;
 
 \ a-addr is the address of the reserved cell.
-: VARIABLE ( -- a-addr ) CREATE DUP 0 , ;
+: CONSTANT ( -- x ) NONE ;
+
+\ a-addr is the address of the reserved cell.
+: VARIABLE ( -- a-addr ) ALIGN HERE 0 , CONSTANT ;
