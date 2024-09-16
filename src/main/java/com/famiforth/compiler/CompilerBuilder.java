@@ -15,10 +15,11 @@ public class CompilerBuilder {
     private File fileIn;
     private File fileOut;
     private File cfgFile;
+    private String target = "nes";
     private String initalDictionary;
 
     public Compiler toCompiler(){
-        return new Compiler(guard, header, vector, oam, mirror, mapper, backup, prgBanks, charBanks, fileIn, fileOut, cfgFile, initalDictionary);
+        return new Compiler(guard, header, vector, oam, mirror, mapper, backup, prgBanks, charBanks, fileIn, fileOut, cfgFile, target, initalDictionary);
     }
 
     public void setHeader(boolean header) {
@@ -63,6 +64,10 @@ public class CompilerBuilder {
 
     public void setCfgFile(File cfgFile) {
         this.cfgFile = cfgFile;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     public void setInitalDictionary(String initalDictionary) {

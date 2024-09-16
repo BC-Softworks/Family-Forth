@@ -57,6 +57,10 @@ public class FamilyForth {
                 builder.setCfgFile(cfgFile);
             }
 
+            if(cmd.hasOption("target")){
+                builder.setTarget(cmd.getOptionValue("target"));
+            }
+
             if(cmd.hasOption("no-header")){
                 builder.setHeader(false);
             }

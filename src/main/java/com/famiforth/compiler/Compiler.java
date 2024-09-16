@@ -38,11 +38,12 @@ public class Compiler {
     final private File fileIn;
     final private File fileOut;
     final private File cfgFile;  // Used to validate segements
+    final private String target;
     final private String initalDictionary;
     final private List<String> parsedLibraries;
 
     public Compiler(boolean guard, boolean header, boolean vector, boolean oam, byte mirror, byte mapper, byte backup, byte prgBanks, byte charBanks, 
-            File fileIn, File fileOut, File cfgFile, String initalDictionary) {
+            File fileIn, File fileOut, File cfgFile, String target, String initalDictionary) {
         this.guard = guard;
         this.header = header;
         this.vector = vector;
@@ -55,6 +56,7 @@ public class Compiler {
         this.fileIn = fileIn;
         this.fileOut = fileOut;
         this.cfgFile = cfgFile;
+        this.target = target;
         this.initalDictionary = initalDictionary;
         this.parsedLibraries = new ArrayList<>();
     }
