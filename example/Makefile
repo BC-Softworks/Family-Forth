@@ -38,10 +38,8 @@ all : prepare build test
 
 prepare :
 	mkdir -p $(ASM_DIR)
-	mvn clean compile assembly:single
-	for name in src/*.f; do\
-        java -jar ../target/famiforth-1.0-SNAPSHOT.jar $${name} -o build/asm ; \
-    done
+	mkdir -p $(BUILD_DIR)
+	java -jar ../target/famiforth-1.0-SNAPSHOT.jar --in pong.f --out build/asm ; 
 	@echo "Assembly file generated."
 
 build : $(TARGET)
