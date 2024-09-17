@@ -4,7 +4,7 @@
 \ Defines the following words
 \ SILENCE
 
-require "control.f"
+require "core.f"
 
 segment "CODE"
 

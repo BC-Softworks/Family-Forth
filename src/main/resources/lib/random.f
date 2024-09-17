@@ -1,7 +1,7 @@
 \ NES RNG library using an XORshift generator
 \ Author: Edward Conn
 
-require "memory.f"
+require "core.f"
 
 segment "CODE"
 

@@ -3,7 +3,7 @@
 \ Defines the following words
 \ CTRL
 
-require "math.f"
+require "core.f"
 
 segment "CODE"
 

@@ -5,7 +5,7 @@
 \ NIP PICK ROLL ERASE TRUE FALSE <> 0> 0<> 
 \ TUCK PAD U> 2>R 2R> 2R@ UNUSED
 
-require "memory.f"
+require "core.f"
 
 segment "CODE"
 

@@ -5,7 +5,7 @@
 \ : \ [ ] STATE QUIT ABORT
 \ BASE BIN DECIMEL HEX
 
-require "memory.f"
+require "core.f"
 
 segment "CODE"
 
