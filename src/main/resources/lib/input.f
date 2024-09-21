@@ -5,6 +5,8 @@
 
 require "core.f"
 
+variable input
+
 segment "CODE"
 
 ( -- x )
@@ -30,10 +32,14 @@ CODE CTRL
     rts
 ENDCODE
 
+( -- )
+\ Repoll user input
+: POLL CTRL input ! ;
+
 ( x -- true | false )
-\ Return true if and only if 
-\ the button has been pressed
-: PRESSED DUP CTRL AND = ;
+\ Return true if and only if the button has been pressed
+\ POLL must be called first
+: PRESSED DUP input @ AND = ;
 
 ( x -- true | false )
 \ Return true if and only if 
