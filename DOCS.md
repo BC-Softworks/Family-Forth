@@ -27,9 +27,7 @@
 | W    |  Zpage         | $00 - $01 |                |
 | W2   |  Zpage         | $02 - $03 |                |
 | DSP  |  Zpage         | $04 - $05 | $0400 to $07FF |
-| BASE |  Zpage         |    $06    |    #2 - #70    |
-| MODE |  Zpage         |    $07    |                |
 | SRC  |  Zpage         | $08 - $09 | $300  to $037F |
-| PSP  |  X Register    |           | $08   to $FD   |
+| PSP  |  X Register    |           | $08   to $00   |
 | RSP  |  Stack Pointer |           | $01A0 to $01FD |
 

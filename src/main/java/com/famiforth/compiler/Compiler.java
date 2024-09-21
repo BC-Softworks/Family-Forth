@@ -161,7 +161,7 @@ public class Compiler {
      */
     private Reader findRequiredFile(String fileInName) throws IOException {
         InputStream stream = null;
-        FileFilter filter = file -> file.getName().startsWith(fileInName) && file.getName().endsWith(".f");
+        FileFilter filter = file -> file.getName().startsWith(fileInName) && ( file.getName().endsWith(".f") || file.getName().endsWith(".fth") ) ;
 
         // Check the current directory first
         File requiredFile = new File(fileIn.getParent());

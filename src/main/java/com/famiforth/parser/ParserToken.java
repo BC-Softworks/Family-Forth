@@ -10,6 +10,7 @@ public class ParserToken {
     public final DefinitionType type;
     public final Pair<String, String> reference;
     public final String name;
+    public final boolean interrupt;
 
 
     public ParserToken(Definition def, DefinitionType type, Pair<String, String> reference, String name) {
@@ -17,13 +18,15 @@ public class ParserToken {
         this.type = type;
         this.reference = reference;
         this.name = name;
+        this.interrupt = false;
     }
 
-    public ParserToken(Definition def, DefinitionType type, Pair<String, String> reference) {
+    public ParserToken(Definition def, DefinitionType type, Pair<String, String> reference, boolean interrupt) {
         this.def = def;
         this.type = type;
         this.reference = reference;
         this.name = null;
+        this.interrupt = interrupt;
     }
 
     public ParserToken(Definition def, DefinitionType type) {

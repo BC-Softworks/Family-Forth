@@ -18,7 +18,9 @@ public class AssemblyGenerator extends Generator{
 
     private static final String JSR = "jsr ";
     private static final String JMP = "jmp ";
-    private static final String RETURN = "rts";
+    private static final String RET = "rts";
+    private static final String RTI = "rti";
+
     
     public AssemblyGenerator(FileOutputStream fileOutputStream) {
         super(fileOutputStream);
@@ -182,8 +184,7 @@ public class AssemblyGenerator extends Generator{
     private List<String> generateSubroutine(ParserToken token, boolean isInline) {
         final String procHeader = String.format(".proc %s", token.def.getLabel());
         final List<String> words = token.def.getWords();
-        final String procFooter = ".endproc";
-
+        final String procFooter = ".endproc";        
         return generateIndentedCodeBlock(procHeader, procFooter, words, isInline);
     }
 
@@ -219,16 +220,18 @@ public class AssemblyGenerator extends Generator{
             codeBlock.addAll(body.stream()
                 .map(UserDictionary::getDefinition)
                 .map(def -> {
-                    String str = def.isMacro() || RETURN.equalsIgnoreCase(def.getLabel()) ? "" : JSR;
+                    String str = def.isMacro() || RET.equalsIgnoreCase(def.getLabel()) ? "" : JSR;
                     return String.format("\t%s%s", str, def.getLabel());
                 })
                 .collect(Collectors.toList()));
-            // If the last line is a subroutine use jmp instead of rts
-            if(codeBlock.get(codeBlock.size() - 1).startsWith("\t" + JSR)){
+            String lastLine = codeBlock.get(codeBlock.size() - 1);
+            if(lastLine.startsWith("\t" + JSR)){
+                // If the last line is a subroutine use jmp instead of rts
                 String str = codeBlock.remove(codeBlock.size() - 1);
                 codeBlock.add(str.replace(JSR, JMP));
-            } else {
-                codeBlock.add("\t" + RETURN);
+            } else if(!(lastLine.startsWith("\t" + RTI) && lastLine.startsWith("\t" + RET))){
+                // Add a return if an explict one was not used
+                codeBlock.add("\t" + RET);
             }
         }
         codeBlock.add(footer);

@@ -32,14 +32,14 @@ public class AssemblyGeneratorTest {
     @Test
     public void generateIfStatementTest() throws IOException {
         setup();
-        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("IF"), DefinitionType.IF, Pair.of("0",""));
+        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("IF"), DefinitionType.IF, Pair.of("0",""), false);
         assertEquals("IF 0", generator.generate(token).get(0));
     }
 
     @Test
     public void generateElseStatementTest() throws IOException {
         setup();
-        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("ELSE"), DefinitionType.ELSE, Pair.of("0","1"));
+        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("ELSE"), DefinitionType.ELSE, Pair.of("0","1"), false);
         generator.generate(token);
         assertEquals("clc", generator.generate(token).get(0));
         assertEquals("bcc 1", generator.generate(token).get(1));
@@ -49,7 +49,7 @@ public class AssemblyGeneratorTest {
     @Test
     public void generateThenStatementTest() throws IOException {
         setup();
-        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("THEN"), DefinitionType.THEN, Pair.of("0", ""));
+        ParserToken token = new ParserToken(UserDictionary.getAnonymousDefinition("THEN"), DefinitionType.THEN, Pair.of("0", ""), false);
         generator.generate(token);
         assertEquals("THEN", generator.generate(token).get(0));
         assertEquals("0: ", generator.generate(token).get(1));

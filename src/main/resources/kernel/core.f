@@ -31,31 +31,19 @@ CONST
 	hiByteW2	= $03
 	lowByteDSP	= $04
 	hiByteDSP	= $05
-	radix		= $06
-	mode		= $07
-	lowByteDP	= $08
-	hiByteDP	= $09
 	false		= %00000000
 	true		= %11111111
 ENDCONST
 
 \ Global Macros
 
-MACRO BRANCH
+MACRO RET
 	rts
 ENDMACRO
 
-( x -- )
-( R: addr -- | addr )
-\ Branch to the next address on the
-\ return stack if teh TOS is 0
-CODE 0BRANCH
-	lda $00,X
-	and $01,X
-	beq @end
-	rts
-@end:
-ENDCODE
+MACRO RETI
+	rti
+ENDMACRO
 
 MACRO NONE
 	nop
@@ -74,21 +62,7 @@ MACRO PUSH arg0, arg1
     sta 01,X
 ENDMACRO
 
-\ Save return value in W2
-MACRO SAVE_RETURN
-	pla
-	sta lowByteW2
-	pla
-	sta hiByteW2
-ENDMACRO
-
-\ Load return value from W2
-MACRO LOAD_RETURN
-	lda hiByteW2
-	pha
-	lda lowByteW2
-	pha
-ENDMACRO
+segment "CODE"
 
 \ Helper procs
 
@@ -98,6 +72,18 @@ CODE LDW
 	lda $01,X
 	sta hiByteW
 	rts
+ENDCODE
+
+( x -- )
+( R: addr -- | addr )
+\ Branch to the next address on the
+\ return stack if teh TOS is 0
+CODE 0BRANCH
+	lda $00,X
+	and $01,X
+	beq @end
+	rts
+@end:
 ENDCODE
 
 \ Set Top of Stack to value in A
@@ -784,13 +770,19 @@ ENDCODE
 \ Transfer n from the return stack to the data stack.
 \ IMPORTANT: Doesn't use W
 CODE R>
-	SAVE_RETURN
+	pla
+	sta lowByteW2
+	pla
+	sta hiByteW2
 	PUT
 	pla
 	sta $00,X
 	pla
 	sta $01,X
-	LOAD_RETURN
+	lda hiByteW2
+	pha
+	lda lowByteW2
+	pha
 	rts
 ENDCODE
 
@@ -799,12 +791,18 @@ ENDCODE
 \ Tokenized >R
 \ IMPORTANT: Doesn't use W
 CODE >R
-	SAVE_RETURN
+	pla
+	sta lowByteW2
+	pla
+	sta hiByteW2
 	lda $01,X
 	pha
 	lda $00,X
 	pha
-	LOAD_RETURN
+	lda hiByteW2
+	pha
+	lda lowByteW2
+	pha
 	jmp DROP
 ENDCODE
 
@@ -1000,8 +998,14 @@ ENDMACRO
 
 \ Stores the program counter in W2
 CODE GET_PC
-	SAVE_RETURN
-	LOAD_RETURN
+	pla
+	sta lowByteW2
+	pla
+	sta hiByteW2
+	lda hiByteW2
+	pha
+	lda lowByteW2
+	pha
 	rts
 ENDCODE
 
@@ -1038,7 +1042,16 @@ ENDCODE
 \ An ambiguous condition exists if n1 | u1 and n2 | u2 are not both the same type.
 \ Anything already on the return stack becomes unavailable until the loop-control 
 \ parameters are discarded. 
-: DO >R	>R GET_PC LOAD_RETURN ;
+CODE DO 
+	jsr >R
+	jsr >R
+	jsr GET_PC
+	lda hiByteW2
+	pha
+	lda lowByteW2
+	pha
+	rts
+ENDCODE
 
 \ ( C: do-sys -- )
 \ Append the run-time semantics given below to the current definition.
@@ -1125,7 +1138,7 @@ ENDMACRO
 \
 \ ( -- )
 \ Continue execution at the location given by dest. 
-: REPEAT BRANCH ;
+: REPEAT R> DROP ;
 
 \ Helper for I and J
 \ Roughly halves bytes used
