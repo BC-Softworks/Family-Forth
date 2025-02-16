@@ -1,4 +1,5 @@
 \ NES port of PONG
+\ Uses the honkeypongtiles char
 
 require "audio.f"
 require "graphics.f"
@@ -7,20 +8,21 @@ require "startup.f"
 
 SEGMENT "CODE"
 
-variable GAMEPAD
-
 \ Graphics update loop
 : NMI 
 
 ; INTERRUPT
 
 \ Check for user input
-: CHECKGP ;
+\ Return directions to stack
+( -- up down left right )
+: GAMEPAD POLL UP DOWN LEFT RIGHT ;
 
 \ Main game logic loop
 : MAIN 
-    1 0 DO
-        CHECKGP
+    0 0 DO
+        GAMEPAD
+
     0 +LOOP
 ;
 

@@ -17,7 +17,7 @@ VARIABLE NMI_FLAG
 
 segment "CODE"
 
-: NMI_READY ( -- true | false) NMI_FLAG ;
+: NMI_READY ( -- true | false) NMI_FLAG @ ;
 
 : SPRITE ;
 
